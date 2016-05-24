@@ -105,6 +105,7 @@ typedef struct {
 	u16 US_After_Process[2];
 	bool ParaList[PARA_LIST_LEN];//79-93:15
 	u8 ParaListData[PARA_LIST_LEN*4];
+	u16 SamplePipeLen;
 }GlobalVariableTypeDef;
 
 extern GlobalVariableTypeDef GlobalVariable;
