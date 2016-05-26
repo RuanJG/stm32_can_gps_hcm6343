@@ -166,6 +166,15 @@ void ReportToARM9Base64(void)
 	}	
 	length+=5;
 	
+	#if 1 //add by ruan
+	buffer[buffer_index++]=102;//pipe deep;
+	for(i = 0; i<4; i++)
+	{
+		buffer[buffer_index++]=GlobalVariable.SamplePipeLen[i];
+	}
+	length+=5;
+	#endif
+	
 	//ADD BY ARPAN 2015.3.24
 	//ADD BD_Latitude
 	buffer[buffer_index++]=0x64;//PutUART(100);
@@ -181,6 +190,7 @@ void ReportToARM9Base64(void)
 		buffer[buffer_index++]=GlobalVariable.BD.BD_Longitude[i];
 	}	
 	length+=9;
+
 
 	//for (i = 0; i<7; ++i)	   //Ô­À´ÊÇ10
 	for(i=0; i<PARA_LIST_LEN; i++)
