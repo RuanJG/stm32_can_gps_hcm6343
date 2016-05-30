@@ -41,23 +41,20 @@ void SetSampleValve(u8 Bottle)  //增加采样箱CAN总线控制
 }
 
 static CanTxMsg TxMessage7;        //收放进水管
-void SendSamplePipeLenCmd(u8 cmd)
+void SendSamplePipeLenCmd(u8 cmd, u8 len)
 {
 	//cmd -> stop 33; pull 17; push 65
-	TxMessage7.StdId = 0x15;//0x15 是监测盒子的ID，分层抽样控制功能也添加在其上
+	TxMessage7.StdId = 0x16;//0x16 分层抽样控制板 功能也添加在其上
 	TxMessage7.DLC = 2;
 	TxMessage7.Data[0] = 0x07;
 	TxMessage7.Data[1] = cmd;
+	if( cmd == 67){
+		TxMessage7.Data[2] = len;
+		TxMessage7.DLC = 3;
+	}
 	CAN_TX(&TxMessage7);
 }
-void test_sample_pipe_len_cmd()
-{
-	static u8 i=0;
-	u8 cmds[3]={17,65,33};
 
-	SendSamplePipeLenCmd(cmds[i++]);
-	if( i >= 3 ) i=0;
-}
 
 void ExecuteValve(u8 valve_value)
 {
@@ -336,21 +333,25 @@ void ExecuteCommand(u8 *commamnd, int commamnd_len)
 						{
 							//stop 33; pull 17; push 65
 							case 33:
-								SendSamplePipeLenCmd(33); // 分层抽样需要给控制板发停止命令
+								SendSamplePipeLenCmd(33,0); // 分层抽样需要给控制板发停止命令
 								ROD_DOWN_RESET;
 								ROD_UP_RESET;
 								break;
 							case 17:
-								SendSamplePipeLenCmd(17); // 分层抽样需要给控制板发回收管命令
+								SendSamplePipeLenCmd(17,0); // 分层抽样需要给控制板发回收管命令
 								ROD_UP_SET;
 								ROD_DOWN_RESET;
 								//rod_down = 0;
 								break;
 							case 65:
-								SendSamplePipeLenCmd(65); // 分层抽样需要给控制板发放管命令
+								SendSamplePipeLenCmd(65,0); // 分层抽样需要给控制板发放管命令
 								ROD_DOWN_SET;
 								ROD_UP_RESET;
 								//rod_down = 1;
+								break;
+							case 67:
+								SendSamplePipeLenCmd(67,commamnd[cmdIndex+2]); // 分层抽样需要控制管长度的命令
+								cmdIndex += 1;
 								break;
 						}
 						cmdIndex += 2;

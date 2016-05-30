@@ -173,6 +173,13 @@ void ReportToARM9Base64(void)
 		buffer[buffer_index++]=GlobalVariable.SamplePipeLen[i];
 	}
 	length+=5;
+	
+	if( GlobalVariable.SamplePipeAck != 0){
+		buffer[buffer_index++]=103;//pipe cmd ack;
+		buffer[buffer_index++]=GlobalVariable.SamplePipeAck;
+		length+=2;
+		GlobalVariable.SamplePipeAck = 0;
+	}
 	#endif
 	
 	//ADD BY ARPAN 2015.3.24

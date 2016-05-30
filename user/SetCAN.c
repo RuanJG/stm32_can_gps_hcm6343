@@ -286,12 +286,15 @@ void CAN_Interrupt (void)
 	
 	else if( RxMessage.Data[0] == 0x40 )  //分层抽样的深度反馈
 	{
-		for( i=0; i< 4; i++){
-			GlobalVariable.SamplePipeLen[i]= RxMessage.Data[1+i]; // len is a int type , maybe -676943807mm ~ 676943807mm
+		if( RxMessage.Data[1] == 0x1 ){ //report len
+			for( i=0; i< 4; i++){
+				GlobalVariable.SamplePipeLen[i]= RxMessage.Data[2+i]; // len is a int type , maybe -676943807mm ~ 676943807mm
+			}
+			//GlobalVariable.SamplePipeLen = RxMessage.Data[1] | (RxMessage.Data[2]<<8) | (RxMessage.Data[3]<<16) | (RxMessage.Data[4]<<24);
+			//i= RxMessage.Data[1] | (RxMessage.Data[2]<<8) | (RxMessage.Data[3]<<16) | (RxMessage.Data[4]<<24);
+		}else if( RxMessage.Data[1] == 0x2 ){ // report ack 
+			GlobalVariable.SamplePipeAck = RxMessage.Data[2];
 		}
-		//GlobalVariable.SamplePipeLen = RxMessage.Data[1] | (RxMessage.Data[2]<<8) | (RxMessage.Data[3]<<16) | (RxMessage.Data[4]<<24);
-		//i= RxMessage.Data[1] | (RxMessage.Data[2]<<8) | (RxMessage.Data[3]<<16) | (RxMessage.Data[4]<<24);
-
 	}
 	
 	
