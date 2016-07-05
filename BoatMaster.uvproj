@@ -412,31 +412,6 @@
               <FilePath>.\user\main.c</FilePath>
             </File>
             <File>
-              <FileName>CommandParserOld.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\user\CommandParserOld.c</FilePath>
-            </File>
-            <File>
-              <FileName>CommandParser.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\user\CommandParser.c</FilePath>
-            </File>
-            <File>
-              <FileName>CommandGeneratorOld.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\user\CommandGeneratorOld.c</FilePath>
-            </File>
-            <File>
-              <FileName>CommandGenerator.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\user\CommandGenerator.c</FilePath>
-            </File>
-            <File>
-              <FileName>ExecuteCommand.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\user\ExecuteCommand.c</FilePath>
-            </File>
-            <File>
               <FileName>SetADC.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\user\SetADC.c</FilePath>
@@ -490,6 +465,41 @@
               <FileName>Ds18B20.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\user\Ds18B20.c</FilePath>
+            </File>
+            <File>
+              <FileName>fifo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\user\fifo.c</FilePath>
+            </File>
+            <File>
+              <FileName>fifo.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\user\fifo.h</FilePath>
+            </File>
+            <File>
+              <FileName>transProtocol.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\user\transProtocol.h</FilePath>
+            </File>
+            <File>
+              <FileName>fifo_void.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\user\fifo_void.h</FilePath>
+            </File>
+            <File>
+              <FileName>fifo_void.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\user\fifo_void.c</FilePath>
+            </File>
+            <File>
+              <FileName>cmdcoder.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\user\cmdcoder.c</FilePath>
+            </File>
+            <File>
+              <FileName>cmdcoder.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\user\cmdcoder.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -936,31 +946,6 @@
               <FilePath>.\user\main.c</FilePath>
             </File>
             <File>
-              <FileName>CommandParserOld.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\user\CommandParserOld.c</FilePath>
-            </File>
-            <File>
-              <FileName>CommandParser.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\user\CommandParser.c</FilePath>
-            </File>
-            <File>
-              <FileName>CommandGeneratorOld.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\user\CommandGeneratorOld.c</FilePath>
-            </File>
-            <File>
-              <FileName>CommandGenerator.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\user\CommandGenerator.c</FilePath>
-            </File>
-            <File>
-              <FileName>ExecuteCommand.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\user\ExecuteCommand.c</FilePath>
-            </File>
-            <File>
               <FileName>SetADC.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\user\SetADC.c</FilePath>
@@ -1014,6 +999,41 @@
               <FileName>Ds18B20.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\user\Ds18B20.c</FilePath>
+            </File>
+            <File>
+              <FileName>fifo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\user\fifo.c</FilePath>
+            </File>
+            <File>
+              <FileName>fifo.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\user\fifo.h</FilePath>
+            </File>
+            <File>
+              <FileName>transProtocol.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\user\transProtocol.h</FilePath>
+            </File>
+            <File>
+              <FileName>fifo_void.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\user\fifo_void.h</FilePath>
+            </File>
+            <File>
+              <FileName>fifo_void.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\user\fifo_void.c</FilePath>
+            </File>
+            <File>
+              <FileName>cmdcoder.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\user\cmdcoder.c</FilePath>
+            </File>
+            <File>
+              <FileName>cmdcoder.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\user\cmdcoder.h</FilePath>
             </File>
           </Files>
         </Group>

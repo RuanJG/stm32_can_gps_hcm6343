@@ -6,32 +6,52 @@
  *----------------------------------------------------------------------------
  ******************************************************************************/
 #include "stm32f10x.h"
-#include "global.h"			 
+#include "global.h"
+#include "fifo_void.h"
 
-// function declaration
-u8 CAN_Configuration(u8 FilterNumber, u16 ID, u16 ID_Mask);
-u8 CAN_TX(CanTxMsg* TxMessage);
 void USB_LP_CAN1_RX0_IRQHandler (void);
 __weak void CAN_Interrupt (void);
-void PutUART2(char ch);
-void PutUART3(char ch);
-
-
-extern u8 can_data_updating;
-
-//variable declaration
 
 CanRxMsg RxMessage;
-//extern bool RxEndFlag;
-extern u8 rod_down;
-extern GlobalVariableTypeDef GlobalVariable;
-#define ALERT_LED_SET	GPIOA->BSRR = GPIO_Pin_5
+Can_Error_CallBack_t can_err_cb;
+int msg_rx_recoveryed = 0;
+
+#define CAN_MB_NONE_VAILD 0xff
+u8 TransmitMailbox = CAN_MB_NONE_VAILD;
+
+#define MSG_TX_COUNT 100 // max count is 0xfe
+CanTxMsg TxMessageArray[MSG_TX_COUNT];
+
+#define MSG_COUNT 100 // max count is 0xfe
+CanRxMsg RxMessageArray[MSG_COUNT];
+
+void rx_put_cb(int id, void* data){
+	RxMessageArray[id] = *(CanRxMsg*)data;
+}
+void rx_get_cb(int id, void * dst){
+	*(CanRxMsg*)dst = RxMessageArray[id];
+}
+void tx_put_cb(int id, void* data){
+	TxMessageArray[id] = *(CanTxMsg*)data;
+}
+void tx_get_cb(int id, void * dst){
+	*(CanTxMsg*)dst = TxMessageArray[id];
+}
+fifo_void_t tx_msg_fifo;//={.enable = 0,.head=0,.tail=0,};
+fifo_void_t rx_msg_fifo;//={.enable = 0,.head=0,.tail=0,};
+
+
 // functio definition
-u8 CAN_Configuration(u8 FilterNumber, u16 ID, u16 ID_Mask)
+u8 Can_Configuration(u8 FilterNumber, u16 ID, u16 ID_Mask,Can_Error_CallBack_t err_cb)
 {
 	CAN_InitTypeDef        CAN_InitStructure;
 	CAN_FilterInitTypeDef  CAN_FilterInitStructure;
 	u8 Init_state;
+	
+	fifo_void_init (&rx_msg_fifo,MSG_COUNT, rx_put_cb, rx_get_cb);
+	fifo_void_init (&tx_msg_fifo,MSG_COUNT, tx_put_cb, tx_get_cb);
+	
+	can_err_cb = err_cb;
 
 	/* CAN register init */
 	CAN_DeInit(CAN1);
@@ -67,28 +87,61 @@ u8 CAN_Configuration(u8 FilterNumber, u16 ID, u16 ID_Mask)
 	CAN_ITConfig (CAN1, CAN_IT_FMP1, ENABLE);
   
 	return Init_state;
-}		 
-u8 CAN_TX(CanTxMsg* TxMessage)
+}
+u8 Can_Send(CanTxMsg* TxMessage)
 {
-	u8 i=0;
-	u8 TransmitMailbox;
-					
+	u8 res = 0;
+	
 	TxMessage->RTR = CAN_RTR_DATA;
 	TxMessage->IDE = CAN_ID_STD;
-	TransmitMailbox=CAN_Transmit(CAN1, TxMessage);
-
-	while((CAN_TransmitStatus(CAN1, TransmitMailbox) != CANTXOK) && (i != 0xFF))
-	{
-		i++;
+	if( 0 < fifo_void_free(&tx_msg_fifo) ){
+		fifo_void_put( &tx_msg_fifo, TxMessage);
+		res = 1;
+	}else{
+		can_err_cb(CAN_ERROR_MSG_TX_OVERFLOW ,1);
+		res = 0;
 	}
-	return CAN_TransmitStatus(CAN1, TransmitMailbox);
+	return res;
 }
 
-void USB_LP_CAN1_RX0_IRQHandler (void)
+void _can_send_tx_fifo_msg()
 {
-	CAN_Interrupt ();
-	CAN_ClearITPendingBit (CAN1, CAN_IT_FMP0); 
-} 
+	CanTxMsg tmsg;
+	
+	if( 0 < fifo_void_avail(&tx_msg_fifo) ){
+		fifo_void_get(&tx_msg_fifo, &tmsg);
+		//tmsg.RTR = CAN_RTR_DATA;
+		//tmsg.IDE = CAN_ID_STD;
+		TransmitMailbox=CAN_Transmit(CAN1, &tmsg);
+	}
+}
+void Can_event()
+{
+	uint8_t res;
+	
+	if( msg_rx_recoveryed > 0 ){ 
+		can_err_cb(CAN_ERROR_MSG_RX_OVERFLOW,msg_rx_recoveryed);
+		msg_rx_recoveryed = 0;
+	}
+	
+	if( TransmitMailbox == CAN_MB_NONE_VAILD ){
+		_can_send_tx_fifo_msg(); //no send data, so check and send 
+	}else if( TransmitMailbox == CAN_NO_MB ){
+		can_err_cb(CAN_ERROR_MSG_TX_FAILED ,2);
+		//and do send next package again
+		_can_send_tx_fifo_msg();
+	}else if( CAN_TransmitStatus(CAN1, TransmitMailbox) == CANTXPENDING ){
+		;// do nothing for this event
+	}else if ( CAN_TransmitStatus(CAN1, TransmitMailbox) == CANTXOK ){
+		//check next tx package and send
+		_can_send_tx_fifo_msg();
+	}else if ( CAN_TransmitStatus(CAN1, TransmitMailbox) == CANTXFAILED ){
+		can_err_cb(CAN_ERROR_MSG_TX_FAILED ,1);
+		//and do send next package again
+		_can_send_tx_fifo_msg();
+	}
+}
+
 /**
  * @brief  CAN receive message from Navigation board, decode and store information
  *
@@ -98,206 +151,23 @@ void USB_LP_CAN1_RX0_IRQHandler (void)
  */
 void CAN_Interrupt (void)
 {
-	int tt = 0;
-	register int i;
-	CAN_Receive	(CAN1, 0, &RxMessage);
-	
-	//for(i=0;i<RxMessage.DLC; i++)
-	//{
-	//	PutUART2(RxMessage.Data[i]);
-	//}
-	
-	if(RxMessage.Data[0] == 0x11) 
-	{ 	
-		switch(RxMessage.Data[1]){
-			case 0x00:
-				can_data_updating = 0;
-				for(i=0; i<6; i++){
-					GlobalVariable.GPS.Latitude[i] = RxMessage.Data[2+i];							
-				}
-				break;
-			case 0x01:
-				can_data_updating = 1;
-				for(i=0; i<2; i++){
-				GlobalVariable.GPS.Latitude[i+6]=RxMessage.Data[2+i];							
-				}
-				for(i=0; i<4; i++){
-					GlobalVariable.GPS.Longitude[i]=RxMessage.Data[4+i];							
-				}
 
-				break;
-			case 0x02:
-				can_data_updating = 2;
-				for(i=0; i<4; i++){
-					GlobalVariable.GPS.Longitude[i+4]=RxMessage.Data[2+i];							
-				}
-				GlobalVariable.GPS.Speed[0]=RxMessage.Data[6];	
-				GlobalVariable.GPS.Speed[1]=RxMessage.Data[7];	 
-				can_data_updating = 0;
-				break;
-			case 0x03:
-				can_data_updating = 3;
-				GlobalVariable.Compass.heading[0]=RxMessage.Data[2];	
-				GlobalVariable.Compass.heading[1]=RxMessage.Data[3];
-				/***********************
-				GlobalVariable.Compass.pitch[0]=RxMessage.Data[4];	
-				GlobalVariable.Compass.pitch[1]=RxMessage.Data[5];
-				GlobalVariable.Compass.roll[0]=RxMessage.Data[6];	
-				GlobalVariable.Compass.roll[1]=RxMessage.Data[7];
-			*********************/
-				can_data_updating = 4;
-			
-			/*
-				switch(usv_protocol_version)
-				{
-					case USV_PROTOCOL_VERSION_1:
-						reportToARM9();
-						break;
-					case USV_PROTOCOL_VERSION_2:
-						ReportToARM9Base64();
-						break;
-					default:
-						break;
-				}
-			*/
-				break;
-			case 0x04:
-				GlobalVariable.GPS.Time[0]=RxMessage.Data[2];	
-				GlobalVariable.GPS.Time[1]=RxMessage.Data[3];
-				GlobalVariable.GPS.Time[2]=RxMessage.Data[4];
-				GlobalVariable.GPS.Date[0]=RxMessage.Data[5];	
-				GlobalVariable.GPS.Date[1]=RxMessage.Data[6];
-				GlobalVariable.GPS.Date[2]=RxMessage.Data[7];
-				break;
-			default:
-				break;
-		}// end of case
-	}// end of data from 0x11
-	
-	// add by arpan 2015.3.24
-	// ADD BEIDOU
-	else if(RxMessage.Data[0] == 0x30)
-	{
-		//PutUART3('3');
-		switch(RxMessage.Data[1]){
-			case 0x00:
-				//can_data_updating = 0;
-				for(i=0; i<6; i++){
-					GlobalVariable.BD.BD_Latitude[i] = RxMessage.Data[2+i];							
-				}
-				break;
-			case 0x01:
-				//can_data_updating = 1;
-				for(i=0; i<2; i++){
-					
-				GlobalVariable.BD.BD_Latitude[i+6]=RxMessage.Data[2+i];							
-				}
-				for(i=0; i<4; i++){
-					GlobalVariable.BD.BD_Longitude[i]=RxMessage.Data[4+i];							
-				}
+	if( 0 >= fifo_void_free( &rx_msg_fifo ) ){
+		msg_rx_recoveryed ++;
+	}else{
+		CAN_Receive	(CAN1, 0, &RxMessage);
+		fifo_void_put(&rx_msg_fifo,&RxMessage);
+	}
+}
+void USB_LP_CAN1_RX0_IRQHandler (void)
+{
+	CAN_Interrupt ();
+	CAN_ClearITPendingBit (CAN1, CAN_IT_FMP0); 
+} 
 
-				break;
-			case 0x02:
-				//can_data_updating = 2;
-				for(i=0; i<4; i++){
-					GlobalVariable.BD.BD_Longitude[i+4]=RxMessage.Data[2+i];							
-				}
-				//GlobalVariable.GPS.Speed[0]=RxMessage.Data[6];	
-				//GlobalVariable.GPS.Speed[1]=RxMessage.Data[7];	 
-				//DEBUG
-				for(tt = 0 ; tt <8 ;tt++)
-				{
-					//PutUART3(GlobalVariable.BD.BD_Latitude[tt]);
-				}
-				
-				for(tt = 0 ; tt <8 ;tt++)
-				{
-					//PutUART3(GlobalVariable.BD.BD_Longitude[tt]);
-				}
-				
-				//can_data_updating = 0;
-				
-				break;
-				/********
-			case 0x03:
-				can_data_updating = 3;
-				GlobalVariable.Compass.heading[0]=RxMessage.Data[2];	
-				GlobalVariable.Compass.heading[1]=RxMessage.Data[3];
-				GlobalVariable.Compass.pitch[0]=RxMessage.Data[4];	
-				GlobalVariable.Compass.pitch[1]=RxMessage.Data[5];
-				GlobalVariable.Compass.roll[0]=RxMessage.Data[6];	
-				GlobalVariable.Compass.roll[1]=RxMessage.Data[7];
-				can_data_updating = 4;
-				********/
-			
-
-				break;
-			default:
-				break;
-		}// end of case		
-	}
-	
-	//add by arpan 2015.3.25
-	//姿态信息
-	else if(RxMessage.Data[0] == 0x31)
-	{
-		switch(RxMessage.Data[1]){
-			case 0x0A:	//横摇
-				for(i=0; i<2; i++){
-					GlobalVariable.Compass.pitch[i] = RxMessage.Data[i+2];							
-				}
-				break;
-				
-			case 0x0B:	//纵摇
-				for(i=0; i<2; i++){
-					GlobalVariable.Compass.roll[i] = RxMessage.Data[i+2];							
-				}
-				break;
-				
-			default:
-				break;
-			}
-	}
-	
-	else if(RxMessage.Data[0] == 0x15)  
-	{
-		i = RxMessage.Data[1]-PARA_BASE_INDEX;	   //更改之前是82
-		//if (i >= 0 && i < 7)	  //原来是10
-		if(i>=0 && i<PARA_LIST_LEN)
-		{
-			GlobalVariable.ParaList[i] = TRUE;
-			GlobalVariable.ParaListData[i*4] = RxMessage.Data[2];
-			GlobalVariable.ParaListData[i*4+1] = RxMessage.Data[3];
-			GlobalVariable.ParaListData[i*4+2] = RxMessage.Data[4];
-			GlobalVariable.ParaListData[i*4+3] = RxMessage.Data[5];
-		}
-		
-
-		///////////////////////////
-		/*if(RxMessage.Data[1]==64)
-		{
-			
-			PutUART3(GlobalVariable.ParaListData[i*4]);
-			PutUART3(GlobalVariable.ParaListData[i*4+1]);
-			PutUART3(GlobalVariable.ParaListData[i*4+2]);
-			PutUART3(GlobalVariable.ParaListData[i*4+3]);
-		}*/
-	}
-	
-	else if( RxMessage.Data[0] == 0x40 )  //分层抽样的深度反馈
-	{
-		if( RxMessage.Data[1] == 0x1 ){ //report len
-			for( i=0; i< 4; i++){
-				GlobalVariable.SamplePipeLen[i]= RxMessage.Data[2+i]; // len is a int type , maybe -676943807mm ~ 676943807mm
-			}
-			//GlobalVariable.SamplePipeLen = RxMessage.Data[1] | (RxMessage.Data[2]<<8) | (RxMessage.Data[3]<<16) | (RxMessage.Data[4]<<24);
-			//i= RxMessage.Data[1] | (RxMessage.Data[2]<<8) | (RxMessage.Data[3]<<16) | (RxMessage.Data[4]<<24);
-		}else if( RxMessage.Data[1] == 0x2 ){ // report ack 
-			GlobalVariable.SamplePipeAck = RxMessage.Data[2];
-		}
-	}
-	
-	
+int Can_Get_CanRxMsg(CanRxMsg *msg)
+{
+	return fifo_void_get(&rx_msg_fifo, msg);
 }
 
 //End of File

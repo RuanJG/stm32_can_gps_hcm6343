@@ -52,4 +52,39 @@ void ADC_Configuration (void)
 	DMA_Cmd(DMA1_Channel1, ENABLE);
 
 }
+
+u16 Get_Temperature_Adc_value()
+{
+	int i;
+	u32 sensor = 0; 		
+	for(i=0;i<50;i++)
+	{
+		sensor += ADCConvert[i][0];
+	}
+	sensor = sensor/50;
+	return sensor;
+}
+u16 Get_Voltage_Adc_value()
+{
+	int i;
+	u32 sensor = 0; 		
+	for(i=0;i<50;i++)
+	{
+		sensor += ADCConvert[i][2];
+	}
+	sensor = sensor/50;
+	return sensor;
+}
+u16 Get_WaterLeakage_Adc_value()
+{
+	int i;
+	u32 sensor = 0; 		
+	for(i=0;i<50;i++)
+	{
+		sensor += ADCConvert[i][1];
+	}
+	sensor = sensor/50;
+	return sensor;
+}
+
 //End of File

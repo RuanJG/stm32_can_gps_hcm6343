@@ -35,13 +35,13 @@ bool ADXL345_Configuration (s8 OffsetX, s8 OffsetY, s8 OffsetZ)
 		I2C_Stop();  
 		return FALSE; 
 	}
-	GlobalVariable.Acc.X = I2C_ReceiveByte();
+	//GlobalVariable.Acc.X = I2C_ReceiveByte();
 	I2C_NoAck();
 	I2C_Stop();
-	if(GlobalVariable.Acc.X != 0xe5)
-	{
-		return FALSE;
-	}
+	//if(GlobalVariable.Acc.X != 0xe5)
+	//{
+	//	return FALSE;
+	//}
 	//Configuration
 	if (!I2C_Start())
 	{
@@ -136,6 +136,7 @@ bool ADXL345_Read(void)
 			return FALSE; 
 		}	
 #endif					
+		/*
 		GlobalVariable.Acc.X = I2C_ReceiveByte();							 
 		I2C_Ack();		   
 		GlobalVariable.Acc.X = (I2C_ReceiveByte()<<8)+ GlobalVariable.Acc.X;
@@ -152,6 +153,7 @@ bool ADXL345_Read(void)
 		}	
 		I2C_NoAck();
 		I2C_Stop();
+		*/
 		return TRUE;
 	}
 	else

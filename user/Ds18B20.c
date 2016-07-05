@@ -30,8 +30,6 @@ void ds_writebyte(u8 cmd);
 void ds_convert(void);
 void Read_DS18B20(void);
 //extern
-extern void delay_us(u16 us);
-extern FtoBsTypeDef FloatToBytes(float data);
 
 // declaration of variables
 //local
@@ -171,11 +169,11 @@ void ds_convert(void){
 	ds_reset();
 
 	temp = (tempH<<8)|tempL;
-	GlobalVariable.tempWater = temp*0.0625f;					//bit 8 in tempL is 2^-4
-	TempBytes = FloatToBytes(GlobalVariable.tempWater);
-	for(i=0; i<4; i++){
-		GlobalVariable.tempWaterBytes[i] = TempBytes.bArray[i];	
-	}
+	//GlobalVariable.tempWater = temp*0.0625f;					//bit 8 in tempL is 2^-4
+	//TempBytes = FloatToBytes(GlobalVariable.tempWater);
+	//for(i=0; i<4; i++){
+		//GlobalVariable.tempWaterBytes[i] = TempBytes.bArray[i];	
+	//}
 }
 
 
@@ -206,20 +204,20 @@ void Read_DS18B20(void){
 		ds_reset();
 	
 		temp = (tempH<<8)|tempL;
-		GlobalVariable.tempWater = temp*0.0625f;					//bit 8 in tempL is 2^-4
+		//GlobalVariable.tempWater = temp*0.0625f;					//bit 8 in tempL is 2^-4
 		/**********************Ôö¼ÓÅÐ¶Ï**********************/
 	
-		TempBytes = FloatToBytes(GlobalVariable.tempWater);
+		//TempBytes = FloatToBytes(GlobalVariable.tempWater);
 		for(i=0; i<4; i++)
 		{
-			GlobalVariable.tempWaterBytes[i] = TempBytes.bArray[i];	
+			//GlobalVariable.tempWaterBytes[i] = TempBytes.bArray[i];	
 		}			
 		// ask for next conversion
 		ds_reset();
 		ds_writebyte(DS_SKIP_ROM);
 		ds_writebyte(DS_CONVERT);
 			
-		number[nu] = GlobalVariable.tempWater;
+		//number[nu] = GlobalVariable.tempWater;
 		nu ++;
 		if(nu > 300)
 		{

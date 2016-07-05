@@ -179,6 +179,17 @@ void GPIO_Initialization(void){
 	GPIOA->BRR  = GPIO_Pin_5;
 	GPIOA->BRR  = GPIO_Pin_6;
 	GPIOA->BRR  = GPIO_Pin_7;
+	
+		//device init
+	GPRS_PWR_SET;
+	ALERT_LED_RESET;
+	US_LEFT_SET;
+	US_RIGHT_SET;
+	CAM_PWR_SET;
+	VALVE12_1RESET;
+	VALVE12_2RESET;
+	VALVE34_1RESET;
+	VALVE34_2RESET;
 }
 
 //End of File

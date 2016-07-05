@@ -2,6 +2,7 @@
 #define _global_h_ 
 
 #include <stm32f10x.h>	
+#include "cmdcoder.h"
 
 #define BIT0 1
 #define BIT1 (1<<1)	//1
@@ -140,6 +141,88 @@ void ReportToARM9Base64(void);
 #define MAINCONTROLLER_ME300  1
 
 extern int MainControllerType;
+
+
+
+
+
+
+
+
+#include "fifo.h"
+
+/*
+*********   UART
+*/
+#define UART_BUFFER_LEN 512
+typedef void (*uartReadCallBack)(char c);
+typedef struct _uart_t {
+	USART_TypeDef *uartDev;
+	uartReadCallBack read_cb;
+	fifo_t txfifo;
+	fifo_t rxfifo;
+	char txbuff[UART_BUFFER_LEN];
+	char rxbuff[UART_BUFFER_LEN];
+}Uart_t;
+void Uart_Configuration (Uart_t *uart, USART_TypeDef *uartDev, uint32_t USART_BaudRate, uint16_t USART_WordLength, uint16_t USART_StopBits, uint16_t USART_Parity);
+void Uart_PutChar(Uart_t *uart,char ch);
+void Uart_PutString (Uart_t *uart,char *buffer);
+void Uart_PutBytes (Uart_t *uart,const char *buffer, int len);
+int Uart_GetChar(Uart_t *uart, char *c);
+
+
+
+
+
+/*
+*
+*##### CAN 
+*/
+#define CAN_ERROR_MSG_RX_OVERFLOW 1
+#define CAN_ERROR_MSG_TX_OVERFLOW 2
+#define CAN_ERROR_MSG_TX_FAILED 3
+typedef void (*Can_Error_CallBack_t)(int type, int value);
+u8 Can_Configuration(u8 FilterNumber, u16 ID, u16 ID_Mask,Can_Error_CallBack_t err_cb);
+u8 Can_Send(CanTxMsg* TxMessage);
+int Can_Get_CanRxMsg(CanRxMsg *msg);
+void Can_event();
+
+
+
+/*
+*********************  ADC
+*
+*/
+u16 Get_Temperature_Adc_value();
+u16 Get_Voltage_Adc_value();
+u16 Get_WaterLeakage_Adc_value();
+void ADC_Configuration (void);
+
+
+/*
+************* systick 
+*/
+typedef struct _systick_time_t {
+	u32 systick_ms;
+	u32 systick_ms_overflow;
+	u32 interval_ms;
+}systick_time_t;
+//float get_system_s();
+int check_systick_time(systick_time_t *time_t);
+int systick_time_start(systick_time_t *time_t, int ms);
+void delay_us(u32 us);
+void Systick_Event();
+void SysTick_Configuration(void);
+
+
+/*
+*************** Board Config
+*/
+void SetClock(void);
+void NVIC_Configuration(void);
+void GPIO_Configuration (void);
+void GPIO_Initialization(void);
+
 
 #endif
 //End of File
