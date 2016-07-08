@@ -20,6 +20,7 @@ CanTxMsg TxMessage;
 volatile int resend_count = 0;
 #define CAN_RESEND_MAX_COUNT 10
 
+volatile char in_send_loop = 0;
 
 // record the mailbox which last message send with
 #define CAN_MB_NONE_VAILD 0xff
@@ -65,6 +66,7 @@ u8 Can1_Configuration_mask(u8 FilterNumber, u16 ID, u16 ID_Mask)
 	fifo_void_init (&can1_rx_msg_fifo,MSG_COUNT, can_rx_put_cb, can_rx_get_cb);
 	fifo_void_init (&can1_tx_msg_fifo,MSG_COUNT, can_tx_put_cb, can_tx_get_cb);
 	resend_count = 0;
+	in_send_loop = 0;
 	TransmitMailbox = CAN_MB_NONE_VAILD;
 
 	
@@ -79,10 +81,10 @@ u8 Can1_Configuration_mask(u8 FilterNumber, u16 ID, u16 ID_Mask)
 	CAN_InitStructure.CAN_TTCM = DISABLE;
 	CAN_InitStructure.CAN_ABOM = ENABLE;
 	CAN_InitStructure.CAN_AWUM = DISABLE;
-	CAN_InitStructure.CAN_NART = ENABLE; //DISABLE
+	CAN_InitStructure.CAN_NART = ENABLE;
 	CAN_InitStructure.CAN_RFLM = DISABLE;
 	CAN_InitStructure.CAN_TXFP = ENABLE; //DISABLE
-	CAN_InitStructure.CAN_Mode = CAN_Mode_Normal;//CAN_Mode_LoopBack;
+	CAN_InitStructure.CAN_Mode = CAN_Mode_Normal;//CAN_Mode_LoopBack;//CAN_Mode_Normal;
 	CAN_InitStructure.CAN_SJW = CAN_SJW_1tq;
 	CAN_InitStructure.CAN_BS1 = CAN_BS1_3tq;
 	CAN_InitStructure.CAN_BS2 = CAN_BS2_5tq;
@@ -131,6 +133,8 @@ u8 Can1_Configuration_mask(u8 FilterNumber, u16 ID, u16 ID_Mask)
 	CAN_ITConfig (CAN1, CAN_IT_FMP0, ENABLE);	
 	CAN_ITConfig (CAN1, CAN_IT_FMP1, ENABLE);
 	CAN_ITConfig (CAN1, CAN_IT_TME, DISABLE);
+	CAN1->TSR |= CAN_TSR_RQCP0|CAN_TSR_RQCP1|CAN_TSR_RQCP2;
+	CAN_ITConfig (CAN1, CAN_IT_TME, ENABLE);
   
 	return Init_state;
 }
@@ -145,26 +149,29 @@ void Can1_Send_Message(CanTxMsg* TxMessage)
 	//TxMessage->RTR = CAN_RTR_DATA;
 	//TxMessage->IDE = CAN_ID_STD;
 	
-	//can tx is stoped 
-	if( CAN_GetITStatus(CAN1,CAN_IT_TME) == RESET ){
-		TransmitMailbox=CAN_Transmit(CAN1, TxMessage);
-		CAN_ITConfig (CAN1, CAN_IT_TME, ENABLE);
-		return;
-	}
-	
-	// can tx is in loop
+	// close irq 
 	CAN_ITConfig (CAN1, CAN_IT_TME, DISABLE);
-#if 1 // wait old message send
-	if( fifo_void_free(&can1_tx_msg_fifo) <= 0 ){
-		system_Error_Callback(ERROR_CAN1_TX_FIFO_OVERFLOW_TYPE,1);
-		CAN_ITConfig (CAN1, CAN_IT_TME, ENABLE);
-		while( fifo_void_free(&can1_tx_msg_fifo) <= 0 );
-		CAN_ITConfig (CAN1, CAN_IT_TME, DISABLE);
+	  
+	if( in_send_loop == 0 ){
+	// fifo_void is empty in irq , so send it direct
+		in_send_loop = 1;
+		CAN1->TSR |= CAN_TSR_RQCP0|CAN_TSR_RQCP1|CAN_TSR_RQCP2;
+		TransmitMailbox=CAN_Transmit(CAN1, TxMessage);
+	}else{
+	// can is busy , fill to fifo_void
+		#if 1 // wait old message  send in fifo_void 
+		if( fifo_void_free(&can1_tx_msg_fifo) <= 0 ){
+			system_Error_Callback(ERROR_CAN1_TX_FIFO_OVERFLOW_TYPE,1);
+			CAN_ITConfig (CAN1, CAN_IT_TME, ENABLE);
+			while( fifo_void_free(&can1_tx_msg_fifo) <= 0 );
+			CAN_ITConfig (CAN1, CAN_IT_TME, DISABLE);
+		}
+		fifo_void_put( &can1_tx_msg_fifo, TxMessage);
+		#else // recovery old message
+		fifo_void_recovery_put( &can1_tx_msg_fifo, TxMessage);
+		#endif
 	}
-	fifo_void_put( &can1_tx_msg_fifo, TxMessage);
-#else
-	fifo_void_recovery_put( &can1_tx_msg_fifo, TxMessage);
-#endif
+	//open irq
 	CAN_ITConfig (CAN1, CAN_IT_TME, ENABLE);
 }
 
@@ -228,21 +235,27 @@ void CAN1_RX1_IRQHandler()
 	CAN_ITConfig (CAN1, CAN_IT_FMP1, DISABLE);
 }
 
+
 void USB_HP_CAN1_TX_IRQHandler (void)
 {
 	uint8_t status ;
+	//volatile static int i=0,j=0,s=0;
+	//s++;
 	if( TransmitMailbox != CAN_MB_NONE_VAILD ){
 		//check last translate status
-		status = CAN_TransmitStatus(CAN1, TransmitMailbox);
+		status = CAN_TransmitStatus(CAN1, TransmitMailbox);//TransmitMailbox);
 		if( status == CANTXPENDING ){
-			//to alarm the error , witch shoule not has this status
-			CAN_ClearITPendingBit(CAN1,CAN_IT_TME);
+			//TODO why this irq will happen, if no clean tsr , it will in here much time ( answer : can not close irq in this function)
+			CAN1->TSR |= CAN_TSR_RQCP0|CAN_TSR_RQCP1|CAN_TSR_RQCP2;
+			//i++;
 			return;
 		}else if( status == CANTXOK ){
+			//j++;
 			resend_count =0;
 		}else if( status == CANTXFAILED ){
 			if( resend_count < CAN_RESEND_MAX_COUNT ){
 				//resend
+				CAN1->TSR |= CAN_TSR_RQCP0|CAN_TSR_RQCP1|CAN_TSR_RQCP2;
 				TransmitMailbox=CAN_Transmit(CAN1, &TxMessage);
 				resend_count++;
 			}else{
@@ -252,6 +265,8 @@ void USB_HP_CAN1_TX_IRQHandler (void)
 				resend_count=0;
 			}
 		}else{
+			// should not to be here
+			resend_count=0;
 			system_Error_Callback(ERROR_CAN1_PROGRAM_NOFIX_TYPE,1);
 		}
 	}else{
@@ -260,13 +275,14 @@ void USB_HP_CAN1_TX_IRQHandler (void)
 	
 	//send new packget 
 	if( resend_count == 0){
+		CAN1->TSR |= CAN_TSR_RQCP0|CAN_TSR_RQCP1|CAN_TSR_RQCP2;
 		if( 0 < fifo_void_get(&can1_tx_msg_fifo, &TxMessage) ){
 			TransmitMailbox=CAN_Transmit(CAN1, &TxMessage);
 		}else{
-			CAN_ITConfig (CAN1, CAN_IT_TME, DISABLE);
+			//CAN_ITConfig (CAN1, CAN_IT_TME, DISABLE); //can not close irq here
+			in_send_loop = 0;
 		}
 	}
-	CAN_ClearITPendingBit(CAN1,CAN_IT_TME);
 }
 
 

@@ -197,23 +197,24 @@ void report_system_status()
 
 CanRxMsg rxmsg;
 CanTxMsg txmsg;
-void test_can()
+void test_can_send()
 {
 	int i;
 	uint8_t data[12]={0xff,0x1,0x3,0xfe,0xab,0x12,0xff,0x1,0x3,0xfe,0xab,0x12};
 	static char send = 1;
-	if( send == 1 ){
+	if( 1 ){
 			//txmsg.StdId = 0x10;
 			//txmsg.DLC = 5;
 			//for( i = 0; i< 12; i++)
 			//	txmsg.Data[i] = 0xff - i;
 		Can1_Send(0x10,data,12);
-		send = 0;
+
 	}
+}
+void listen_can1()
+{
 	if( Can1_Get_CanRxMsg(&rxmsg) ){
 		Nbl_Led_toggle(GPS_LED_ID);
-	}else{
-		send = 1;
 	}
 }
 
@@ -245,7 +246,7 @@ void user_main_loop()
 		listen_uart3();
 		
 		//listen_arm9(&Uart1);
-		//listen_can1();
+		listen_can1();
 		//listen_misc();
 		if( check_systick_time(&report_status_t) ){
 			report_status_to_arm9();
@@ -256,9 +257,10 @@ void user_main_loop()
 		if( check_systick_time(&debug_t) ){
 			//test_protocol();
 			Nbl_Led_toggle(COMPASS_LED_ID);
-			test_can();
+			test_can_send();
 			report_system_status();
 		}
+		
 		
 }
 
