@@ -48,6 +48,25 @@ int fifo_void_put(fifo_void_t *fifo, void *data)
   return 1;
 }
 
+int fifo_void_recovery_put(fifo_void_t *fifo, void *data)
+{
+  int next;
+
+  // check if FIFO has room
+  next = (fifo->head + 1) % fifo->len;
+  if (next == fifo->tail) {
+    // full
+		fifo->error_overflow = 1;
+		fifo->tail = (fifo->tail + 1) % fifo->len;
+    //return 0;
+  }
+
+  //fifo->buf[fifo->head] = c;
+	fifo->put_cb(fifo->head,data);
+  fifo->head = next;
+
+  return 1;
+}
 
 int fifo_void_get(fifo_void_t *fifo, void *dst)
 {

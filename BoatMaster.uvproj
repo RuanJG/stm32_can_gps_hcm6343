@@ -363,7 +363,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_MD,USE_STDPERIPH_DRIVER,MAINCONTROLLER_TYPE=MAINCONTROLLER_COMMON</Define>
               <Undefine></Undefine>
-              <IncludePath>.\user;.\user\base64;.\Libraries\CMSIS\Core\CM3;.\Libraries\STM32F10x_StdPeriph_Driver\inc</IncludePath>
+              <IncludePath>.\user;.\user\base64;.\Libraries\CMSIS\Core\CM3;.\Libraries\STM32F10x_StdPeriph_Driver\inc;.\system</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -407,44 +407,14 @@
           <GroupName>user</GroupName>
           <Files>
             <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\user\main.c</FilePath>
-            </File>
-            <File>
               <FileName>SetADC.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\user\SetADC.c</FilePath>
             </File>
             <File>
-              <FileName>SetClock.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\user\SetClock.c</FilePath>
-            </File>
-            <File>
               <FileName>SetGPIO.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\user\SetGPIO.c</FilePath>
-            </File>
-            <File>
-              <FileName>SetNVIC.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\user\SetNVIC.c</FilePath>
-            </File>
-            <File>
-              <FileName>SetSysTick.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\user\SetSysTick.c</FilePath>
-            </File>
-            <File>
-              <FileName>SetUART.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\user\SetUART.c</FilePath>
-            </File>
-            <File>
-              <FileName>SetCAN.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\user\SetCAN.c</FilePath>
             </File>
             <File>
               <FileName>SetI2C.c</FileName>
@@ -467,39 +437,24 @@
               <FilePath>.\user\Ds18B20.c</FilePath>
             </File>
             <File>
-              <FileName>fifo.c</FileName>
+              <FileName>navigation_box_led.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\user\fifo.c</FilePath>
+              <FilePath>.\user\navigation_box_led.c</FilePath>
             </File>
             <File>
-              <FileName>fifo.h</FileName>
+              <FileName>navigation_box_led.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\user\fifo.h</FilePath>
+              <FilePath>.\user\navigation_box_led.h</FilePath>
             </File>
             <File>
-              <FileName>transProtocol.h</FileName>
+              <FileName>user_main.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\user\transProtocol.h</FilePath>
+              <FilePath>.\user\user_main.h</FilePath>
             </File>
             <File>
-              <FileName>fifo_void.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\user\fifo_void.h</FilePath>
-            </File>
-            <File>
-              <FileName>fifo_void.c</FileName>
+              <FileName>user_main_MainController.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\user\fifo_void.c</FilePath>
-            </File>
-            <File>
-              <FileName>cmdcoder.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\user\cmdcoder.c</FilePath>
-            </File>
-            <File>
-              <FileName>cmdcoder.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\user\cmdcoder.h</FilePath>
+              <FilePath>.\user\user_main_MainController.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -529,12 +484,77 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>user/base64</GroupName>
+          <GroupName>system</GroupName>
           <Files>
             <File>
-              <FileName>base64.c</FileName>
+              <FileName>cmdcoder.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\user\base64\base64.c</FilePath>
+              <FilePath>.\system\cmdcoder.c</FilePath>
+            </File>
+            <File>
+              <FileName>fifo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\system\fifo.c</FilePath>
+            </File>
+            <File>
+              <FileName>fifo_void.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\system\fifo_void.c</FilePath>
+            </File>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\system\main.c</FilePath>
+            </File>
+            <File>
+              <FileName>SetCAN.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\system\SetCAN.c</FilePath>
+            </File>
+            <File>
+              <FileName>SetClock.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\system\SetClock.c</FilePath>
+            </File>
+            <File>
+              <FileName>SetSysTick.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\system\SetSysTick.c</FilePath>
+            </File>
+            <File>
+              <FileName>SetUART.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\system\SetUART.c</FilePath>
+            </File>
+            <File>
+              <FileName>cmdcoder.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\system\cmdcoder.h</FilePath>
+            </File>
+            <File>
+              <FileName>fifo.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\system\fifo.h</FilePath>
+            </File>
+            <File>
+              <FileName>fifo_void.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\system\fifo_void.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_conf.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\system\stm32f10x_conf.h</FilePath>
+            </File>
+            <File>
+              <FileName>system.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\system\system.h</FilePath>
+            </File>
+            <File>
+              <FileName>system_error_status.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\system\system_error_status.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -941,44 +961,14 @@
           <GroupName>user</GroupName>
           <Files>
             <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\user\main.c</FilePath>
-            </File>
-            <File>
               <FileName>SetADC.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\user\SetADC.c</FilePath>
             </File>
             <File>
-              <FileName>SetClock.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\user\SetClock.c</FilePath>
-            </File>
-            <File>
               <FileName>SetGPIO.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\user\SetGPIO.c</FilePath>
-            </File>
-            <File>
-              <FileName>SetNVIC.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\user\SetNVIC.c</FilePath>
-            </File>
-            <File>
-              <FileName>SetSysTick.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\user\SetSysTick.c</FilePath>
-            </File>
-            <File>
-              <FileName>SetUART.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\user\SetUART.c</FilePath>
-            </File>
-            <File>
-              <FileName>SetCAN.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\user\SetCAN.c</FilePath>
             </File>
             <File>
               <FileName>SetI2C.c</FileName>
@@ -1001,39 +991,24 @@
               <FilePath>.\user\Ds18B20.c</FilePath>
             </File>
             <File>
-              <FileName>fifo.c</FileName>
+              <FileName>navigation_box_led.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\user\fifo.c</FilePath>
+              <FilePath>.\user\navigation_box_led.c</FilePath>
             </File>
             <File>
-              <FileName>fifo.h</FileName>
+              <FileName>navigation_box_led.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\user\fifo.h</FilePath>
+              <FilePath>.\user\navigation_box_led.h</FilePath>
             </File>
             <File>
-              <FileName>transProtocol.h</FileName>
+              <FileName>user_main.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\user\transProtocol.h</FilePath>
+              <FilePath>.\user\user_main.h</FilePath>
             </File>
             <File>
-              <FileName>fifo_void.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\user\fifo_void.h</FilePath>
-            </File>
-            <File>
-              <FileName>fifo_void.c</FileName>
+              <FileName>user_main_MainController.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\user\fifo_void.c</FilePath>
-            </File>
-            <File>
-              <FileName>cmdcoder.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\user\cmdcoder.c</FilePath>
-            </File>
-            <File>
-              <FileName>cmdcoder.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\user\cmdcoder.h</FilePath>
+              <FilePath>.\user\user_main_MainController.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1063,12 +1038,77 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>user/base64</GroupName>
+          <GroupName>system</GroupName>
           <Files>
             <File>
-              <FileName>base64.c</FileName>
+              <FileName>cmdcoder.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\user\base64\base64.c</FilePath>
+              <FilePath>.\system\cmdcoder.c</FilePath>
+            </File>
+            <File>
+              <FileName>fifo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\system\fifo.c</FilePath>
+            </File>
+            <File>
+              <FileName>fifo_void.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\system\fifo_void.c</FilePath>
+            </File>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\system\main.c</FilePath>
+            </File>
+            <File>
+              <FileName>SetCAN.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\system\SetCAN.c</FilePath>
+            </File>
+            <File>
+              <FileName>SetClock.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\system\SetClock.c</FilePath>
+            </File>
+            <File>
+              <FileName>SetSysTick.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\system\SetSysTick.c</FilePath>
+            </File>
+            <File>
+              <FileName>SetUART.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\system\SetUART.c</FilePath>
+            </File>
+            <File>
+              <FileName>cmdcoder.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\system\cmdcoder.h</FilePath>
+            </File>
+            <File>
+              <FileName>fifo.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\system\fifo.h</FilePath>
+            </File>
+            <File>
+              <FileName>fifo_void.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\system\fifo_void.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_conf.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\system\stm32f10x_conf.h</FilePath>
+            </File>
+            <File>
+              <FileName>system.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\system\system.h</FilePath>
+            </File>
+            <File>
+              <FileName>system_error_status.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\system\system_error_status.c</FilePath>
             </File>
           </Files>
         </Group>

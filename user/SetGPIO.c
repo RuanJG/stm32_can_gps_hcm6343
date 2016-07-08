@@ -1,9 +1,47 @@
 #include "stm32f10x.h" 
-#include "global.h"	
+#include "system.h"	
+
+#define BIT0 1
+#define BIT1 (1<<1)	//1
+#define BIT2 (1<<2)	//2
+#define BIT3 (1<<3)	//4
+#define BIT4 (1<<4)
+#define BIT5 (1<<5)
+#define BIT6 (1<<6)
+#define BIT7 (1<<7)
+
+#define VALVE12_1SET   	GPIOB->BSRR = GPIO_Pin_12
+#define VALVE12_1RESET  GPIOB->BRR  = GPIO_Pin_12
+#define VALVE12_2SET   	GPIOB->BSRR = GPIO_Pin_13
+#define VALVE12_2RESET 	GPIOB->BRR  = GPIO_Pin_13
+#define VALVE34_1SET   	GPIOB->BSRR = GPIO_Pin_14
+#define VALVE34_1RESET 	GPIOB->BRR  = GPIO_Pin_14
+#define VALVE34_2SET   	GPIOB->BSRR = GPIO_Pin_15
+#define VALVE34_2RESET 	GPIOB->BRR  = GPIO_Pin_15
+#define ROD_DOWN_SET  	GPIOB->BSRR = GPIO_Pin_0
+#define ROD_DOWN_RESET	GPIOB->BRR  = GPIO_Pin_0
+#define ROD_UP_SET 		GPIOB->BSRR = GPIO_Pin_1
+#define ROD_UP_RESET	GPIOB->BRR  = GPIO_Pin_1
+#define CAM_PWR_SET		GPIOA->BSRR = GPIO_Pin_6
+#define CAM_PWR_RESET	GPIOA->BRR  = GPIO_Pin_6
+#define GPRS_PWR_SET	GPIOB->BSRR = GPIO_Pin_5
+#define GPRS_PWR_RESET	GPIOB->BRR  = GPIO_Pin_5
+#define SPEAKER_SET		GPIOA->BSRR = GPIO_Pin_4
+#define SPEAKER_RESET	GPIOA->BRR  = GPIO_Pin_4
+#define ALERT_LED_SET	GPIOA->BSRR = GPIO_Pin_5
+#define ALERT_LED_RESET	GPIOA->BRR  = GPIO_Pin_5
+#define US_LEFT_SET		GPIOA->BSRR = GPIO_Pin_9
+#define US_LEFT_RESET	GPIOA->BRR  = GPIO_Pin_9
+#define US_RIGHT_SET	GPIOB->BSRR = GPIO_Pin_9
+#define US_RIGHT_RESET	GPIOB->BRR  = GPIO_Pin_9
 
 void GPIO_Configuration (void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
+	
+		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA,ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB,ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO,ENABLE);
 
 	//ADC_IN To Detect Bat. Life
 	GPIO_StructInit(&GPIO_InitStructure);
@@ -154,6 +192,8 @@ void GPIO_Configuration (void)
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 		 
 	GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);
+	
+		GPIO_PinRemapConfig(GPIO_Remap_USART1, ENABLE);
 }
 
 void GPIO_Initialization(void){

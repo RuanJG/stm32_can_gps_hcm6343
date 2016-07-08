@@ -1,9 +1,12 @@
 #include "misc.h"
 #include "core_cm3.h"
-#include "global.h"
+#include "system.h"
 
 #define SysTick_Reloadvalue  8 //9-1
 
+
+#define SYSTICK_MS_MAX 0x0fffffff
+#define SYSTICK_OVERYFLOW_MAX 0x3fffffff
 volatile u32 TimingDelay = 0;
 volatile u32 systick_ms=0;
 volatile u32 systick_us=0;
@@ -30,7 +33,7 @@ void SysTick_Handler(void)
 		systick_us =0;
 	}
 	*/
-	if(TimingDelay > 0x00)
+	if(TimingDelay > 0)
 	{
 		TimingDelay--;
 	}
@@ -45,9 +48,9 @@ void Systick_Event()
 		systick_ms += ms;
 		systick_us -= ms*1000;
 	}
-	if( systick_ms >= 0x0fffffff ){
+	if( systick_ms >= SYSTICK_MS_MAX ){
 		systick_ms_overflow ++;
-		systick_ms_overflow %= 0x3fffffff;
+		systick_ms_overflow %= SYSTICK_OVERYFLOW_MAX;
 		systick_ms = 0.0;
 	}
 }
@@ -73,13 +76,13 @@ float get_system_s()
 int systick_time_start(systick_time_t *time_t, int ms)
 {
 	time_t->interval_ms = ms;
-	time_t->systick_ms = (systick_ms+ ((float)systick_us/1000.0+0.5)) + time_t->interval_ms;
+	time_t->systick_ms = (systick_ms+ time_t->interval_ms +  (systick_us+200)/1000 );// ((float)systick_us/1000.0+0.5) ) + ;
 	time_t->systick_ms_overflow = systick_ms_overflow;
 }
 int check_systick_time(systick_time_t *time_t)
 {
 	char force_update = 0;
-	float now_ms =(systick_ms+ ((float)systick_us/1000.0+0.5)) ;
+	unsigned int now_ms =systick_ms+ (systick_us+200)/1000;// ((float)systick_us/1000.0+0.5) ;
 	
 	if( systick_ms_overflow != time_t->systick_ms_overflow ){
 		time_t->systick_ms_overflow = systick_ms_overflow;

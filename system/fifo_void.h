@@ -17,6 +17,7 @@ typedef struct {
 
 void fifo_void_init(fifo_void_t *fifo,int len,fifo_void_put_callback put_cb,fifo_void_get_callback get_cb);
 int fifo_void_put(fifo_void_t *fifo, void *dst);
+int fifo_void_recovery_put(fifo_void_t *fifo, void *data);
 int fifo_void_get(fifo_void_t *fifo, void *dst);
 int fifo_void_avail(fifo_void_t *fifo);
 int fifo_void_free(fifo_void_t *fifo);

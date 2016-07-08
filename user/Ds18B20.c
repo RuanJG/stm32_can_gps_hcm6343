@@ -7,7 +7,7 @@
  ******************************************************************************/
 
 #include <stm32f10x.h>
-#include "global.h"													   
+#include "system.h"													   
 #include "stm32f10x_tim.h"
 
 /* Config GPIO setting, use Pin11 as the single data line*/
@@ -33,7 +33,6 @@ void Read_DS18B20(void);
 
 // declaration of variables
 //local
-FtoBsTypeDef TempBytes;
 //extern
 extern u8 rod_down;
 	char number[300] = {0};

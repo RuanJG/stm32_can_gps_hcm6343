@@ -7,7 +7,7 @@
  ******************************************************************************/
 
 #include "stm32f10x.h"
-#include "global.h"	
+#include "system.h"	
 #include "stm32f10x_tim.h"	
 
 #define	DS_SKIP_ROM	0xCC
@@ -21,7 +21,26 @@
 void Timer_Configuration (void)
 {	   
 	TIM_TimeBaseInitTypeDef TIM_BaseInitStructure; 
+NVIC_InitTypeDef NVIC_InitStructure;
+	
+		RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
+		
 
+	 										 
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
+	NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure); 
+
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
+	NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure); 
+
+	
 	TIM_BaseInitStructure.TIM_Period = 0;
 	TIM_BaseInitStructure.TIM_Prescaler = 7200-1; //10KHz 计数， 0.1ms基准延时
 	TIM_BaseInitStructure.TIM_ClockDivision = 0;

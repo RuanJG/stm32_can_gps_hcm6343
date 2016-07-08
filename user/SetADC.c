@@ -1,5 +1,5 @@
 #include "stm32f10x.h"
-#include "global.h"
+#include "system.h"
 u16 ADCConvert[50][3];
 
 
@@ -9,6 +9,9 @@ void ADC_Configuration (void)
 	ADC_InitTypeDef ADC_InitStructure;
 	DMA_InitTypeDef DMA_InitStructure;
 
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1,ENABLE);	
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1,ENABLE);
+	
 	ADC_InitStructure.ADC_Mode = ADC_Mode_Independent;
 	ADC_InitStructure.ADC_ScanConvMode = ENABLE;
 	ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
