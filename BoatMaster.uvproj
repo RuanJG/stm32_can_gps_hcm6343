@@ -404,84 +404,57 @@
       </TargetOption>
       <Groups>
         <Group>
-          <GroupName>user</GroupName>
+          <GroupName>board_mainController</GroupName>
           <Files>
-            <File>
-              <FileName>SetADC.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\user\SetADC.c</FilePath>
-            </File>
-            <File>
-              <FileName>SetGPIO.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\user\SetGPIO.c</FilePath>
-            </File>
-            <File>
-              <FileName>SetI2C.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\user\SetI2C.c</FilePath>
-            </File>
-            <File>
-              <FileName>SetTimer.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\user\SetTimer.c</FilePath>
-            </File>
             <File>
               <FileName>ADXL345.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\user\ADXL345.c</FilePath>
+              <FilePath>.\board_mainController\ADXL345.c</FilePath>
             </File>
             <File>
               <FileName>Ds18B20.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\user\Ds18B20.c</FilePath>
+              <FilePath>.\board_mainController\Ds18B20.c</FilePath>
             </File>
             <File>
               <FileName>navigation_box_led.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\user\navigation_box_led.c</FilePath>
+              <FilePath>.\board_mainController\navigation_box_led.c</FilePath>
             </File>
             <File>
               <FileName>navigation_box_led.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\user\navigation_box_led.h</FilePath>
+              <FilePath>.\board_mainController\navigation_box_led.h</FilePath>
             </File>
             <File>
-              <FileName>user_main.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\user\user_main.h</FilePath>
+              <FileName>SetADC.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_mainController\SetADC.c</FilePath>
             </File>
             <File>
               <FileName>user_main_MainController.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\user\user_main_MainController.c</FilePath>
+              <FilePath>.\board_mainController\user_main_MainController.c</FilePath>
+            </File>
+            <File>
+              <FileName>SetTimer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_mainController\SetTimer.c</FilePath>
+            </File>
+            <File>
+              <FileName>SetI2C.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_mainController\SetI2C.c</FilePath>
+            </File>
+            <File>
+              <FileName>SetGPIO.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_mainController\SetGPIO.c</FilePath>
             </File>
           </Files>
         </Group>
         <Group>
-          <GroupName>lib</GroupName>
-          <Files>
-            <File>
-              <FileName>lib.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>.\Libraries\lib.lib</FilePath>
-            </File>
-            <File>
-              <FileName>core_cm3.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Libraries\CMSIS\Core\CM3\core_cm3.c</FilePath>
-            </File>
-            <File>
-              <FileName>system_stm32f10x.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Libraries\CMSIS\Core\CM3\system_stm32f10x.c</FilePath>
-            </File>
-            <File>
-              <FileName>startup_stm32f10x_md.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>.\Libraries\CMSIS\Core\CM3\startup\arm\startup_stm32f10x_md.s</FilePath>
-            </File>
-          </Files>
+          <GroupName>board_navigationBox</GroupName>
         </Group>
         <Group>
           <GroupName>system</GroupName>
@@ -555,6 +528,31 @@
               <FileName>system_error_status.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\system\system_error_status.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>lib</GroupName>
+          <Files>
+            <File>
+              <FileName>lib.lib</FileName>
+              <FileType>4</FileType>
+              <FilePath>.\Libraries\lib.lib</FilePath>
+            </File>
+            <File>
+              <FileName>core_cm3.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\CMSIS\Core\CM3\core_cm3.c</FilePath>
+            </File>
+            <File>
+              <FileName>system_stm32f10x.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\CMSIS\Core\CM3\system_stm32f10x.c</FilePath>
+            </File>
+            <File>
+              <FileName>startup_stm32f10x_md.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\Libraries\CMSIS\Core\CM3\startup\arm\startup_stm32f10x_md.s</FilePath>
             </File>
           </Files>
         </Group>
@@ -958,84 +956,57 @@
       </TargetOption>
       <Groups>
         <Group>
-          <GroupName>user</GroupName>
+          <GroupName>board_mainController</GroupName>
           <Files>
-            <File>
-              <FileName>SetADC.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\user\SetADC.c</FilePath>
-            </File>
-            <File>
-              <FileName>SetGPIO.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\user\SetGPIO.c</FilePath>
-            </File>
-            <File>
-              <FileName>SetI2C.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\user\SetI2C.c</FilePath>
-            </File>
-            <File>
-              <FileName>SetTimer.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\user\SetTimer.c</FilePath>
-            </File>
             <File>
               <FileName>ADXL345.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\user\ADXL345.c</FilePath>
+              <FilePath>.\board_mainController\ADXL345.c</FilePath>
             </File>
             <File>
               <FileName>Ds18B20.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\user\Ds18B20.c</FilePath>
+              <FilePath>.\board_mainController\Ds18B20.c</FilePath>
             </File>
             <File>
               <FileName>navigation_box_led.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\user\navigation_box_led.c</FilePath>
+              <FilePath>.\board_mainController\navigation_box_led.c</FilePath>
             </File>
             <File>
               <FileName>navigation_box_led.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\user\navigation_box_led.h</FilePath>
+              <FilePath>.\board_mainController\navigation_box_led.h</FilePath>
             </File>
             <File>
-              <FileName>user_main.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\user\user_main.h</FilePath>
+              <FileName>SetADC.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_mainController\SetADC.c</FilePath>
             </File>
             <File>
               <FileName>user_main_MainController.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\user\user_main_MainController.c</FilePath>
+              <FilePath>.\board_mainController\user_main_MainController.c</FilePath>
+            </File>
+            <File>
+              <FileName>SetTimer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_mainController\SetTimer.c</FilePath>
+            </File>
+            <File>
+              <FileName>SetI2C.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_mainController\SetI2C.c</FilePath>
+            </File>
+            <File>
+              <FileName>SetGPIO.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_mainController\SetGPIO.c</FilePath>
             </File>
           </Files>
         </Group>
         <Group>
-          <GroupName>lib</GroupName>
-          <Files>
-            <File>
-              <FileName>lib.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>.\Libraries\lib.lib</FilePath>
-            </File>
-            <File>
-              <FileName>core_cm3.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Libraries\CMSIS\Core\CM3\core_cm3.c</FilePath>
-            </File>
-            <File>
-              <FileName>system_stm32f10x.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Libraries\CMSIS\Core\CM3\system_stm32f10x.c</FilePath>
-            </File>
-            <File>
-              <FileName>startup_stm32f10x_md.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>.\Libraries\CMSIS\Core\CM3\startup\arm\startup_stm32f10x_md.s</FilePath>
-            </File>
-          </Files>
+          <GroupName>board_navigationBox</GroupName>
         </Group>
         <Group>
           <GroupName>system</GroupName>
@@ -1109,6 +1080,31 @@
               <FileName>system_error_status.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\system\system_error_status.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>lib</GroupName>
+          <Files>
+            <File>
+              <FileName>lib.lib</FileName>
+              <FileType>4</FileType>
+              <FilePath>.\Libraries\lib.lib</FilePath>
+            </File>
+            <File>
+              <FileName>core_cm3.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\CMSIS\Core\CM3\core_cm3.c</FilePath>
+            </File>
+            <File>
+              <FileName>system_stm32f10x.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\CMSIS\Core\CM3\system_stm32f10x.c</FilePath>
+            </File>
+            <File>
+              <FileName>startup_stm32f10x_md.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\Libraries\CMSIS\Core\CM3\startup\arm\startup_stm32f10x_md.s</FilePath>
             </File>
           </Files>
         </Group>

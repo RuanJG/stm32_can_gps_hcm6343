@@ -8,10 +8,10 @@
 
 
 
-
-void Read_DS18B20(void);
-void ds_writebyte(u8 cmd);
-void ds_reset(void);
+/*
+*  **************  ds18b20 water temperature
+*/
+int16_t DS18B20_Read(void);
 
 /*
 *********************  ADC
@@ -170,29 +170,28 @@ system_error_t *system_error;
 
 void report_system_status()
 {
+	Uart_PutChar(&Uart1,0x00);
 	if( system_error->hse_setup_status != 0){
-		Uart_PutChar(&Uart1,'<');
-		Uart_PutChar(&Uart1,'H');
+		Uart_PutChar(&Uart1,1);
 		Uart_PutChar(&Uart1,system_error->hse_setup_status);
-		Uart_PutChar(&Uart1,'>');
 	}
 	if( system_error->can1_error_status != 0 ){
-		Uart_PutChar(&Uart1,0x00);
-		Uart_PutChar(&Uart1,1);
+		Uart_PutChar(&Uart1,2);
 		Uart_PutChar(&Uart1,system_error->can1_error_status);
-		Uart_PutChar(&Uart1,0);
 	}
 	if( system_error->uart1_fifo_overflow_status != 0){
-		Uart_PutChar(&Uart1,'<');
+		Uart_PutChar(&Uart1,3);
 		Uart_PutChar(&Uart1,0x10|system_error->uart1_fifo_overflow_status);
-		Uart_PutChar(&Uart1,'>');
 	}
 	if( system_error->uart2_fifo_overflow_status != 0){
+		Uart_PutChar(&Uart1,3);
 		Uart_PutChar(&Uart1,0x20|system_error->uart2_fifo_overflow_status);
 	}
 	if( system_error->uart3_fifo_overflow_status != 0){
+		Uart_PutChar(&Uart1,3);
 		Uart_PutChar(&Uart1,0x30|system_error->uart3_fifo_overflow_status);
 	}
+	Uart_PutChar(&Uart1,0);
 }
 
 CanRxMsg rxmsg;
@@ -201,15 +200,7 @@ void test_can_send()
 {
 	int i;
 	uint8_t data[12]={0xff,0x1,0x3,0xfe,0xab,0x12,0xff,0x1,0x3,0xfe,0xab,0x12};
-	static char send = 1;
-	if( 1 ){
-			//txmsg.StdId = 0x10;
-			//txmsg.DLC = 5;
-			//for( i = 0; i< 12; i++)
-			//	txmsg.Data[i] = 0xff - i;
-		Can1_Send(0x10,data,12);
-
-	}
+	Can1_Send(0x10,data,12);
 }
 void listen_can1()
 {
@@ -218,7 +209,7 @@ void listen_can1()
 	}
 }
 
-void user_main_setup()
+void main_setup()
 {
 	Board_Configuration();
 	Can1_Configuration (0x10);	//0x10CANµØÖ·
@@ -234,10 +225,11 @@ void user_main_setup()
 	systick_time_start(&report_status_t,50);//REPORT_STATUS_MS);
 	systick_time_start(&debug_t,10);
 	
+	//system error 
 	system_error = system_error_get();
 }
 
-void user_main_loop()
+void main_loop()
 {
 	int i;
 	
@@ -259,6 +251,7 @@ void user_main_loop()
 			Nbl_Led_toggle(COMPASS_LED_ID);
 			test_can_send();
 			report_system_status();
+			//DS18B20_Read();
 		}
 		
 		

@@ -2,8 +2,9 @@
 #include "system.h"	
 #include "stdio.h"	
 #include  <ctype.h>
-#include "user_main.h"
 
+void main_setup();
+void main_loop();
 
 int main(void)														 
 {		
@@ -17,11 +18,11 @@ int main(void)
 	
 	system_error_init();
 	SysTick_Configuration();
-	user_main_setup();
+	main_setup();
 	
 	while(1)
 	{
-		user_main_loop();
+		main_loop();
 		Systick_Event();
 	}
 }

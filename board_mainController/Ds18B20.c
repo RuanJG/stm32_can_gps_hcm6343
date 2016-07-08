@@ -6,9 +6,8 @@
  *----------------------------------------------------------------------------
  ******************************************************************************/
 
-#include <stm32f10x.h>
-#include "system.h"													   
-#include "stm32f10x_tim.h"
+#include <stm32f10x.h>											   
+#include "system.h"
 
 /* Config GPIO setting, use Pin11 as the single data line*/
 #define DS_H         GPIOA->BSRR = GPIO_Pin_1 				//set data line to high
@@ -29,14 +28,11 @@ u8 ds_readbyte(void);
 void ds_writebyte(u8 cmd);
 void ds_convert(void);
 void Read_DS18B20(void);
-//extern
 
-// declaration of variables
-//local
-//extern
-extern u8 rod_down;
-	char number[300] = {0};
-		u16 nu = 0;
+
+char number[300] = {0};
+u16 nu = 0;
+
 // definition of functions
 /**
  * @brief  Change the GPIO mode of the pin for data line
@@ -171,7 +167,7 @@ void ds_convert(void){
 	//GlobalVariable.tempWater = temp*0.0625f;					//bit 8 in tempL is 2^-4
 	//TempBytes = FloatToBytes(GlobalVariable.tempWater);
 	//for(i=0; i<4; i++){
-		//GlobalVariable.tempWaterBytes[i] = TempBytes.bArray[i];	
+	//	GlobalVariable.tempWaterBytes[i] = TempBytes.bArray[i];	
 	//}
 }
 
@@ -184,45 +180,28 @@ void ds_convert(void){
  *
  * to get 12 bit reading, conversion time is 750ms
  */
-void Read_DS18B20(void){
+int16_t DS18B20_Read(void)
+{
 	u16 tempL, tempH;
-	s16 temp = 0;
+	int16_t temp = 0;
 
-
-
-	u8 i = 0;
-//	if(rod_down==1) 
-	//无论收放杆有没有放下去，都要测水温
-	{
-		// get last conversion value
-		ds_reset();
-		ds_writebyte(DS_SKIP_ROM);
-		ds_writebyte(DS_READ_PAD);
-		tempL = (u16)ds_readbyte();
-		tempH = (u16)ds_readbyte();
-		ds_reset();
+	// get last conversion value
+	ds_reset();
+	ds_writebyte(DS_SKIP_ROM);
+	ds_writebyte(DS_READ_PAD);
+	tempL = (u16)ds_readbyte();
+	tempH = (u16)ds_readbyte();
+	ds_reset();
 	
-		temp = (tempH<<8)|tempL;
-		//GlobalVariable.tempWater = temp*0.0625f;					//bit 8 in tempL is 2^-4
-		/**********************增加判断**********************/
+	temp = (tempH<<8)|tempL;
+	//GlobalVariable.tempWater = temp*0.0625f;					//bit 8 in tempL is 2^-4
 	
-		//TempBytes = FloatToBytes(GlobalVariable.tempWater);
-		for(i=0; i<4; i++)
-		{
-			//GlobalVariable.tempWaterBytes[i] = TempBytes.bArray[i];	
-		}			
-		// ask for next conversion
-		ds_reset();
-		ds_writebyte(DS_SKIP_ROM);
-		ds_writebyte(DS_CONVERT);
-			
-		//number[nu] = GlobalVariable.tempWater;
-		nu ++;
-		if(nu > 300)
-		{
-			nu = 0;
-		}		
-	}
+	// ask for next conversion
+	ds_reset();
+	ds_writebyte(DS_SKIP_ROM);
+	ds_writebyte(DS_CONVERT);
+
+	return temp;
 }
 
 // end of file
