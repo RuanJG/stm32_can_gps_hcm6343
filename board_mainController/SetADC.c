@@ -56,7 +56,7 @@ void ADC_Configuration (void)
 
 }
 
-u16 Get_Temperature_Adc_value()
+u16 Get_MPU_Temperature_Adc_value()
 {
 	int i;
 	u32 sensor = 0; 		

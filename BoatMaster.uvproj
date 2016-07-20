@@ -417,16 +417,6 @@
               <FilePath>.\board_mainController\Ds18B20.c</FilePath>
             </File>
             <File>
-              <FileName>navigation_box_led.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_mainController\navigation_box_led.c</FilePath>
-            </File>
-            <File>
-              <FileName>navigation_box_led.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\board_mainController\navigation_box_led.h</FilePath>
-            </File>
-            <File>
               <FileName>SetADC.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\board_mainController\SetADC.c</FilePath>
@@ -455,6 +445,48 @@
         </Group>
         <Group>
           <GroupName>board_navigationBox</GroupName>
+          <Files>
+            <File>
+              <FileName>gps.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_navigationBox\gps.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMC6343.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_navigationBox\HMC6343.c</FilePath>
+            </File>
+            <File>
+              <FileName>main_navigation_box.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_navigationBox\main_navigation_box.c</FilePath>
+            </File>
+            <File>
+              <FileName>navigation_box_led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_navigationBox\navigation_box_led.c</FilePath>
+            </File>
+            <File>
+              <FileName>SetGPIO.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_navigationBox\SetGPIO.c</FilePath>
+            </File>
+            <File>
+              <FileName>navigation_box.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\board_navigationBox\navigation_box.h</FilePath>
+            </File>
+            <File>
+              <FileName>navigation_box_led.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\board_navigationBox\navigation_box_led.h</FilePath>
+            </File>
+            <File>
+              <FileName>gpio_I2C.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\board_navigationBox\gpio_I2C.h</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>system</GroupName>
@@ -969,16 +1001,6 @@
               <FilePath>.\board_mainController\Ds18B20.c</FilePath>
             </File>
             <File>
-              <FileName>navigation_box_led.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_mainController\navigation_box_led.c</FilePath>
-            </File>
-            <File>
-              <FileName>navigation_box_led.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\board_mainController\navigation_box_led.h</FilePath>
-            </File>
-            <File>
               <FileName>SetADC.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\board_mainController\SetADC.c</FilePath>
@@ -1007,6 +1029,48 @@
         </Group>
         <Group>
           <GroupName>board_navigationBox</GroupName>
+          <Files>
+            <File>
+              <FileName>gps.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_navigationBox\gps.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMC6343.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_navigationBox\HMC6343.c</FilePath>
+            </File>
+            <File>
+              <FileName>main_navigation_box.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_navigationBox\main_navigation_box.c</FilePath>
+            </File>
+            <File>
+              <FileName>navigation_box_led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_navigationBox\navigation_box_led.c</FilePath>
+            </File>
+            <File>
+              <FileName>SetGPIO.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_navigationBox\SetGPIO.c</FilePath>
+            </File>
+            <File>
+              <FileName>navigation_box.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\board_navigationBox\navigation_box.h</FilePath>
+            </File>
+            <File>
+              <FileName>navigation_box_led.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\board_navigationBox\navigation_box_led.h</FilePath>
+            </File>
+            <File>
+              <FileName>gpio_I2C.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\board_navigationBox\gpio_I2C.h</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>system</GroupName>

@@ -5,6 +5,8 @@
 
 #include "navigation_box_led.h"
 
+#if MAIN_CONTROLLER_BOARD
+
 
 
 
@@ -17,7 +19,7 @@ int16_t DS18B20_Read(void);
 *********************  ADC
 *
 */
-u16 Get_Temperature_Adc_value();
+u16 Get_MPU_Temperature_Adc_value();
 u16 Get_Voltage_Adc_value();
 u16 Get_WaterLeakage_Adc_value();
 void ADC_Configuration (void);
@@ -25,26 +27,25 @@ void ADC_Configuration (void);
 /*
 *************  Board config
 */
-void Board_Configuration()
+static void Board_Configuration()
 {
 	SetupPllClock(HSE_CLOCK_6MHZ);
 	GPIO_Configuration ();
 	GPIO_Initialization();
-	ADC_Configuration ();
-	//Timer_Configuration();
 }
 
 void report_status_to_arm9()
 {
-	Get_Temperature_Adc_value();
+	Get_MPU_Temperature_Adc_value();
 	Get_Voltage_Adc_value();
 	Get_WaterLeakage_Adc_value();
+	DS18B20_Read();
+	
 }
 
 
 void listen_misc()
 {
-	Read_DS18B20();
 }
 
 
@@ -151,7 +152,7 @@ void listen_uart2()
 	char data;
 	if( Uart_GetChar(&Uart2, &data) > 0 ){
 		//led_toggle(COMPASS_LED_ID);
-		//Uart_PutChar(&Uart1,data);
+		Uart_PutChar(&Uart1,data);
 	}
 }
 void listen_uart3()
@@ -168,30 +169,35 @@ char  report_error_id = 0 ;
 system_error_t *system_error;
 
 
+void log_error(unsigned char id, unsigned char data)
+{
+	Uart_PutChar(&Uart1,'\r');
+	Uart_PutChar(&Uart1,'\n');
+	Uart_PutChar(&Uart1,'e');
+	Uart_PutChar(&Uart1,0x00);
+	Uart_PutChar(&Uart1,id);
+	Uart_PutChar(&Uart1,data);
+	Uart_PutChar(&Uart1,0x00);
+}
 void report_system_status()
 {
-	Uart_PutChar(&Uart1,0x00);
+
 	if( system_error->hse_setup_status != 0){
-		Uart_PutChar(&Uart1,1);
-		Uart_PutChar(&Uart1,system_error->hse_setup_status);
+		log_error(1,system_error->hse_setup_status);
 	}
 	if( system_error->can1_error_status != 0 ){
-		Uart_PutChar(&Uart1,2);
-		Uart_PutChar(&Uart1,system_error->can1_error_status);
+		log_error(2,system_error->can1_error_status);
 	}
 	if( system_error->uart1_fifo_overflow_status != 0){
-		Uart_PutChar(&Uart1,3);
-		Uart_PutChar(&Uart1,0x10|system_error->uart1_fifo_overflow_status);
+		log_error(3,system_error->uart1_fifo_overflow_status);
 	}
 	if( system_error->uart2_fifo_overflow_status != 0){
-		Uart_PutChar(&Uart1,3);
-		Uart_PutChar(&Uart1,0x20|system_error->uart2_fifo_overflow_status);
+		log_error(3,system_error->uart2_fifo_overflow_status);
 	}
 	if( system_error->uart3_fifo_overflow_status != 0){
-		Uart_PutChar(&Uart1,3);
-		Uart_PutChar(&Uart1,0x30|system_error->uart3_fifo_overflow_status);
+		log_error(3,system_error->uart3_fifo_overflow_status);
 	}
-	Uart_PutChar(&Uart1,0);
+
 }
 
 CanRxMsg rxmsg;
@@ -209,13 +215,16 @@ void listen_can1()
 	}
 }
 
+
+
 void main_setup()
 {
 	Board_Configuration();
+	ADC_Configuration ();
 	Can1_Configuration (0x10);	//0x10CANµÿ÷∑
-	Uart_Configuration (&Uart1, USART1, 115200, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
-	Uart_Configuration (&Uart2, USART2, 115200, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
-	Uart_Configuration (&Uart3, USART3, 115200, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
+	Uart_Configuration (&Uart1, USART1, 9600, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
+	Uart_Configuration (&Uart2, USART2, 9600, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
+	//Uart_Configuration (&Uart3, USART3, 115200, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
 	
 #if DEBUG //for debug
 	Nbl_Led_Configuration();
@@ -233,10 +242,11 @@ void main_loop()
 {
 	int i;
 	
-		listen_uart1();
+		//listen_uart1();
 		listen_uart2();
-		listen_uart3();
-		
+	report_system_status();
+		//listen_uart3();
+		/*
 		//listen_arm9(&Uart1);
 		listen_can1();
 		//listen_misc();
@@ -254,7 +264,15 @@ void main_loop()
 			//DS18B20_Read();
 		}
 		
-		
+		*/
 }
 
 
+
+
+
+
+
+
+
+#endif //MAIN_CONTROLLER_BOARD

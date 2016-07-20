@@ -3,6 +3,11 @@
 
 #include <stm32f10x.h>	
 #include "cmdcoder.h"
+#include "base64_data.h"
+
+#define MAIN_CONTROLLER_BOARD 0
+#define NAVIGATION_BOX 1
+
 
 /*
 *

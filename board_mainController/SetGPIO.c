@@ -39,7 +39,7 @@ void GPIO_Configuration (void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 	
-		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA,ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA,ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB,ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO,ENABLE);
 
@@ -49,8 +49,11 @@ void GPIO_Configuration (void)
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
-   	//GPIO to Read Temp. Sensor
-	//Declared in other files
+  //GPIO to Read Temp. Sensor, Ds18B20	
+	GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_1;				//DS18B20 Pin 11	
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;		
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
 	//ADC to Detect Water Leakage
 	GPIO_StructInit(&GPIO_InitStructure);
@@ -192,8 +195,7 @@ void GPIO_Configuration (void)
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 		 
 	GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);
-	
-		GPIO_PinRemapConfig(GPIO_Remap_USART1, ENABLE);
+	GPIO_PinRemapConfig(GPIO_Remap_USART1, ENABLE);
 }
 
 void GPIO_Initialization(void){
@@ -231,5 +233,7 @@ void GPIO_Initialization(void){
 	VALVE34_1RESET;
 	VALVE34_2RESET;
 }
+
+
 
 //End of File
