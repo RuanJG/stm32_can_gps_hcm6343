@@ -43,12 +43,12 @@ char Course[10];
 
 
 bool HMC6343_Configuration(void);
-bool HMC6343_Read(void);
+bool HMC6343_Read(CompassTypeDef * compass);
 
 void Navi_GPIO_Configuration (void);
 
 void gps_event();
-void gps_config(Uart_t* uart);
+void gps_config(Uart_t* uart, GPSTypeDef* gps);
 
 void navi_report();
 	

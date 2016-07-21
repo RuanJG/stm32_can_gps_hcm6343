@@ -47,10 +47,10 @@ typedef struct _cmdcoder_t{
 	encodeSendCallback send_cb;
 }cmdcoder_t;
 
-void cmdcoder_init(cmdcoder_t* packget, encodeSendCallback sendCallback);
+void cmdcoder_init(cmdcoder_t* packget, unsigned char id, encodeSendCallback sendCallback);
 int cmdcoder_Parse_byte( cmdcoder_t* packget, unsigned char pbyte);
 int cmdcoder_encode_and_send(cmdcoder_t* packget);
-
+void cmdcoder_send_bytes(cmdcoder_t* packget, unsigned char *data,int len);
 
 
 

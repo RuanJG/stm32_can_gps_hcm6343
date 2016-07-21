@@ -26,7 +26,8 @@ unsigned char GPS_Command_Buffer[82];
 	
 
 Uart_t * gps_uart;
-
+GPSTypeDef *gps_d;
+	
 void send_commad(char *buffer, int length)
 {
 	char i;
@@ -36,9 +37,10 @@ void send_commad(char *buffer, int length)
 		delay_us(20000);
   }
 }
-void gps_config(Uart_t* uart)
+void gps_config(Uart_t* uart, GPSTypeDef* gps)
 {
 	gps_uart = uart;
+	gps_d = gps;
 	//send_commad(PollCfgRate, sizeof(PollCfgRate));
 	//send_commad(PollCfgRate, 7);
 	//send_commad(SetCfgRate5hz, sizeof(SetCfgRate5hz));
@@ -76,69 +78,69 @@ bool GPS_Analyze (void)
 		//Time
 		for(i = 0; GPS_Command_Buffer[ptr] != ','; )
 		{ 
-			gps_data.Time[i] = GPS_Command_Buffer[ptr];
+			gps_d->Time[i] = GPS_Command_Buffer[ptr];
 			ptr ++;
 			i ++; 
 		}
-		gps_data.Time[i+1] = '\0';
+		gps_d->Time[i+1] = '\0';
 		ptr ++;
 		if(GPS_Command_Buffer[ptr] == 'A')
 		{
-			gps_data.Location = 1;//TRUE
+			gps_d->Location = 1;//TRUE
 		}
 		else
 		{
-			gps_data.Location = 0;//FLASE
+			gps_d->Location = 0;//FLASE
 		}
 		ptr += 2;
 		//Latitude									  
 		for(i = 1; GPS_Command_Buffer[ptr] != ','; )
 		{ 
-			gps_data.Latitude[i] = GPS_Command_Buffer[ptr];	
+			gps_d->Latitude[i] = GPS_Command_Buffer[ptr];	
 			ptr ++;
 			i ++; 
 		}								   
 		ptr ++;								  
-		gps_data.Latitude[0] = GPS_Command_Buffer[ptr];
-		gps_data.Latitude[i] = '\0'; 				   
+		gps_d->Latitude[0] = GPS_Command_Buffer[ptr];
+		gps_d->Latitude[i] = '\0'; 				   
 		ptr += 2;			
 		//Longitude									  
 		for(i = 1; GPS_Command_Buffer[ptr] != ','; )
 		{ 
-			gps_data.Longitude[i] = GPS_Command_Buffer[ptr];	
+			gps_d->Longitude[i] = GPS_Command_Buffer[ptr];	
 			ptr ++;
 			i ++; 
 		}								   
 		ptr ++;								  
-		gps_data.Longitude[0] = GPS_Command_Buffer[ptr];
-		gps_data.Longitude[i] = '\0';	 				   
+		gps_d->Longitude[0] = GPS_Command_Buffer[ptr];
+		gps_d->Longitude[i] = '\0';	 				   
 		ptr += 2;			
 		//Speed									  
 		for(i = 0; GPS_Command_Buffer[ptr] != ','; )
 		{ 
-			gps_data.Speed[i] = GPS_Command_Buffer[ptr];	
+			gps_d->Speed[i] = GPS_Command_Buffer[ptr];	
 			ptr ++;
 			i ++; 
 		}		
-		gps_data.Speed[i] = '\0';	 										   
+		gps_d->Speed[i] = '\0';	 										   
 		ptr ++;	
 		//Course									  
 		for(i = 0; GPS_Command_Buffer[ptr] != ','; )
 		{ 
-			gps_data.Course[i] = GPS_Command_Buffer[ptr];	
+			gps_d->Course[i] = GPS_Command_Buffer[ptr];	
 			ptr ++;
 			i ++; 
 		}	
-		gps_data.Course[i] = '\0';	 							   
+		gps_d->Course[i] = '\0';	 							   
 		ptr ++;	
 		//Date									  
 		for(i = 0; GPS_Command_Buffer[ptr] != ','; )
 		{ 
-			gps_data.Date[i] = GPS_Command_Buffer[ptr];	
+			gps_d->Date[i] = GPS_Command_Buffer[ptr];	
 			ptr ++;
 			i ++; 
 		}		
-		gps_data.Date[i] = '\0';	 						   
+		gps_d->Date[i] = '\0';	 						   
 		ptr ++;				
 		GPS_Command_PTR = 0;
 		return TRUE;
@@ -186,7 +188,7 @@ int gps_parse(unsigned char c)
 					if (GPS_Command_PTR <= 60)
 					{
 						GPS_Command_PTR = 0;
-						gps_data.Location = 0;
+						gps_d->Location = 0;
 					}
 					else 
 					{

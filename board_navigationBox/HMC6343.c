@@ -1,7 +1,7 @@
 #include <stm32f10x.h>												   
 #include "navigation_box.h"
 #include "gpio_I2C.h"
-
+#include "system.h"
 
 static u16 heading_msb;
 static u16 heading_lsb;
@@ -10,6 +10,10 @@ static u16 pitch_lsb;
 static u16 roll_msb;
 static u16 roll_lsb;
 
+void Delay_Nms(u16 ms)
+{
+	delay_us(ms*1000);
+}
 /******************************************
 函数名称：HMC6343_Configuration()
 功    能：启动I2C总线传输并设置HMC6343数据更新频率
@@ -102,7 +106,7 @@ bool HMC6343_Calibrate(void)
 功    能：读取HMC6343的数据
 说    明：数据是由6个byte组成的，每两个byte是一组数据
 *******************************************/
-bool HMC6343_Read(void)
+bool HMC6343_Read(CompassTypeDef * compass)
 {
 	if (!I2C_Start())
 	{
@@ -149,16 +153,16 @@ bool HMC6343_Read(void)
 	I2C_NoAck();						  //由于是最后一个byte，发NoAck，结束接收数据
 	I2C_Stop();							  //结束本次通信
 
-	compass_data.heading = (heading_msb<< 8) + heading_lsb;	  //Heading 数据（0~3600）
-	compass_data.pitch = (pitch_msb << 8) + pitch_lsb;		  //Pitch 数据（-1800~+1800）compass facing water 
-	compass_data.roll = (roll_msb << 8) + roll_lsb;			  //roll 数据（-1800~+1800）
+	compass->heading = (heading_msb<< 8) + heading_lsb;	  //Heading 数据（0~3600）
+	compass->pitch = (pitch_msb << 8) + pitch_lsb;		  //Pitch 数据（-1800~+1800）compass facing water 
+	compass->roll = (roll_msb << 8) + roll_lsb;			  //roll 数据（-1800~+1800）
 
-	compass_data.headingBytes[0] = heading_msb;
-	compass_data.headingBytes[1] = heading_lsb;
-	compass_data.pitchBytes[0] = pitch_msb;
-	compass_data.pitchBytes[1] = pitch_lsb;
-	compass_data.rollBytes[0] = roll_msb;
-	compass_data.rollBytes[1] = roll_lsb;
+	compass->headingBytes[0] = heading_msb;
+	compass->headingBytes[1] = heading_lsb;
+	compass->pitchBytes[0] = pitch_msb;
+	compass->pitchBytes[1] = pitch_lsb;
+	compass->rollBytes[0] = roll_msb;
+	compass->rollBytes[1] = roll_lsb;
 
 	return TRUE;
 			  

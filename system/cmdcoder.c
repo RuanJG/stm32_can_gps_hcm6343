@@ -31,7 +31,7 @@ static int encode_variable_len(unsigned int value, unsigned char *buf, int size)
 	return offset;
 }
 
-void cmdcoder_init(cmdcoder_t* packget, encodeSendCallback sendCallback)
+void cmdcoder_init(cmdcoder_t* packget, unsigned char id, encodeSendCallback sendCallback)
 {
 	packget->parse_status = FIND_TAG;
 	packget->last_byte_is_tag = 0;
@@ -40,6 +40,7 @@ void cmdcoder_init(cmdcoder_t* packget, encodeSendCallback sendCallback)
 	packget->index = 0;
 	packget->sum_crc = 0;
 	packget->send_cb = sendCallback;
+	packget->id = id;
 }
 
 int cmdcoder_Parse_byte(cmdcoder_t* packget,unsigned char pbyte )
@@ -49,7 +50,7 @@ int cmdcoder_Parse_byte(cmdcoder_t* packget,unsigned char pbyte )
 	
 	switch( packget->parse_status ){
 		case FIND_DONE:{
-			cmdcoder_init(packget,packget->send_cb);
+			cmdcoder_init(packget,packget->id,packget->send_cb);
 		}
 		case FIND_TAG:{
 			if( pbyte != CMD_CODER_TAG ){
@@ -170,7 +171,7 @@ int cmdcoder_Parse_byte(cmdcoder_t* packget,unsigned char pbyte )
 	}
 	
 	if( decode_failed == 1 ){
-		cmdcoder_init(packget,packget->send_cb);
+		cmdcoder_init(packget,packget->id,packget->send_cb);
 	}
 	
 	return decode_a_packget;
@@ -228,7 +229,26 @@ int cmdcoder_encode_and_send(cmdcoder_t* packget){
 	return count;
 }
 
-
+void cmdcoder_send_bytes(cmdcoder_t* packget, unsigned char *data,int len)
+{
+	int i;
+	
+	//packget.id = id;
+	packget->len = 0;
+	for( i=0; i<  len; i++)
+	{
+		packget->data[i] = data[i];
+		packget->len++;
+		if( packget->len >= CMD_CODER_MAX_DATA_LEN ){
+			cmdcoder_encode_and_send( packget );
+			packget->len = 0;
+		}
+	}
+	if( packget->len > 0 ){
+			cmdcoder_encode_and_send( packget );
+			packget->len = 0;
+	}
+}
 
 
 

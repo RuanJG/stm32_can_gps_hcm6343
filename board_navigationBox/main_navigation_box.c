@@ -8,7 +8,11 @@
 #include "navigation_box.h"
 #include "system.h"
 
-
+#if NAVIGATION_BOX
+	
+	
+#define TEST_REPORT_IN_UART 1
+	
 	
 systick_time_t report_t;
 systick_time_t gps_delay_t;
@@ -16,6 +20,8 @@ CompassTypeDef compass_data;
 GPSTypeDef gps_data;
 Uart_t Uart1 ;
 Uart_t Uart2 ;
+cmdcoder_t encoder;
+
 
 
 
@@ -124,6 +130,9 @@ void navi_report()
 			}
 			//CAN_TX (&TxMessage1);
 			Can1_Send(TxMessage1.StdId , TxMessage1.Data, TxMessage1.DLC);
+			#if TEST_REPORT_IN_UART
+			cmdcoder_send_bytes(&encoder, TxMessage1.Data , TxMessage1.DLC);
+			#endif
 			// Frame 2: GPS Latitude （纬度） 的后2个byte, Longitude （经度） 的前4个byte
 			TxMessage1.Data[1] = 0x01;
 			for(i = 0; i<2; i++)
@@ -135,6 +144,9 @@ void navi_report()
 				TxMessage1.Data[i+4] = LonBytes.bArray[i];
 			}
 			Can1_Send(TxMessage1.StdId , TxMessage1.Data, TxMessage1.DLC);		
+			#if TEST_REPORT_IN_UART
+			cmdcoder_send_bytes(&encoder, TxMessage1.Data , TxMessage1.DLC);
+			#endif
 		
 			// Frame 3: GPS Longitude （经度） 的后4个byte, GPS speed 2 bytes
 			TxMessage1.Data[1] = 0x02;
@@ -145,6 +157,9 @@ void navi_report()
 			TxMessage1.Data[6] = SpeedBytes[0];
 			TxMessage1.Data[7] = SpeedBytes[1];
 			Can1_Send(TxMessage1.StdId , TxMessage1.Data, TxMessage1.DLC);
+			#if TEST_REPORT_IN_UART
+			cmdcoder_send_bytes(&encoder, TxMessage1.Data , TxMessage1.DLC);
+			#endif
 			/*** end transmission of data : GPS longitude***/				
 			// Frame 5: UTC时间,日期 from GPS
 			if (!already_send_time)//如果没法送时间，就发送时间，每次GPS找到信号，只发送一次时间。如果中途ARM9重启，将
@@ -158,6 +173,9 @@ void navi_report()
 				TxMessage1.Data[6]=(((u8)gps_data.Date[2])-0x30)*10 + ((u8)gps_data.Date[3])-0x30;
 				TxMessage1.Data[7]=(((u8)gps_data.Date[0])-0x30)*10 + ((u8)gps_data.Date[1])-0x30;
 				Can1_Send(TxMessage1.StdId , TxMessage1.Data, TxMessage1.DLC);
+				#if TEST_REPORT_IN_UART
+				cmdcoder_send_bytes(&encoder, TxMessage1.Data , TxMessage1.DLC);
+				#endif
 				//标志  已发送
 				already_send_time = TRUE;
 			}		
@@ -171,20 +189,18 @@ void navi_report()
 			TxMessage1.Data[6+i] = compass_data.rollBytes[i];		
 		}
 		Can1_Send(TxMessage1.StdId , TxMessage1.Data, TxMessage1.DLC);	
-	
+		#if TEST_REPORT_IN_UART
+		cmdcoder_send_bytes(&encoder, TxMessage1.Data , TxMessage1.DLC);
+		#endif	
 	
 }
 
 
-void Delay_Nms(u16 ms)
+int encodeCallback ( unsigned char c )
 {
-	delay_us(ms*1000);
+	Uart_PutChar(&Uart1,c);
+	return 1;
 }
-
-
-
-
-
 
 void main_setup()
 {
@@ -196,7 +212,8 @@ void main_setup()
 	//Uart_Configuration (&Uart3, USART3, 115200, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
 	Nbl_Led_Configuration();
 	HMC6343_Configuration();
-	gps_config(&Uart2);
+	gps_config(&Uart2, &gps_data);
+	cmdcoder_init(&encoder, 4, encodeCallback);
 	//time_t init 
 	systick_time_start(&report_t,50);//REPORT_STATUS_MS);
 	systick_time_start(&gps_delay_t,5);//REPORT_STATUS_MS);
@@ -212,7 +229,7 @@ void main_loop()
 		gps_event();
 	}
 	if( check_systick_time(&report_t) ){
-		if( HMC6343_Read() ){
+		if( HMC6343_Read(&compass_data) ){
 			Nbl_Led_toggle(COMPASS_LED_ID);
 		}else{
 			Nbl_Led_off(COMPASS_LED_ID);
@@ -226,7 +243,7 @@ void main_loop()
 
 
 
-
+#endif 
 
 
 
