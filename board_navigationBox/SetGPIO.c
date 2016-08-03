@@ -1,4 +1,5 @@
 #include "stm32f10x.h" 	
+#include "navigation_box.h"
 
 void Navi_GPIO_Configuration (void)
 {
@@ -53,10 +54,10 @@ void Navi_GPIO_Configuration (void)
 
 	//key
 	GPIO_StructInit(&GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
+	GPIO_InitStructure.GPIO_Pin = KEY_GPIO_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_Init(GPIOB, &GPIO_InitStructure);
+	GPIO_Init(KEY_GPIO_BANK, &GPIO_InitStructure);
 	
 	GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);
 	GPIO_PinRemapConfig(GPIO_Remap_USART1, ENABLE);

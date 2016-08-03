@@ -51,11 +51,13 @@ void gps_event();
 void gps_config(Uart_t* uart, GPSTypeDef* gps);
 
 void navi_report();
+bool HMC6343_Configuration(void);
 	
 extern CompassTypeDef compass_data;
 extern GPSTypeDef gps_data;
 
-
+#define KEY_GPIO_BANK GPIOB
+#define KEY_GPIO_PIN GPIO_Pin_8
 
 
 #endif

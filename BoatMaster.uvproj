@@ -363,7 +363,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_MD,USE_STDPERIPH_DRIVER,MAINCONTROLLER_TYPE=MAINCONTROLLER_COMMON</Define>
               <Undefine></Undefine>
-              <IncludePath>.\user;.\user\base64;.\Libraries\CMSIS\Core\CM3;.\Libraries\STM32F10x_StdPeriph_Driver\inc;.\system</IncludePath>
+              <IncludePath>.\user;.\user\base64;.\Libraries\CMSIS\Core\CM3;.\Libraries\STM32F10x_StdPeriph_Driver\inc;.\system;.\board_navigationBox</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>

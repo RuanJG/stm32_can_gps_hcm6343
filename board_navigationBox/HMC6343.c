@@ -45,7 +45,6 @@ bool HMC6343_Configuration(void)
 bool HMC6343_Calibrate(void)
 {
 	int i;
-#if 1
 	if (!I2C_Start())
 	{
 		return FALSE; 
@@ -69,37 +68,6 @@ bool HMC6343_Calibrate(void)
 	
 	return TRUE;
 	
-#else
-		if (!I2C_Start())
-	{
-		return FALSE; 
-	}
-	I2C_SendByte(0x32);
-	I2C_WaitAck();
-	
-    /* enter cali */
-	I2C_SendByte(0x70);
-	//I2C_WaitAck();
-	I2C_NoAck();						  
-	I2C_Stop();
-	
-    Delay_Nms(10000);
-
-	if (!I2C_Start())
-	{
-		return FALSE; 
-	}
-	I2C_SendByte(0x32);
-	I2C_WaitAck();
-	
-    /* exit cali */
-	I2C_SendByte(0x7F);
-	I2C_NoAck();						  
-	I2C_Stop();	
-
-	return TRUE;
-	
-#endif
 }
 /******************************************
 º¯ÊýÃû³Æ£ºHMC6343_Read()

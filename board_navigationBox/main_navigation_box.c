@@ -16,12 +16,13 @@
 	
 systick_time_t report_t;
 systick_time_t gps_delay_t;
+systick_time_t key_dect_t;
 CompassTypeDef compass_data;
 GPSTypeDef gps_data;
 Uart_t Uart1 ;
 Uart_t Uart2 ;
 cmdcoder_t encoder;
-
+volatile int key_count=0;
 
 
 
@@ -217,6 +218,7 @@ void main_setup()
 	//time_t init 
 	systick_time_start(&report_t,50);//REPORT_STATUS_MS);
 	systick_time_start(&gps_delay_t,5);//REPORT_STATUS_MS);
+	systick_time_start(&key_dect_t,40);
 	
 	//system error 
 	//system_error = system_error_get();
@@ -224,18 +226,40 @@ void main_setup()
 
 void main_loop()
 {
-
+	
 	if( check_systick_time(&gps_delay_t) ){
 		gps_event();
 	}
 	if( check_systick_time(&report_t) ){
 		if( HMC6343_Read(&compass_data) ){
-			Nbl_Led_toggle(COMPASS_LED_ID);
+			if( key_count == 0)
+				Nbl_Led_toggle(COMPASS_LED_ID);
 		}else{
 			Nbl_Led_off(COMPASS_LED_ID);
+			//TODO reoprt error , if can
 		}
 		navi_report();
 	}
+	
+	if( check_systick_time(&key_dect_t) ){
+		if(GPIO_ReadInputDataBit(KEY_GPIO_BANK ,KEY_GPIO_PIN) ==0){
+					key_count++;
+					Nbl_Led_toggle(COMPASS_LED_ID);
+					if( key_count >= 100 ) // more than 4s
+					{
+						key_count = 0;
+						Nbl_Led_on(COMPASS_LED_ID);
+						if(!HMC6343_Calibrate() )
+						{
+							//TODO 
+						}
+						Nbl_Led_toggle(COMPASS_LED_ID);
+					}
+		}else{
+			key_count = 0;
+		}
+	}
+	
 
 }
 
