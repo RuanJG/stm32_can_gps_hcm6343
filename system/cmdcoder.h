@@ -52,7 +52,9 @@ int cmdcoder_Parse_byte( cmdcoder_t* packget, unsigned char pbyte);
 int cmdcoder_encode_and_send(cmdcoder_t* packget);
 void cmdcoder_send_bytes(cmdcoder_t* packget, unsigned char *data,int len);
 
-
+#define MAINCONTROLLER_BOX_CMDCODER_ID 1
+#define NAVIGATION_BOX_CMDCODER_ID 2
+#define ESC_BOX_CMDCODER_ID 3
 
 /*
 **********************************  example 

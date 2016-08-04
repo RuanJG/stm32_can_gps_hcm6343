@@ -214,7 +214,7 @@ void main_setup()
 	Nbl_Led_Configuration();
 	HMC6343_Configuration();
 	gps_config(&Uart2, &gps_data);
-	cmdcoder_init(&encoder, 4, encodeCallback);
+	cmdcoder_init(&encoder, NAVIGATION_BOX_CMDCODER_ID, encodeCallback);
 	//time_t init 
 	systick_time_start(&report_t,50);//REPORT_STATUS_MS);
 	systick_time_start(&gps_delay_t,5);//REPORT_STATUS_MS);

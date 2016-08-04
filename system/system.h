@@ -6,19 +6,19 @@
 #include "base64_data.h"
 
 #define MAIN_CONTROLLER_BOARD 0
-#define NAVIGATION_BOX 1
-
+#define NAVIGATION_BOX 0
+#define M80_ESC_BOX 1
 
 /*
 *
 *  Pll clock 
 */
-enum HSE_CLOCK_MHZ{
-	HSE_CLOCK_NO_USE = 0,
-	HSE_CLOCK_6MHZ = 6,
-	HSE_CLOCK_8MHZ = 8
-};
-int SetupPllClock(enum HSE_CLOCK_MHZ hse_mhz) ;
+#define HSE_CLOCK_NO_USE  0
+#define HSE_CLOCK_6MHZ  6
+#define HSE_CLOCK_8MHZ  8
+
+extern uint32_t systemClk ;
+int SetupPllClock(unsigned char hse_mhz) ;
 
 
 /*

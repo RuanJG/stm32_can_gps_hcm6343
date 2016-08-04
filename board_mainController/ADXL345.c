@@ -1,6 +1,8 @@
 #include <stm32f10x.h>
 #include "system.h"													   
 
+#include "ADXL345_SetI2C.h"
+/*
 bool I2C_Start(void);
 void I2C_Stop(void);
 void I2C_Ack(void);
@@ -8,7 +10,7 @@ void I2C_NoAck(void);
 bool I2C_WaitAck(void);
 void I2C_SendByte(u8 SendByte);
 u8 I2C_ReceiveByte(void);
-
+*/
 bool ADXL345_Configuration (s8 OffsetX, s8 OffsetY, s8 OffsetZ)
 {
 	//Read ID

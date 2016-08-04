@@ -75,7 +75,7 @@ void listen_arm9(Uart_t * uart)
 	
 	arm9_uart = uart;
 	if( inited == 0 ){
-		cmdcoder_init(&arm9_coder, send_byte_to_arm9);
+		cmdcoder_init(&arm9_coder,MAINCONTROLLER_BOX_CMDCODER_ID, send_byte_to_arm9);
 		inited = 1;
 	}
 	while( Uart_GetChar(arm9_uart, &data) > 0){
@@ -116,8 +116,8 @@ void test_protocol()
 {
 	int i;
 	
-	cmdcoder_init(&encode_packget, test_send_cb);
-	cmdcoder_init(&decode_packget, NULL);
+	cmdcoder_init(&encode_packget, MAINCONTROLLER_BOX_CMDCODER_ID ,test_send_cb);
+	cmdcoder_init(&decode_packget, MAINCONTROLLER_BOX_CMDCODER_ID,NULL);
 	
 	//for( i=0; i<TEST_DATA_LEN; i++) encode_packget.data[i]= (i%2 != 0) ? 0xff : 0 ;
 	//for( i=0; i<TEST_DATA_LEN; i++) encode_packget.data[i]= (i%2 != 0) ? 0xff : i ;

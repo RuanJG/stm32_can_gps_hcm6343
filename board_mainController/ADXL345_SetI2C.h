@@ -1,3 +1,6 @@
+#ifndef _MAINBOX_ADXL345_SETI2C
+#define _MAINBOX_ADXL345_SETI2C
+
 #include <stm32f10x.h>	
 
 //End of File
@@ -142,4 +145,7 @@ u8 I2C_ReceiveByte(void)  //数据从高位到低位//
 	return ReceiveByte; 
 } 
 
+
+
+#endif
 //End of File
