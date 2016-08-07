@@ -58,8 +58,6 @@ int SetupPllClock(unsigned char hse_mhz)
 		    RCC_PCLK2Config(RCC_HCLK_Div1);//x=1,2,4,8,16 
 		    /* PCLK1(APB1) = HCLK/x */
 		    RCC_PCLK1Config(RCC_HCLK_Div2);//x=1,2,4,8,16
-				/* Configure ADCCLK such as ADCCLK = PCLK2/6 */ 
-				RCC_ADCCLKConfig(RCC_PCLK2_Div8); 
 		    /* 设置代码延时x周期*/
 		    FLASH_SetLatency(FLASH_Latency_2);//此值与系统时钟值有关
 				/* Enable Prefetch Buffer */
@@ -68,10 +66,14 @@ int SetupPllClock(unsigned char hse_mhz)
 				if( hse_mhz == HSE_CLOCK_6MHZ ){
 					/* PLLCLK = 6MHz /1  * 12 = 72 MHz */
 					RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_12);//72M
+					/* Configure ADCCLK such as ADCCLK = PCLK2/6 12Mhz can not > 14M*/ 
+					RCC_ADCCLKConfig(RCC_PCLK2_Div6); 
 					systemClk = 72000000;
 				}else if( hse_mhz == HSE_CLOCK_8MHZ ){
 					/* PLLCLK = 8MHz /1  * 9 = 72 MHz */
 					RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_9);//72M
+					/* Configure ADCCLK such as ADCCLK = PCLK2/6 12Mhz can not > 14M*/ 
+					RCC_ADCCLKConfig(RCC_PCLK2_Div6);
 					systemClk = 72000000;
 				}else{
 					system_Error_Callback(ERROR_HSE_SETUP_TYPE,1);

@@ -23,6 +23,12 @@ void SysTick_Configuration(void)
 	SysTick->CTRL|=0x01;
 }
 
+void SysTick_Deinit(void)
+{
+	SysTick->CTRL &= ~0x02;
+	SysTick->CTRL &= ~0x01;
+}
+
 void SysTick_Handler(void)
 {
 	systick_us++;

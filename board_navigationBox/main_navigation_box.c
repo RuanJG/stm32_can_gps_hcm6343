@@ -211,9 +211,12 @@ void main_setup()
 	Uart_Configuration (&Uart1, USART1, 115200, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
 	Uart_Configuration (&Uart2, USART2, 9600, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
 	//Uart_Configuration (&Uart3, USART3, 115200, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
+	
+	Iap_Configure(&Uart1);
 	Nbl_Led_Configuration();
 	HMC6343_Configuration();
 	gps_config(&Uart2, &gps_data);
+	
 	cmdcoder_init(&encoder, NAVIGATION_BOX_CMDCODER_ID, encodeCallback);
 	//time_t init 
 	systick_time_start(&report_t,50);//REPORT_STATUS_MS);
@@ -223,9 +226,14 @@ void main_setup()
 	//system error 
 	//system_error = system_error_get();
 }
-
+// if use iap , you can setup this function for your deinit
+void main_deinit()
+{
+	// TODO something that import for extern ic or machine befor reset
+}
 void main_loop()
 {
+	Iap_Event();
 	
 	if( check_systick_time(&gps_delay_t) ){
 		gps_event();

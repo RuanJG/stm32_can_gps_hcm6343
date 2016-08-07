@@ -81,7 +81,12 @@ void Uart_Configuration (Uart_t *uart, USART_TypeDef *uartDev, uint32_t USART_Ba
 	*/
 }
 
-
+void Uart_DeInit (Uart_t *uart)
+{
+	USART_ITConfig(uart->uartDev, USART_IT_RXNE, DISABLE);
+	USART_ITConfig(uart->uartDev, USART_IT_TXE, DISABLE);
+	USART_Cmd(uart->uartDev, DISABLE);	
+}
 
 void _uart_irq_function(Uart_t *uart)
 {

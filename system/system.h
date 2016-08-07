@@ -7,7 +7,14 @@
 
 #define MAIN_CONTROLLER_BOARD 0
 #define NAVIGATION_BOX 0
-#define M80_ESC_BOX 1
+#define M80_ESC_BOX 0
+
+// if make iap firmware 
+// modify keil flash  ; note : if the firmware offset's value is define in iap_firmware/iap.c
+// iap firmware : 0x8000000   0xM000                         ; 0x4000/1024 = 16 = 16kB         
+// app firmware : 0x800M000   0xN000  = (0x10000 - 0xM000) 
+#define IAP_FIRMWARE 1
+
 
 /*
 *
@@ -40,8 +47,7 @@ void Uart_PutChar(Uart_t *uart,char ch);
 void Uart_PutString (Uart_t *uart,char *buffer);
 void Uart_PutBytes (Uart_t *uart,const char *buffer, int len);
 int Uart_GetChar(Uart_t *uart, char *c);
-
-
+void Uart_DeInit (Uart_t *uart);
 
 
 
@@ -69,7 +75,7 @@ int systick_time_start(systick_time_t *time_t, int ms);
 void delay_us(u32 us);
 void Systick_Event();
 void SysTick_Configuration(void);
-
+void SysTick_Deinit(void);
 
 /*
 *************** Board Config
@@ -115,6 +121,19 @@ typedef struct _system_error_t {
 void system_error_init();
 void system_Error_Callback(int type, int value);
 system_error_t* system_error_get();
+
+
+
+
+
+
+//iap
+//void jump_iap();
+void Iap_Event();
+void Iap_Configure(Uart_t *uart);
+
+
+
 
 #endif
 //End of File
