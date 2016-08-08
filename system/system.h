@@ -14,6 +14,15 @@
 // iap firmware : 0x8000000   0xM000                         ; 0x4000/1024 = 16 = 16kB         
 // app firmware : 0x800M000   0xN000  = (0x10000 - 0xM000) 
 #define IAP_FIRMWARE 1
+//chose board
+#define IAP_FIRMWARE_BOARD_NAVIGATION 1
+#define IAP_FIRMWARE_BOARD_80_ESC 0
+#define IAP_FIRMWARE_BOARD_MAINCONTROLLER 0
+//iap config
+#define IAP_UART_BAUDRATE 115200
+#define IAP_UART_DEV USART1
+
+
 
 
 /*

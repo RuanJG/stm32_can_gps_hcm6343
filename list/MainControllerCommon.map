@@ -111,7 +111,7 @@ Section Cross References
     iap.o(.text) refers to stm32f10x_flash.o(i.FLASH_Lock) for FLASH_Lock
     iap.o(.text) refers to setclock.o(.text) for SetupPllClock
     iap.o(.text) refers to setgpio_1.o(.text) for Navi_GPIO_Configuration
-    iap.o(.text) refers to iap.o(.bss) for Uart1
+    iap.o(.text) refers to iap.o(.bss) for IapUart
     iap.o(.text) refers to iap.o(.data) for FLASHStatus
     main.o(.text) refers to system_error_status.o(.text) for system_error_init
     main.o(.text) refers to setsystick.o(.text) for SysTick_Configuration
@@ -1156,7 +1156,7 @@ Image Symbol Table
     _system_error                            0x20000038   Data           5  system_error_status.o(.data)
     remoterUart                              0x20000040   Data           4  iap_jumper.o(.data)
     programm_buff                            0x2000010c   Data        1024  iap.o(.bss)
-    Uart1                                    0x2000050c   Data        1080  iap.o(.bss)
+    IapUart                                  0x2000050c   Data        1080  iap.o(.bss)
     decoder                                  0x20000944   Data         148  iap.o(.bss)
     encoder                                  0x200009d8   Data         148  iap.o(.bss)
     RxMessage                                0x20000a6c   Data          20  setcan.o(.bss)
@@ -1365,14 +1365,14 @@ Image component sizes
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
        548         16          0          0        180       2990   adc_config.o
-         0          0          0          0          0     252580   adxl345.o
+         0          0          0          0          0     252732   adxl345.o
        808          6          0          0          0       3581   cmdcoder.o
         32          0          0          0          0        588   core_cm3.o
        220          0          0          0          0       2731   fifo.o
        232          0          0          0          0       2983   fifo_void.o
-      1060         48          0         14       2400       6972   iap.o
+      1060         48          0         14       2400       6978   iap.o
        356         20          0          4        296       7683   iap_jumper.o
-        24          0          0          0          0       3923   main.o
+        24          0          0          0          0       4075   main.o
       1172         74          0          6       4088       5136   setcan.o
        308         14          0          4          0       1171   setclock.o
        300         12          0          0          0        658   setgpio_1.o
@@ -1383,7 +1383,7 @@ Image component sizes
        264         26          0          5          0       1631   system_error_status.o
 
     ----------------------------------------------------------------------
-      6796        294        268         68       8500     322439   Object Totals
+      6796        294        268         68       8500     322749   Object Totals
          0          0         32          0          0          0   (incl. Generated)
          0          0          0         10          0          0   (incl. Padding)
 
@@ -1443,8 +1443,8 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-     11156        570        268         88       8600     647279   Grand Totals
-     11156        570        268         88       8600     647279   ELF Image Totals
+     11156        570        268         88       8600     647589   Grand Totals
+     11156        570        268         88       8600     647589   ELF Image Totals
      11156        570        268         88          0          0   ROM Totals
 
 ==============================================================================

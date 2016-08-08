@@ -22,7 +22,7 @@ uint32_t  program_addr = ApplicationAddress;
 unsigned char program_data_frame_seq = 0;
 
 volatile FLASH_Status FLASHStatus = FLASH_COMPLETE;
-Uart_t Uart1;
+Uart_t IapUart;
 cmdcoder_t decoder;
 cmdcoder_t encoder;
 
@@ -52,7 +52,7 @@ void _memset(void *dst, unsigned char data, unsigned n)
 
 int encodeCallback ( unsigned char c )
 {
-	Uart_PutChar(&Uart1,c);
+	Uart_PutChar(&IapUart,c);
 	return 1;
 }
 
@@ -254,7 +254,7 @@ int catch_program_app_head_in_ms(int ms)
 			break;
 		#endif
 		
-		while( Uart_GetChar(&Uart1,&ubyte) > 0 ){
+		while( Uart_GetChar(&IapUart,&ubyte) > 0 ){
 			if( cmdcoder_Parse_byte(&decoder,ubyte) ){
 				if( decoder.id == PACKGET_START_ID )
 					return 1;
@@ -265,25 +265,33 @@ int catch_program_app_head_in_ms(int ms)
 	return 0;
 }
 
-
+#if IAP_FIRMWARE_BOARD_NAVIGATION
 #include <navigation_box.h>
+#endif
+#if IAP_FIRMWARE_BOARD_80_ESC
+#include <esc_box.h>
+#endif
+
 
 void main_setup()
 {
 	int res;
 	
+#if IAP_FIRMWARE_BOARD_80_ESC
 	SetupPllClock(HSE_CLOCK_6MHZ);
-	//Esc_GPIO_Configuration();
+	Esc_GPIO_Configuration();
+#endif
+#if IAP_FIRMWARE_BOARD_NAVIGATION
+	SetupPllClock(HSE_CLOCK_6MHZ);
 	Navi_GPIO_Configuration();
-	Uart_Configuration (&Uart1, USART1, 115200, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
+#endif
 	
-	
+	Uart_Configuration (&IapUart, IAP_UART_DEV, IAP_UART_BAUDRATE, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
 	cmdcoder_init(&decoder, 1,  CMD_CODER_CALL_BACK_NULL);
 	cmdcoder_init(&encoder, PACKGET_ACK_ID,  encodeCallback);
 
 	
 	#if 0
-	//Nbl_Led_on(GPS_LED_ID);
 	res = catch_program_app_head_in_ms(500);
 	if(  res == 0 )
 	{
@@ -297,14 +305,13 @@ void main_setup()
 			clean_iap_tag(); // clean tag, and go to listen update
 		}
 	}
-	//Nbl_Led_on(GPS_LED_ID);
 	#endif
 	//no app program or get a program start , it will do main_loop
 }
 void main_deinit()
 {
 	SysTick_Deinit();
-	Uart_DeInit(&Uart1);
+	Uart_DeInit(&IapUart);
 	//Nbl_Led_off(GPS_LED_ID);
 }
 void main_loop()
@@ -312,7 +319,7 @@ void main_loop()
 	char ubyte;
 	char  res;
 	
-	if( Uart_GetChar(&Uart1,&ubyte) > 0 )
+	if( Uart_GetChar(&IapUart,&ubyte) > 0 )
 	{
 		if( cmdcoder_Parse_byte(&decoder,ubyte) ){
 			if( decoder.id == PACKGET_START_ID ){
