@@ -132,8 +132,11 @@ system_error_t* system_error_get();
 void Iap_Event();
 void Iap_Configure(Uart_t *uart);
 
-
-
+#define IAP_TAG_ADRESS 0xFC00
+#define IAP_TAG_UPDATE_VALUE 1
+#define IAP_TAG_JUMP_VALUE 2
+int set_iap_tag(int tag);
+int get_iap_tag();
 
 #endif
 //End of File

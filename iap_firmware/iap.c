@@ -56,13 +56,35 @@ int encodeCallback ( unsigned char c )
 	return 1;
 }
 
+int is_main_program_written()
+{
+	if (((*(__IO uint32_t*)ApplicationAddress) & 0x2FFE0000 ) == 0x20000000)
+		return 1;
+	else
+		return 0;
+}
+int is_iap_tag_set()
+{
+	// force into iap
+	int tag;
+	tag = get_iap_tag();
+	if( tag == IAP_TAG_UPDATE_VALUE)
+		return 1;
+	else
+		return 0;
+}
+int clean_iap_tag()
+{
+	return set_iap_tag(IAP_TAG_JUMP_VALUE);
+}
+
 void main_deinit();
 void jump_to_main_program()
 {
 	iapFunction Jump_To_Application;
 	uint32_t JumpAddress;
 		/* If Program has been written */
-	if (((*(__IO uint32_t*)ApplicationAddress) & 0x2FFE0000 ) == 0x20000000)
+	if (is_main_program_written())
 		{
 			main_deinit();
 			
@@ -129,6 +151,7 @@ int program_page_to_flash(uint32_t page_addr , unsigned char *data, int len)
 	return 1;
 	
 }
+
 
 
 
@@ -259,12 +282,24 @@ void main_setup()
 	cmdcoder_init(&decoder, 1,  CMD_CODER_CALL_BACK_NULL);
 	cmdcoder_init(&encoder, PACKGET_ACK_ID,  encodeCallback);
 
+	
+	#if 0
 	Nbl_Led_on(GPS_LED_ID);
 	res = catch_program_app_head_in_ms(500);
 	if(  res == 0 )
 	{
 		jump_to_main_program();
 	}
+	#else
+	if( 1 == is_main_program_written() ){ // if no main app , just listen update
+		if( 0 == is_iap_tag_set() ){ // if main app set tag, need to listen update 
+			jump_to_main_program();
+		}else{
+			clean_iap_tag(); // clean tag, and go to listen update
+		}
+	}
+	Nbl_Led_on(GPS_LED_ID);
+	#endif
 	//no app program or get a program start , it will do main_loop
 }
 void main_deinit()
@@ -322,7 +357,9 @@ void main_loop()
 				}
 			}
 		}
-	}	
+	}else{
+		delay_us(1000);
+	}		
 	
 }
 

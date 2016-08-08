@@ -47,9 +47,9 @@ typedef void(*iapFunction)(void);
 #define PACKGET_END_STOP 2
 #define PACKGET_MAX_DATA_SEQ 200  // new_seq = (last_seq+1)% PACKGET_MAX_DATA_SEQ
 // ack error code
-#define PACKGET_ACK_FALSE_PROGRAM_ERROR 1 // the send data process stop
-#define PACKGET_ACK_FALSE_ERASE_ERROR 2 // the send data process stop
-#define PACKGET_ACK_FALSE_SEQ_FALSE 3 // the send data process will restart
+#define PACKGET_ACK_FALSE_PROGRAM_ERROR 21 // the send data process stop
+#define PACKGET_ACK_FALSE_ERASE_ERROR 22 // the send data process stop
+#define PACKGET_ACK_FALSE_SEQ_FALSE 23 // the send data process will restart
 // if has ack false , the flash process shuld be restart
 
 

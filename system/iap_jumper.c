@@ -8,9 +8,83 @@
 
 typedef void(*pFunction)(void);
 
+Uart_t * remoterUart = 0;
+static cmdcoder_t aip_decoder;
 
 // define in board main file, if you want to deinit some import think
 __weak void main_deinit();
+
+
+
+
+int get_iap_tag()
+{
+	return *(__IO int*) IAP_TAG_ADRESS;
+}
+
+int set_iap_tag(int tag)
+{//1 ok, 0 flase
+	int timeout = 10;
+	char res, ntag;
+	volatile FLASH_Status FLASHStatus = FLASH_COMPLETE;
+	
+	FLASH_Unlock();
+	FLASH_ClearFlag(FLASH_FLAG_EOP | FLASH_FLAG_PGERR | FLASH_FLAG_WRPRTERR);
+	
+	res = 0;
+	timeout = 10;
+	while( timeout-- > 0)
+	{
+		FLASHStatus = FLASH_ErasePage(IAP_TAG_ADRESS);
+		if( FLASHStatus == FLASH_COMPLETE ){
+			res = 1;
+			break;
+		}
+	}
+	
+	if( res == 1 )
+	{
+		res = 0;
+		timeout = 10;
+		while( timeout-- > 0)
+		{
+			FLASHStatus = FLASH_ProgramWord(IAP_TAG_ADRESS,tag) ;//FLASH_ProgramOptionByteData(IAP_TAG_ADRESS,tag);
+			if( FLASHStatus == FLASH_COMPLETE ){
+				res = 1;
+				break;
+			}
+		}
+	}
+
+	FLASH_Lock();
+	
+	if( res == 1)
+	{
+		ntag = get_iap_tag();
+		if( ntag != tag )
+			res = 0;
+	}
+	
+	return res;
+}
+
+
+int aipjumperEnodeCallback ( unsigned char c )
+{
+	Uart_PutChar(remoterUart,c);
+	return 1;
+}
+cmdcoder_t iapJumperEncoder;
+void iap_jumper_answer_ack_false(char error)
+{
+	unsigned char data[4];
+	
+	cmdcoder_init(&iapJumperEncoder, PACKGET_ACK_ID,  aipjumperEnodeCallback);
+	
+	data[0] = PACKGET_ACK_FALSE;
+	data[1] = error;
+	cmdcoder_send_bytes(&iapJumperEncoder, data , 2);
+}
 
 void jump_by_reset()
 {
@@ -57,14 +131,11 @@ void jump_iap()
 	//jump_to_iap_program();
 }
 
-
-Uart_t * remoterUart = 0;
-static cmdcoder_t aip_decoder;
-
 void Iap_Configure(Uart_t *uart)
 {
 	remoterUart = uart;
 }
+
 void Iap_Event()
 {
 	char ubyte ;
@@ -72,7 +143,11 @@ void Iap_Event()
 	{
 		if( cmdcoder_Parse_byte(&aip_decoder,ubyte) ){
 			if( aip_decoder.id == PACKGET_START_ID && aip_decoder.len==1 ){
-				jump_iap();
+				if( set_iap_tag(IAP_TAG_UPDATE_VALUE) ){
+					jump_iap();
+				}else{
+					iap_jumper_answer_ack_false(PACKGET_ACK_FALSE_PROGRAM_ERROR);
+				}
 			}
 		}
 	}
