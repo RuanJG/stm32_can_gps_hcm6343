@@ -267,7 +267,7 @@ int catch_program_app_head_in_ms(int ms)
 
 
 #include <navigation_box.h>
-#include <navigation_box_led.h>
+
 void main_setup()
 {
 	int res;
@@ -275,7 +275,6 @@ void main_setup()
 	SetupPllClock(HSE_CLOCK_6MHZ);
 	//Esc_GPIO_Configuration();
 	Navi_GPIO_Configuration();
-	Nbl_Led_Configuration();
 	Uart_Configuration (&Uart1, USART1, 115200, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
 	
 	
@@ -284,7 +283,7 @@ void main_setup()
 
 	
 	#if 0
-	Nbl_Led_on(GPS_LED_ID);
+	//Nbl_Led_on(GPS_LED_ID);
 	res = catch_program_app_head_in_ms(500);
 	if(  res == 0 )
 	{
@@ -298,7 +297,7 @@ void main_setup()
 			clean_iap_tag(); // clean tag, and go to listen update
 		}
 	}
-	Nbl_Led_on(GPS_LED_ID);
+	//Nbl_Led_on(GPS_LED_ID);
 	#endif
 	//no app program or get a program start , it will do main_loop
 }
@@ -306,7 +305,7 @@ void main_deinit()
 {
 	SysTick_Deinit();
 	Uart_DeInit(&Uart1);
-	Nbl_Led_off(GPS_LED_ID);
+	//Nbl_Led_off(GPS_LED_ID);
 }
 void main_loop()
 {
