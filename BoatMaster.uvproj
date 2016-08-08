@@ -76,9 +76,9 @@
             <nStopB2X>0</nStopB2X>
           </BeforeMake>
           <AfterMake>
-            <RunUserProg1>0</RunUserProg1>
+            <RunUserProg1>1</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name></UserProg1Name>
+            <UserProg1Name>C:\Keil_v5\ARM\ARMCC\bin\fromelf.exe  --bin -o  .\output\iap.bin   output\MainControllerCommon\MainControllerCommon.axf</UserProg1Name>
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
@@ -308,7 +308,7 @@
               <OCR_RVCT4>
                 <Type>1</Type>
                 <StartAddress>0x8000000</StartAddress>
-                <Size>0x10000</Size>
+                <Size>0x4000</Size>
               </OCR_RVCT4>
               <OCR_RVCT5>
                 <Type>1</Type>
@@ -363,7 +363,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_MD,USE_STDPERIPH_DRIVER,MAINCONTROLLER_TYPE=MAINCONTROLLER_COMMON</Define>
               <Undefine></Undefine>
-              <IncludePath>.\user;.\user\base64;.\Libraries\CMSIS\Core\CM3;.\Libraries\STM32F10x_StdPeriph_Driver\inc;.\system;.\board_navigationBox;.\board_m80_esc</IncludePath>
+              <IncludePath>.\user;.\user\base64;.\Libraries\CMSIS\Core\CM3;.\Libraries\STM32F10x_StdPeriph_Driver\inc;.\system;.\board_navigationBox;.\board_m80_esc;.\iap_firmware</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -432,14 +432,14 @@
               <FilePath>.\board_mainController\SetTimer.c</FilePath>
             </File>
             <File>
-              <FileName>SetI2C.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_mainController\SetI2C.c</FilePath>
-            </File>
-            <File>
               <FileName>SetGPIO.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\board_mainController\SetGPIO.c</FilePath>
+            </File>
+            <File>
+              <FileName>ADXL345_SetI2C.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\board_mainController\ADXL345_SetI2C.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -507,9 +507,39 @@
               <FilePath>.\board_m80_esc\esc_box.h</FilePath>
             </File>
             <File>
-              <FileName>esc_pwm.c</FileName>
+              <FileName>ADC_config.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\board_m80_esc\esc_pwm.c</FilePath>
+              <FilePath>.\board_m80_esc\ADC_config.c</FilePath>
+            </File>
+            <File>
+              <FileName>esc_box_led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_m80_esc\esc_box_led.c</FilePath>
+            </File>
+            <File>
+              <FileName>esc_80_pump_pitch_control.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_m80_esc\esc_80_pump_pitch_control.c</FilePath>
+            </File>
+            <File>
+              <FileName>esc_80_yaw_control.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_m80_esc\esc_80_yaw_control.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>iap_firmware</GroupName>
+          <Files>
+            <File>
+              <FileName>iap.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\iap_firmware\iap.c</FilePath>
+            </File>
+            <File>
+              <FileName>iap.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\iap_firmware\iap.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -585,6 +615,11 @@
               <FileName>system_error_status.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\system\system_error_status.c</FilePath>
+            </File>
+            <File>
+              <FileName>iap_jumper.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\system\iap_jumper.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1041,14 +1076,14 @@
               <FilePath>.\board_mainController\SetTimer.c</FilePath>
             </File>
             <File>
-              <FileName>SetI2C.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_mainController\SetI2C.c</FilePath>
-            </File>
-            <File>
               <FileName>SetGPIO.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\board_mainController\SetGPIO.c</FilePath>
+            </File>
+            <File>
+              <FileName>ADXL345_SetI2C.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\board_mainController\ADXL345_SetI2C.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1116,9 +1151,39 @@
               <FilePath>.\board_m80_esc\esc_box.h</FilePath>
             </File>
             <File>
-              <FileName>esc_pwm.c</FileName>
+              <FileName>ADC_config.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\board_m80_esc\esc_pwm.c</FilePath>
+              <FilePath>.\board_m80_esc\ADC_config.c</FilePath>
+            </File>
+            <File>
+              <FileName>esc_box_led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_m80_esc\esc_box_led.c</FilePath>
+            </File>
+            <File>
+              <FileName>esc_80_pump_pitch_control.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_m80_esc\esc_80_pump_pitch_control.c</FilePath>
+            </File>
+            <File>
+              <FileName>esc_80_yaw_control.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_m80_esc\esc_80_yaw_control.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>iap_firmware</GroupName>
+          <Files>
+            <File>
+              <FileName>iap.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\iap_firmware\iap.c</FilePath>
+            </File>
+            <File>
+              <FileName>iap.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\iap_firmware\iap.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1194,6 +1259,11 @@
               <FileName>system_error_status.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\system\system_error_status.c</FilePath>
+            </File>
+            <File>
+              <FileName>iap_jumper.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\system\iap_jumper.c</FilePath>
             </File>
           </Files>
         </Group>
