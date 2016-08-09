@@ -11,10 +11,10 @@
 
 // if make iap firmware 
 // modify keil flash  ; note : if the firmware offset's value is define in iap_firmware/iap.c
-// iap firmware : 0x8000000   0xM000                         ; 0x4000/1024 = 16 = 16kB         
-// app firmware : 0x800M000   0xN000  = (0x10000 - 0xM000) 
+// iap firmware : 0x8000000   0x4000                         ; 0x4000/1024 = 16 = 16kB         
+// app firmware : 0x8004000   0xC000  = (0x10000 - 0x4000) 
 #define IAP_FIRMWARE 0
-
+#define IAP_UART_BAUDRATE 115200
 
 /*
 *
@@ -129,7 +129,7 @@ system_error_t* system_error_get();
 
 //iap
 //void jump_iap();
-void Iap_Event();
+//void Iap_Event();
 void Iap_Configure(Uart_t *uart);
 
 #define IAP_TAG_ADRESS 0xFC00

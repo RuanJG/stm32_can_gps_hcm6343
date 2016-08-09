@@ -49,7 +49,8 @@ void Uart_Configuration (Uart_t *uart, USART_TypeDef *uartDev, uint32_t USART_Ba
 
 	// irq
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
-	//uart->read_cb = rcb;
+	//user cant set this read_cb by youself
+	uart->read_cb = NULL; //example , in Iap_jumper 
 	uart->uartDev = uartDev;
 	if( uartDev == USART1 ){
 		uart1_p = uart;
@@ -110,6 +111,8 @@ void _uart_irq_function(Uart_t *uart)
 				fifo_recovery_put(&uart->rxfifo,c);
 				#endif
 			}
+			if( uart->read_cb != NULL)
+				uart->read_cb(c);
 		}
 	}
 

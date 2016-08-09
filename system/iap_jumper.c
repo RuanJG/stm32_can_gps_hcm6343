@@ -131,11 +131,34 @@ void jump_iap()
 	//jump_to_iap_program();
 }
 
+
+
+#define IAP_USE_READCALLBACK 1
+
+#if IAP_USE_READCALLBACK
+void iapUartReadCallBack(char c)
+{
+		if( cmdcoder_Parse_byte(&aip_decoder,c) ){
+			if( aip_decoder.id == PACKGET_START_ID && aip_decoder.len==1 ){
+				if( set_iap_tag(IAP_TAG_UPDATE_VALUE) ){
+					jump_iap();
+				}else{
+					iap_jumper_answer_ack_false(PACKGET_ACK_FALSE_PROGRAM_ERROR);
+				}
+			}
+		}
+}
+#endif
+
 void Iap_Configure(Uart_t *uart)
 {
 	remoterUart = uart;
+	#if IAP_USE_READCALLBACK
+	remoterUart->read_cb = iapUartReadCallBack;
+	#endif
 }
 
+#if !IAP_USE_READCALLBACK
 void Iap_Event()
 {
 	char ubyte ;
@@ -152,3 +175,4 @@ void Iap_Event()
 		}
 	}
 }
+#endif

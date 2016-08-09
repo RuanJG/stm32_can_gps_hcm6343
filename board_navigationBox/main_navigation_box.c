@@ -11,7 +11,7 @@
 #if NAVIGATION_BOX
 	
 	
-#define TEST_REPORT_IN_UART 1
+#define TEST_REPORT_IN_UART 0
 	
 	
 systick_time_t report_t;
@@ -203,12 +203,103 @@ int encodeCallback ( unsigned char c )
 	return 1;
 }
 
+
+
+
+
+
+void print_uint( Uart_t *uart, int n)
+{
+	int intt,les,count=0;
+	int num = n;
+	char data[16]={0};
+	while(1){
+		intt = num/10;
+		les = num%10;
+		data[count++] = 0x30+les;
+		
+		if( intt == 0 )
+			break;
+		
+		num = intt;
+	}
+	while(count-->0){
+		Uart_PutChar(uart, data[count]);
+	}
+	
+}
+
+int str_to_int(char *data, int len)
+{
+	int i;
+	int res=0,muli=1;
+	for( i=(len-1) ; i>=0; i--)
+	{
+		res += (data[i]-0x30)*muli;
+		muli*=10;
+	}
+	return res;
+}
+int read_num_by_uart1(uint32_t *num)
+{
+	static char data[32];// #200#, num is 200
+	static char tag = 0;
+	static char index = 0;
+	char tmp;
+	if( Uart_GetChar(&Uart1, &tmp) > 0 ){
+		switch(tag)
+		{
+			case 0:{
+				if( tmp == '#'){
+					tag++;
+					index = 0;
+				}
+				break;
+			}
+			case 1:{
+				if( tmp == '#' && index > 0){
+					*num = str_to_int(data,index);
+					tag = 0;
+					index = 0;
+					return 1;
+				}else{
+					data[index++]=tmp;
+				}
+				break;
+			}
+		}
+	}
+	return 0;
+}
+
+void test_h_bridge()
+{
+	uint32_t pwm=0;
+
+	if(read_num_by_uart1( &pwm ) == 1)
+	{
+		if( pwm == 0 ){
+			Uart_PutString(&Uart1,"back\r\n");
+		}else if( pwm == 1){
+			Uart_PutString(&Uart1,"stop\r\n");
+		}else if( pwm == 2){
+			Uart_PutString(&Uart1,"forward\r\n");
+		}
+	}
+
+}
+
+
+
+
+
+
 void main_setup()
 {
 	SetupPllClock(HSE_CLOCK_6MHZ);
 	Navi_GPIO_Configuration ();
 	Can1_Configuration (0x11);	//0x11CANµÿ÷∑
-	Uart_Configuration (&Uart1, USART1, 115200, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
+	Uart_Configuration (&Uart1, USART1, IAP_UART_BAUDRATE, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
 	Uart_Configuration (&Uart2, USART2, 9600, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
 	//Uart_Configuration (&Uart3, USART3, 115200, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
 	
@@ -233,7 +324,6 @@ void main_deinit()
 }
 void main_loop()
 {
-	Iap_Event();
 	
 	if( check_systick_time(&gps_delay_t) ){
 		gps_event();
