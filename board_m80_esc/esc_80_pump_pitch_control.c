@@ -22,6 +22,8 @@ void TIM3_Mode_Config(void)
 	 
 	 //clk
 	 RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE); 
+	 RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB,ENABLE);
+	 RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO,ENABLE);
 
 	 	//pb1 pb0 timer3 pwm // //PWMA 控制倒车斗 即喷泵的pitch方向, 主要设置三个值，即前，中，后 ;  pwmB no use
 	GPIO_StructInit(&GPIO_InitStructure);
@@ -70,6 +72,7 @@ void TIM3_Mode_Config(void)
 void Esc_Pump_Pitch_Config()
  {
 	 TIM3_Mode_Config();
+	 Esc_Pump_Pitch_Middle();
  }
 int esc_set_pwmA(uint16_t pwm)
 {

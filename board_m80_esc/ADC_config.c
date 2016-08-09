@@ -9,9 +9,10 @@
 #define PUMP_ANGLE_ADC_ID 1
 static u16 escADCConvert[ADC_SAMPLE_COUNT][ADC_SAMPLE_CHANNEL_COUNT];
 
-void adc_sample_irq_function();
 
-void Esc_ADC_Configuration (void)
+escAdcIrqFunction_t adc_sample_irq_function = NULL;
+
+void Esc_ADC_Configuration (escAdcIrqFunction_t irqfunc)
 {										 
 	ADC_InitTypeDef ADC_InitStructure;
 	DMA_InitTypeDef DMA_InitStructure;
@@ -96,6 +97,9 @@ void Esc_ADC_Configuration (void)
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
+	
+	
+	adc_sample_irq_function = irqfunc;
 
 }
 
@@ -104,7 +108,8 @@ void DMA1_Channel1_IRQHandler(void)
  if(DMA_GetITStatus(DMA1_IT_TC1))
  {
 	 //just check yaw , is_a , 油量在主程序里计算
-	 adc_sample_irq_function();
+	 if( adc_sample_irq_function != NULL)
+			adc_sample_irq_function();
 	 DMA_ClearITPendingBit(DMA1_IT_GL1);
  }
 }
@@ -143,20 +148,6 @@ u16 Get_PUMP_ANGLE_Adc_value()
 	return Cali_Adc_Value(PUMP_ANGLE_ADC_ID);
 }
 
-void check_push_rod_current()
-{
-	
-	
-}
-void check_push_rod_angle()
-{
-	
-}
 
-void adc_sample_irq_function()
-{
-	check_push_rod_current();
-	check_push_rod_angle();
-}
 
 //End of File

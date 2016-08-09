@@ -307,8 +307,8 @@
               </OCR_RVCT3>
               <OCR_RVCT4>
                 <Type>1</Type>
-                <StartAddress>0x8000000</StartAddress>
-                <Size>0x4000</Size>
+                <StartAddress>0x8004000</StartAddress>
+                <Size>0xc000</Size>
               </OCR_RVCT4>
               <OCR_RVCT5>
                 <Type>1</Type>
@@ -525,6 +525,11 @@
               <FileName>esc_80_yaw_control.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\board_m80_esc\esc_80_yaw_control.c</FilePath>
+            </File>
+            <File>
+              <FileName>TH11S-B_Driver.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_m80_esc\TH11S-B_Driver.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1169,6 +1174,11 @@
               <FileName>esc_80_yaw_control.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\board_m80_esc\esc_80_yaw_control.c</FilePath>
+            </File>
+            <File>
+              <FileName>TH11S-B_Driver.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_m80_esc\TH11S-B_Driver.c</FilePath>
             </File>
           </Files>
         </Group>

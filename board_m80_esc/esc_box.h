@@ -23,14 +23,20 @@ void Esc_Pump_Pitch_Config();
 void Esc_Pump_Pitch_Back();
 void Esc_Pump_Pitch_Middle();
 void Esc_Pump_Pitch_Forward();
-//int esc_set_pump_pitch_pwm(uint16_t pwm);
+int esc_set_pump_pitch_pwm(uint16_t pwm);
 
 
 
 //adc 
-void Esc_ADC_Configuration (void);
+typedef void(*escAdcIrqFunction_t)(void);
+void Esc_ADC_Configuration (escAdcIrqFunction_t irqfunc);
+u16 Get_Oil_Mass_Adc_value();
+u16 Get_ISA_Adc_value();
+u16 Get_PUMP_ANGLE_Adc_value();
 
-
+// yaw control 
+void Esc_Yaw_Control_Event();
+void Esc_Yaw_Control_Configure();
 
 //led
 void Esc_Led_set_toggle(int id, int _10ms);
@@ -99,13 +105,13 @@ void Esc_Led_Configuration();
 #define IS_A_GPIO_PIN GPIO_Pin_4
 	// H_BRIDGE Ctrl1 ctrl2 ctrl3 ctrl4 控制方向推动杆，泵喷水方向左右转,yaw
 #define H_BRIDGE_A_CTRL3_BANK GPIOB
-#define H_BRIDGE_A_CTRL3_PIN GPIO_Pin_4
+#define H_BRIDGE_A_CTRL3_PIN GPIO_Pin_6
 #define H_BRIDGE_A_CTRL4_BANK GPIOB
-#define H_BRIDGE_A_CTRL4_PIN GPIO_Pin_5
+#define H_BRIDGE_A_CTRL4_PIN GPIO_Pin_7
 #define H_BRIDGE_B_CTRL1_BANK GPIOB
-#define H_BRIDGE_B_CTRL1_PIN GPIO_Pin_6
+#define H_BRIDGE_B_CTRL1_PIN GPIO_Pin_4
 #define H_BRIDGE_B_CTRL2_BANK GPIOB
-#define H_BRIDGE_B_CTRL2_PIN GPIO_Pin_7
+#define H_BRIDGE_B_CTRL2_PIN GPIO_Pin_5
 	//H_BRIDGE  pwmb pwmj  控制方向推动杆 速度
 	//now use H bridge A , pwmb is use for uart , so  RUDDEREN_A_GPIO is connect to pwmb 
 //#define H_BRIDGE_A_PWMB_GPIO_BANK  GPIOB

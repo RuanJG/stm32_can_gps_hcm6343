@@ -61,6 +61,7 @@ void Esc_GPIO_Configuration (void)
 
 	//接近开关，检测是否方向推动杆推动泵的roll方向yaw 是否到达最左，最右，中间，的位置
 // 采用中断来做处理
+/*
 	GPIO_StructInit(&GPIO_InitStructure);
 	GPIO_InitStructure.GPIO_Pin = LIMIT_L_GPIO_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
@@ -75,7 +76,7 @@ void Esc_GPIO_Configuration (void)
 	GPIO_InitStructure.GPIO_Pin = LIMIT_R_GPIO_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
 	GPIO_Init(LIMIT_R_GPIO_BANK, &GPIO_InitStructure);
-	
+	*/
 
 	
 	//remap
