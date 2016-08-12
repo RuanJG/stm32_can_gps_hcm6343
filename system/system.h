@@ -15,11 +15,11 @@
 // app firmware : 0x800M000   0xN000  = (0x10000 - 0xM000) 
 #define IAP_FIRMWARE 1
 //chose board
-#define IAP_FIRMWARE_BOARD_NAVIGATION 1
-#define IAP_FIRMWARE_BOARD_80_ESC 0
+#define IAP_FIRMWARE_BOARD_NAVIGATION 0
+#define IAP_FIRMWARE_BOARD_80_ESC 1
 #define IAP_FIRMWARE_BOARD_MAINCONTROLLER 0
 //iap config
-#define IAP_UART_BAUDRATE 115200
+#define IAP_UART_BAUDRATE 9600
 #define IAP_UART_DEV USART1
 
 
@@ -138,7 +138,7 @@ system_error_t* system_error_get();
 
 //iap
 //void jump_iap();
-void Iap_Event();
+//void Iap_Event();
 void Iap_Configure(Uart_t *uart);
 
 #define IAP_TAG_ADRESS 0xFC00

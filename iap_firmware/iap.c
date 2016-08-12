@@ -58,10 +58,15 @@ int encodeCallback ( unsigned char c )
 
 int is_main_program_written()
 {
+	#if 1
 	if (((*(__IO uint32_t*)ApplicationAddress) & 0x2FFE0000 ) == 0x20000000)
 		return 1;
 	else
 		return 0;
+	
+	#else
+	return 1;
+	#endif
 }
 int is_iap_tag_set()
 {
@@ -280,6 +285,7 @@ void main_setup()
 #if IAP_FIRMWARE_BOARD_80_ESC
 	SetupPllClock(HSE_CLOCK_6MHZ);
 	Esc_GPIO_Configuration();
+	Esc_Led_Configuration();
 #endif
 #if IAP_FIRMWARE_BOARD_NAVIGATION
 	SetupPllClock(HSE_CLOCK_6MHZ);
@@ -305,6 +311,7 @@ void main_setup()
 			clean_iap_tag(); // clean tag, and go to listen update
 		}
 	}
+	Esc_Led_on(LED_YELLOW_ID);
 	#endif
 	//no app program or get a program start , it will do main_loop
 }
