@@ -57,14 +57,16 @@ void logd_uint(char *str, unsigned int num);
 
 
 
-// th11sb
+
+
+// rtu_485 bus control
+void Rtu_485_Runtime_Configure();
+void Rtu_485_Runtime_loop();
+int Rtu_485_Runtime_sendCmd(unsigned char addr, unsigned char func, unsigned short reg_addr , unsigned short len);
+int Rtu_485_Runtime_send_RawCmd(unsigned char *data, unsigned char len);
+	// th11sb
 unsigned short Th11sb_get_tempture();
 unsigned short Th11sb_get_wet();
-int Th11sb_485_runtime();
-void Th11sb_Configure(uint8_t addr);
-
-
-
 
 
 // H Bridge

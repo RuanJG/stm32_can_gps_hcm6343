@@ -14,8 +14,6 @@ volatile char is_485_bus_status = _485_NONE;
 
 
 
-
-
 void rtu_485_ack_init(rtu_485_ack_t* ack)
 {
 	ack->len = 0;

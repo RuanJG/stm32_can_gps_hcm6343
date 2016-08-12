@@ -246,6 +246,10 @@ void listen_cmd(Uart_t *uart)
 			//uart 转发
 			cmd_uart_485cmd(&Uart1,&Uart2);
 		}
+		if(cmd==4){
+			//uart 转发
+			cmd_uart_485cmd(&Uart1,&Uart2);
+		}
 	}
 }
 
@@ -263,7 +267,7 @@ void main_setup()
 	Esc_Led_Configuration();
 	
 	//time_t init 
-	systick_time_start(&report_t,200);//REPORT_STATUS_MS);
+	systick_time_start(&report_t,500);//REPORT_STATUS_MS);
 	systick_time_start(&led_t,10);
 	
 	//system error 
@@ -271,8 +275,8 @@ void main_setup()
 	
 	Iap_Configure(&Uart1);
 	
-	Th11sb_Configure(0x33);
 	Rtu_485_Configure(&Uart2);
+	Rtu_485_Runtime_Configure(); //  base on rtu_485
 	
 	//test
 	//Esc_Led_set_toggle(LED_RED_ID,100);//100*10ms each toggle
@@ -286,9 +290,11 @@ void main_loop()
 	
 	if( check_systick_time(&report_t) ){
 		//test_can_send();
-		Th11sb_485_runtime();
-		logd_uint("wet:",Th11sb_get_wet()/10);
-		logd_uint("tempture:",Th11sb_get_tempture()/10);
+		//Th11sb_485_runtime();
+		//Rtu_485_Runtime_sendCmd(0x33,0x03,0x00,0x02);
+		//logd_uint("wet:",Th11sb_get_wet()/10);
+		//logd_uint("tempture:",Th11sb_get_tempture()/10);
+		//Rtu_485_Runtime_sendCmd(0x04,0x05,0,0xff00);
 	}
 	//test_pwm();
 	//test_h_bridge();
@@ -308,6 +314,7 @@ void main_loop()
 	}
 	
 	Rtu_485_Event();
+	Rtu_485_Runtime_loop(); // base on rtu_485
 	
 }
 

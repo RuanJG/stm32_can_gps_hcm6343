@@ -133,10 +133,6 @@
       <TargetDriverDllRegistry>
         <SetRegEntry>
           <Number>0</Number>
-          <Key>DLGUARM</Key>
-        </SetRegEntry>
-        <SetRegEntry>
-          <Number>0</Number>
           <Key>ARMRTXEVENTFLAGS</Key>
           <Name>-L70 -Z18 -C0 -M0 -T1</Name>
         </SetRegEntry>
@@ -1551,8 +1547,8 @@
       <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\board_m80_esc\TH11S-B_Driver.c</PathWithFileName>
-      <FilenameWithoutPath>TH11S-B_Driver.c</FilenameWithoutPath>
+      <PathWithFileName>.\board_m80_esc\esc_box_log.c</PathWithFileName>
+      <FilenameWithoutPath>esc_box_log.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1564,8 +1560,8 @@
       <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\board_m80_esc\esc_box_log.c</PathWithFileName>
-      <FilenameWithoutPath>esc_box_log.c</FilenameWithoutPath>
+      <PathWithFileName>.\board_m80_esc\Rtu_485_Runtime.c</PathWithFileName>
+      <FilenameWithoutPath>Rtu_485_Runtime.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
