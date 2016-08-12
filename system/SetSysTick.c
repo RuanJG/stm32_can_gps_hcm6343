@@ -101,4 +101,9 @@ int check_systick_time(systick_time_t *time_t)
 	return 0;
 }
 
+u32 get_system_ms()
+{
+	return systick_ms;
+}
+
 //End of File

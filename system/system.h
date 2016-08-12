@@ -14,7 +14,7 @@
 // iap firmware : 0x8000000   0x4000                         ; 0x4000/1024 = 16 = 16kB         
 // app firmware : 0x8004000   0xC000  = (0x10000 - 0x4000) 
 #define IAP_FIRMWARE 0
-#define IAP_UART_BAUDRATE 115200
+#define IAP_UART_BAUDRATE 9600
 
 /*
 *
@@ -69,7 +69,7 @@ typedef struct _systick_time_t {
 	u32 systick_ms_overflow;
 	u32 interval_ms;
 }systick_time_t;
-//float get_system_s();
+u32 get_system_ms();
 int check_systick_time(systick_time_t *time_t);
 int systick_time_start(systick_time_t *time_t, int ms);
 void delay_us(u32 us);
@@ -131,12 +131,42 @@ system_error_t* system_error_get();
 //void jump_iap();
 //void Iap_Event();
 void Iap_Configure(Uart_t *uart);
+void Iap_Jump();
 
 #define IAP_TAG_ADRESS 0xFC00
 #define IAP_TAG_UPDATE_VALUE 1
 #define IAP_TAG_JUMP_VALUE 2
 int set_iap_tag(int tag);
 int get_iap_tag();
+
+
+
+
+
+
+
+
+// misc
+
+//crc
+unsigned short crc_calculate(const unsigned char* pBuffer, int length);
+//rtu 485 uart
+void rtu_485_send_cmd(unsigned char addr, unsigned char func, unsigned short reg_addr , unsigned short len);
+typedef struct _rtu_485_ack {
+	unsigned char frame[259];
+	unsigned char *data;
+	unsigned char addr;
+	unsigned char func;
+	unsigned char len;
+	unsigned char step;
+	unsigned char index;
+	unsigned short crc;
+}rtu_485_ack_t;
+void Rtu_485_Configure(Uart_t* uart);
+rtu_485_ack_t * Rtu_485_Get_Ack(int *res);
+void Rtu_485_Event();
+int Rtu_485_send_cmd(unsigned char addr, unsigned char func, unsigned short reg_addr , unsigned short len);
+int Rtu_485_send_raw_cmd(unsigned char *data,int len);
 
 #endif
 //End of File

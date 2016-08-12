@@ -158,6 +158,15 @@ void Iap_Configure(Uart_t *uart)
 	#endif
 }
 
+void Iap_Jump()
+{
+		if( set_iap_tag(IAP_TAG_UPDATE_VALUE) ){
+				jump_iap();
+		}else{
+				iap_jumper_answer_ack_false(PACKGET_ACK_FALSE_PROGRAM_ERROR);
+		}
+}
+
 #if !IAP_USE_READCALLBACK
 void Iap_Event()
 {

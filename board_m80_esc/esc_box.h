@@ -50,6 +50,23 @@ void Esc_Led_Configuration();
 
 
 
+//log 
+void logd(char *str);
+void logd_uint(char *str, unsigned int num);
+
+
+
+
+// th11sb
+unsigned short Th11sb_get_tempture();
+unsigned short Th11sb_get_wet();
+int Th11sb_485_runtime();
+void Th11sb_Configure(uint8_t addr);
+
+
+
+
+
 // H Bridge
 
 

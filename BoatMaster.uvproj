@@ -531,6 +531,11 @@
               <FileType>1</FileType>
               <FilePath>.\board_m80_esc\TH11S-B_Driver.c</FilePath>
             </File>
+            <File>
+              <FileName>esc_box_log.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_m80_esc\esc_box_log.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -545,6 +550,21 @@
               <FileName>iap.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\iap_firmware\iap.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>misc</GroupName>
+          <Files>
+            <File>
+              <FileName>crc16.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\misc\crc16.c</FilePath>
+            </File>
+            <File>
+              <FileName>rtu_485.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\misc\rtu_485.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1180,6 +1200,11 @@
               <FileType>1</FileType>
               <FilePath>.\board_m80_esc\TH11S-B_Driver.c</FilePath>
             </File>
+            <File>
+              <FileName>esc_box_log.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_m80_esc\esc_box_log.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1194,6 +1219,21 @@
               <FileName>iap.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\iap_firmware\iap.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>misc</GroupName>
+          <Files>
+            <File>
+              <FileName>crc16.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\misc\crc16.c</FilePath>
+            </File>
+            <File>
+              <FileName>rtu_485.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\misc\rtu_485.c</FilePath>
             </File>
           </Files>
         </Group>
