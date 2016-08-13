@@ -85,10 +85,17 @@ u8 Can1_Configuration_mask(u8 FilterNumber, u16 ID, u16 ID_Mask)
 	CAN_InitStructure.CAN_RFLM = DISABLE;
 	CAN_InitStructure.CAN_TXFP = ENABLE; //DISABLE
 	CAN_InitStructure.CAN_Mode = CAN_Mode_Normal;//CAN_Mode_LoopBack;//CAN_Mode_Normal;
+#if 0 // 1M
 	CAN_InitStructure.CAN_SJW = CAN_SJW_1tq;
 	CAN_InitStructure.CAN_BS1 = CAN_BS1_3tq;
 	CAN_InitStructure.CAN_BS2 = CAN_BS2_5tq;
 	CAN_InitStructure.CAN_Prescaler = 4;//2
+#else // 500k
+	CAN_InitStructure.CAN_SJW = CAN_SJW_1tq;
+	CAN_InitStructure.CAN_BS1 = CAN_BS1_5tq;
+	CAN_InitStructure.CAN_BS2 = CAN_BS2_2tq;
+	CAN_InitStructure.CAN_Prescaler = 9;//2
+#endif
 	Init_state = CAN_Init(CAN1, &CAN_InitStructure);
 	if( Init_state  == 0 ){
 		RCC_APB1PeriphClockCmd(RCC_APB1Periph_CAN1, DISABLE);

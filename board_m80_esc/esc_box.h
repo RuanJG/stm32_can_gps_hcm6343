@@ -65,8 +65,41 @@ void Rtu_485_Runtime_loop();
 int Rtu_485_Runtime_sendCmd(unsigned char addr, unsigned char func, unsigned short reg_addr , unsigned short len);
 int Rtu_485_Runtime_send_RawCmd(unsigned char *data, unsigned char len);
 	// th11sb
-unsigned short Th11sb_get_tempture();
-unsigned short Th11sb_get_wet();
+typedef struct _th11sb_t {
+	unsigned char addr;
+	unsigned short wet ;
+	unsigned short tempture;
+}th11sb_t;
+//th11sb_t th11sb_head,th11sb_tail;
+typedef struct _dam_t{
+	unsigned short status;
+	unsigned char addr;
+	unsigned char type; // 4 or 16
+}dam_t;
+//dam4_02,dam4_04,dam4_05,dam16_08,dam4_09;
+typedef struct _powerAdc6_t{
+	unsigned char addr;
+	unsigned short adc[6];
+}powerAdc6_t;
+//powerAdc6_01,powerAdc6_06,powerAdc6_07;
+typedef struct _pgw636_t{
+	unsigned char addr;
+	int curren_speed;  //-8388608  ~  8388607
+	int max_speed;
+	int min_speed;
+}pgw636_t;
+//pgw636_03;
+
+
+
+
+
+
+
+//esc_can_listener
+void Listen_Can1();
+
+
 
 
 // H Bridge

@@ -536,6 +536,11 @@
               <FileType>1</FileType>
               <FilePath>.\board_m80_esc\Rtu_485_Runtime.c</FilePath>
             </File>
+            <File>
+              <FileName>esc_can_listener.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_m80_esc\esc_can_listener.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1204,6 +1209,11 @@
               <FileName>Rtu_485_Runtime.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\board_m80_esc\Rtu_485_Runtime.c</FilePath>
+            </File>
+            <File>
+              <FileName>esc_can_listener.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_m80_esc\esc_can_listener.c</FilePath>
             </File>
           </Files>
         </Group>

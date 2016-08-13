@@ -12,7 +12,18 @@ rtu_485_ack_t rtu485_ack;
 volatile char is_485_bus_status = _485_NONE;
 
 
-
+void _485_cail_ack_len(rtu_485_ack_t* ack, unsigned char abyte)
+{
+	// if data cmd , will get this abyte = len, if set cmd , ack len == cmd_len
+	
+	if( ack->func == 0x03 || ack->func == 0x04 || ack->func == 0x01 ){
+		ack->len = abyte;
+	}else if( ack->func == 0x05 || ack->func == 0x10 ){
+		ack->len = 3;
+	}else{
+		logd("unknow 485 cmd\r\n");
+	}
+}
 
 void rtu_485_ack_init(rtu_485_ack_t* ack)
 {
@@ -45,7 +56,7 @@ int recive_485_parse(rtu_485_ack_t* ack, unsigned char abyte)
 		}
 		case 2:{
 			ack->step++;
-			ack->len = abyte;
+			_485_cail_ack_len(ack, abyte);
 			if( ack->len <= 0 ) 
 				ack->step++; // no data
 			ack->index = 0;
@@ -53,6 +64,7 @@ int recive_485_parse(rtu_485_ack_t* ack, unsigned char abyte)
 			break;
 		}
 		case 3:{
+			ack->frame[3+ack->index]=abyte;
 			ack->data[ ack->index++ ] = abyte;
 			if( ack->index >= ack->len)
 				ack->step++;
@@ -60,10 +72,12 @@ int recive_485_parse(rtu_485_ack_t* ack, unsigned char abyte)
 		}
 		case 4:{
 			ack->crc = abyte;
+			ack->frame[3+ack->len]=abyte;
 			ack->step++;
 			break;
 		}
 		case 5:{
+			ack->frame[4+ack->len]=abyte;
 			ack->crc |= (abyte<<8);
 			crc = crc_calculate(ack->frame, ack->len+3);
 			if( ack->crc == crc ){
@@ -83,6 +97,12 @@ int recive_485_parse(rtu_485_ack_t* ack, unsigned char abyte)
 
 extern Uart_t Uart1;
 void Esc_Led_toggle(int id);
+
+void clean_uart_buff()
+{
+	char data;
+	while( Uart_GetChar(rtu485_uart,&data) );
+}
 
 int Rtu_485_send_cmd(unsigned char addr, unsigned char func, unsigned short reg_addr , unsigned short len)
 {
@@ -105,6 +125,7 @@ int Rtu_485_send_cmd(unsigned char addr, unsigned char func, unsigned short reg_
 	//Uart_PutBytes(&Uart1,cmd,8);
 	
 	rtu_485_ack_init(&rtu485_ack);
+	clean_uart_buff();
 	is_485_bus_status = _485_CMD_PENDING;
 	return 1;
 }
@@ -117,6 +138,7 @@ int Rtu_485_send_raw_cmd(unsigned char *data,int len)
 	Uart_PutBytes(rtu485_uart,data,len);
 	
 	rtu_485_ack_init(&rtu485_ack);
+	clean_uart_buff();
 	is_485_bus_status = _485_CMD_PENDING;
 	return 1;
 }
@@ -143,7 +165,7 @@ void Rtu_485_Event()
 			}
 	  }
 		//add timeout check
-		if( is_485_bus_status == _485_CMD_PENDING && (get_system_ms() - _rtu_ms ) > 500 ){
+		if( is_485_bus_status == _485_CMD_PENDING && (get_system_ms() - _rtu_ms ) > 300 ){
 			//logd("485 timeout\r\n");
 			is_485_bus_status = _485_CMD_ACK_FALSE; //timeout
 			_rtu_ms = 0;

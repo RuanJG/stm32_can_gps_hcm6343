@@ -5,19 +5,15 @@
 
 
 /***********************   TH11SB  ************************/
-struct th11sb_t {
-	unsigned char addr;
-	unsigned short wet ;
-	unsigned short tempture;
-}th11sb_head,th11sb_tail;
-struct th11sb_t *current_th11sb;
+th11sb_t th11sb_head,th11sb_tail;
+
 
 void _Th11sb_config()
 {
 	th11sb_head.addr = 0x0a;
 	th11sb_tail.addr = 0x0b;
 }
-int _Th11sb_485_runtime(struct th11sb_t *th11sb, int step, int res, rtu_485_ack_t *runtime_ack)
+int _Th11sb_485_runtime( th11sb_t *th11sb, int step, int res, rtu_485_ack_t *runtime_ack)
 {
 	// 1 : this step run ok ; 0: send cmd fail need retry; -1 ack analize failed
 	// ack analize ( step 1) cannot return 0, if failed , return -1;
@@ -32,6 +28,8 @@ int _Th11sb_485_runtime(struct th11sb_t *th11sb, int step, int res, rtu_485_ack_
 						//logd("th11sb updated\r\n");
 						th11sb->tempture = ((runtime_ack->data[0]<<8) | runtime_ack->data[1]);
 						th11sb->wet = ((runtime_ack->data[2]<<8) | runtime_ack->data[3]);
+						logd_uint("wet:",th11sb_head.wet /10);
+						logd_uint("tempture:",th11sb_head.tempture/10);
 			}else{
 				logd("th11sb wrong ack\r\n");
 				return -1;
@@ -48,11 +46,7 @@ int _Th11sb_485_runtime(struct th11sb_t *th11sb, int step, int res, rtu_485_ack_
 
 /******************************* DAM  ***********************/
 
-struct dam_t{
-	unsigned int status;
-	unsigned char addr;
-	unsigned char type; // 4 or 16
-}dam4_02,dam4_04,dam4_05,dam16_08,dam4_09;
+dam_t dam4_02,dam4_04,dam4_05,dam16_08,dam4_09;
 
 void _dam_config()
 {
@@ -76,7 +70,7 @@ void _dam_config()
 	dam4_09.type = 4;
 	dam4_09.status = 0;
 }
-int _dam_485_runtime(struct dam_t *dam_dev, int step, int res, rtu_485_ack_t *runtime_ack)
+int _dam_485_runtime( dam_t *dam_dev, int step, int res, rtu_485_ack_t *runtime_ack)
 {
 	// 1 : this step run ok ; 0: send cmd fail need retry; -1 ack analize failed
 	// ack analize ( step 1) cannot return 0, if failed , return -1;
@@ -94,6 +88,8 @@ int _dam_485_runtime(struct dam_t *dam_dev, int step, int res, rtu_485_ack_t *ru
 				}else{
 					dam_dev->status = runtime_ack->data[0];
 				}
+				logd_uint("dam",dam_dev->addr);
+				logd_uint(" >",dam_dev->status);
 			}else{
 				logd("dam wrong ack\r\n");
 				return -1;
@@ -107,7 +103,7 @@ int _dam_485_runtime(struct dam_t *dam_dev, int step, int res, rtu_485_ack_t *ru
 	}
 }
 // num_id is from 1-4 or 1-16  enable : 1 or disable 0  , return 0 false 1 ok
-int _dam_485_send_on_off_cmd( struct dam_t *dam_dev, unsigned char num_id, int enable)
+int _dam_485_send_on_off_cmd(  dam_t *dam_dev, unsigned char num_id, int enable)
 {
 	unsigned short on_off;
 	
@@ -117,7 +113,7 @@ int _dam_485_send_on_off_cmd( struct dam_t *dam_dev, unsigned char num_id, int e
 }
 
 // flash enable=1 闪开 enable=0 闪断, delaytime ：时间间隔 单位是0.1s 
-int _dam_485_send_flash(struct dam_t *dam_dev, unsigned char num_id, int enable, int delaytime)
+int _dam_485_send_flash( dam_t *dam_dev, unsigned char num_id, int enable, int delaytime)
 {
 	//FE    10   00 03    00 02     04       00 04       00 0A        00 D8
 	//addr func  num_id  cmd count  cmd len   flash type  delay time   crc
@@ -130,7 +126,7 @@ int _dam_485_send_flash(struct dam_t *dam_dev, unsigned char num_id, int enable,
 	
 	cmd[0] = dam_dev->addr;
 	cmd[1] = 0x10;
-	cmd[2] = 0x00;cmd[3]=num_id;
+	cmd[2] = 0x00;cmd[3]=num_id-1;
 	cmd[4]= 0x00; cmd [5]= 0x02;
 	cmd[6] = 0x04;
 	cmd[7] = 0x00; cmd[8]= enable? 0x04:0x02;
@@ -143,23 +139,38 @@ int _dam_485_send_flash(struct dam_t *dam_dev, unsigned char num_id, int enable,
 }
 
 
+void test_dam_cmd(unsigned char addr_id, unsigned char num_id, unsigned int cmd)
+{
+	//cmd =1 on ;0 close ; 2 flash off ; 3 flash on
+	 dam_t *dam_dev=NULL;
+	switch (addr_id){
+		case 2:{ dam_dev = &dam4_02; break;}
+		case 4:{ dam_dev = &dam4_04; break;}
+		case 5:{ dam_dev = &dam4_05; break;}
+		case 8:{ dam_dev = &dam16_08; break;}
+		case 9:{ dam_dev = &dam4_09; break;}
+	}
+	if( dam_dev == NULL ) return;
+	if( cmd <= 1 ){
+		_dam_485_send_on_off_cmd( dam_dev, num_id, cmd);
+	}else{
+		_dam_485_send_flash(dam_dev, num_id, cmd-2 , 40);
+	}
+}
 
 
 
 /******************************  Power ADC devices 电压采集板 *******************/
-struct powerAdc6_t{
-	unsigned char addr;
-	unsigned short adc[6];
-}powerAdc6_01,powerAdc6_06,powerAdc6_07;
+powerAdc6_t powerAdc6_01,powerAdc6_06,powerAdc6_07;
 
 void powerAdc6_config()
 {
-	powerAdc6_01.addr = 0x01;
+	powerAdc6_01.addr = 0x03;
 	powerAdc6_06.addr = 0x06;
 	powerAdc6_07.addr = 0x07;
 }
 
-int _powerAdc_485_runtime(struct powerAdc6_t *padc_dev, int step, int res, rtu_485_ack_t *runtime_ack)
+int _powerAdc_485_runtime( powerAdc6_t *padc_dev, int step, int res, rtu_485_ack_t *runtime_ack)
 {
 	// 1 : this step run ok ; 0: send cmd fail need retry; -1 ack analize failed
 	// ack analize ( step 1) cannot return 0, if failed , return -1;
@@ -173,6 +184,14 @@ int _powerAdc_485_runtime(struct powerAdc6_t *padc_dev, int step, int res, rtu_4
 		if( res == 1){
 			if( padc_dev->addr == runtime_ack->addr ){
 				//TODO
+				if( runtime_ack->len == 12){
+					for(i=0; i< runtime_ack->len; i+=2){
+						padc_dev->adc[i/2] = ((runtime_ack->data[i]<<8) | runtime_ack->data[i+1] );
+					}
+				}else{
+					logd("poweradc error ack\r\n");
+					return -1;
+				}
 			}else{
 				logd("powerAdc wrong ack\r\n");
 				return -1;
@@ -188,6 +207,65 @@ int _powerAdc_485_runtime(struct powerAdc6_t *padc_dev, int step, int res, rtu_4
 
 
 
+/********************************8   speed pgw636 ******************************/
+ pgw636_t pgw636_03;
+
+void pgw636_config()
+{
+	pgw636_03.addr = 0x01;
+	pgw636_03.curren_speed = 0;
+	pgw636_03.max_speed = 0;
+	pgw636_03.min_speed = 0;
+}
+
+
+int _pgw636_485_runtime( pgw636_t *pgw_dev, int step, int res, rtu_485_ack_t *runtime_ack)
+{
+	// 1 : this step run ok ; 0: send cmd fail need retry; -1 ack analize failed
+	// ack analize ( step 1) cannot return 0, if failed , return -1;
+	int ret,i;
+	if( step == 0 ){
+		//send cmd
+		//查询当前速度，最大速度，最小速度  
+		return Rtu_485_send_cmd(pgw_dev->addr, 3, 0 ,6);
+	}else{
+		//recive ack
+		if( res == 1){
+			if( pgw_dev->addr == runtime_ack->addr ){
+				//TODO
+				if( runtime_ack->len == 12){
+					//current => (reg1<<8 | reg0 )  reg0= data[0](reg0_H)<<8 | data[1](reg0_L)  reg1 = data[2](reg1_H) << 8 | data[3](reg1_L)
+					pgw_dev->curren_speed = (int)(runtime_ack->data[2]<<24) | (runtime_ack->data[3]<<16) | (runtime_ack->data[0]<<8) | (runtime_ack->data[1]) ;
+					pgw_dev->max_speed = (int)(runtime_ack->data[6]<<24) | (runtime_ack->data[7]<<16) | (runtime_ack->data[4]<<8) | (runtime_ack->data[5]) ;
+					pgw_dev->min_speed = (int)(runtime_ack->data[10]<<24) | (runtime_ack->data[11]<<16) | (runtime_ack->data[8]<<8) | (runtime_ack->data[9]) ;
+					logd_uint("speed: ",pgw_dev->curren_speed);
+				}else{
+					logd("pgw636 error ack\r\n");
+					return -1;
+				}
+			}else{
+				logd("pgw636 wrong ack\r\n");
+				return -1;
+			}
+		}else{
+			//timeout or failed
+			logd("pgw636 timeout ack\r\n");
+			return -1;
+		}
+		return 1;
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -196,7 +274,9 @@ int _powerAdc_485_runtime(struct powerAdc6_t *padc_dev, int step, int res, rtu_4
 
 /***************************************** Rtu 485 Device list config */
 
-#define _485_LOOP_MS 10  // each 10ms enter loop 
+#define _485_LOOP_MS 200  // each 10ms enter loop 
+unsigned int _rtu_485_devices_report_hz = 0;
+unsigned int _rtu_485_devices_report_counter = 0;
 int _rtu_485_devices_runtime(int step, int res, rtu_485_ack_t *runtime_ack)
 {
 	// if step=0; return 0 will reenter step 0;
@@ -204,6 +284,7 @@ int _rtu_485_devices_runtime(int step, int res, rtu_485_ack_t *runtime_ack)
 	int ret;
 	
 	switch(_485_device_seq){
+#if 0
 		case 0:{
 			ret = _Th11sb_485_runtime(&th11sb_head,step,res,runtime_ack);
 			break;
@@ -232,13 +313,49 @@ int _rtu_485_devices_runtime(int step, int res, rtu_485_ack_t *runtime_ack)
 			ret = _dam_485_runtime(&dam16_08, step,res,runtime_ack);
 			break;
 		}		
-		
+
 		case 7:{
-			_485_device_seq = 0;
-			ret = 0;
+			ret = _powerAdc_485_runtime(&powerAdc6_01,step,res,runtime_ack);
+			break;
+		}
+		case 8:{
+			ret = _powerAdc_485_runtime(&powerAdc6_06,step,res,runtime_ack);
+			break;
+		}
+		case 9:{
+			ret = _powerAdc_485_runtime(&powerAdc6_07,step,res,runtime_ack);
 			break;
 		}
 		
+		case 10:{
+			ret = _pgw636_485_runtime(&pwg636_03,step,res,runtime_ack);
+			break;
+		}
+		
+		case 11:{
+			_485_device_seq = 0;
+			ret = 0;
+			_rtu_485_devices_report_counter ++;
+			break;
+		}
+#else
+		/*
+		case 0:{
+			ret = _powerAdc_485_runtime(&powerAdc6_06,step,res,runtime_ack);
+			break;
+		}
+		case 1:{
+			ret = _dam_485_runtime(&dam4_02, step,res,runtime_ack);
+			break;
+		}
+		case 2:{
+			ret = _Th11sb_485_runtime(&th11sb_head,step,res,runtime_ack);
+			break;
+		}*/
+		
+
+		
+#endif
 	}
 	if ( step == 1){
 		_485_device_seq++;
@@ -363,7 +480,7 @@ void Rtu_485_SendCmd_runtime_loop()
 			ret = _rtu_485_sendcmd_runtime(1,res,g_ack);
 			#if 1// debug
 			if( ret == -1 )
-				logd("_485_sendcmd error");
+				logd("_485_sendcmd error\r\n");
 			#endif
 			//step = _rtu_485_sendcmd_runtime(0,0,NULL);
 		}
@@ -399,7 +516,7 @@ void Rtu_485_Devices_runtime_loop()
 			#if 1// debug
 			
 			if( res == -1 || ret == -1 )
-				logd("_485_devices error");
+				logd("_485_devices error\r\n");
 			#endif
 		}
 	}
@@ -417,7 +534,8 @@ void Rtu_485_Runtime_Configure()
 {
 	_Th11sb_config();
 	_dam_config();
-	powerAdc_config();
+	powerAdc6_config();
+	pgw636_config();
 	fifo_init(&rtu_485_cmd_fifo, rtu_485_cmd_fifo_buff, RTU_485_CMD_FIFI_BUFF_LEN);
 	systick_time_start(&rtu_485_time_t,_485_LOOP_MS);
 }
@@ -425,7 +543,7 @@ void Rtu_485_Runtime_Configure()
 #define _485_CMD_LOOP 1
 #define _485_DEVICES_LOOP 2
 volatile char _rtu_485_loop_type = _485_DEVICES_LOOP;
-
+unsigned int loop_counter=0;
 void Rtu_485_Runtime_loop()
 {
 	char _to_send_cmd = 0;
@@ -434,7 +552,16 @@ void Rtu_485_Runtime_loop()
 		_to_send_cmd = 1;
 	
 	if( check_systick_time(&rtu_485_time_t) ){
-		
+		// check report hz
+		loop_counter++;
+		if( loop_counter >= (1000/_485_LOOP_MS) )
+		{
+			loop_counter = 0;
+			_rtu_485_devices_report_hz = _rtu_485_devices_report_counter;
+			_rtu_485_devices_report_counter = 0;
+			logd_uint("rtu 485 report hz=",_rtu_485_devices_report_hz);
+		}
+		// run runtime loop
 		if( _rtu_485_loop_type == _485_DEVICES_LOOP)
 		{
 			if( _to_send_cmd == 1  && _rtu_485_runtime_running == 0)

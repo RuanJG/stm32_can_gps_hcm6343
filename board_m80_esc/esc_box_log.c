@@ -24,7 +24,6 @@ void _print_uint( Uart_t *uart, int n)
 	while(count-->0){
 		Uart_PutChar(uart, data[count]);
 	}
-	
 }
 
 void logd(char *str)

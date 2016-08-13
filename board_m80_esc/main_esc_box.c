@@ -123,58 +123,38 @@ int read_num_by_uart(Uart_t *uart ,uint32_t *num)
 	return 0;
 }
 
-void test_pwm()
+void test_pwm(Uart_t *uarts)
 {
 	uint32_t pwm=0;
-	static int a;
-	if(read_num_by_uart(&Uart2, &pwm ) == 1)
-	{
-		print_uint(&Uart2,pwm);
-		Uart_PutString(&Uart2,"\r\n");
-		if( a==1 ){
-			Esc_Led_on(LED_YELLOW_ID);
-			a=0;
-		}else{
-			a=1;
-			Esc_Led_off(LED_YELLOW_ID);
-		}
+
+	while(read_num_by_uart(uarts, &pwm ) == 0) delay_us(1000);
+
+		logd_uint("test pwm=",pwm);
 		esc_set_pump_pitch_pwm(pwm);
-	}
+	
 }
 
-#define a_yaw_control_shutdown() 	GPIO_ResetBits(H_BRIDGE_A_PWMB_GPIO_BANK,H_BRIDGE_A_PWMB_GPIO_PIN)
-#define a_yaw_control_poweron()  GPIO_SetBits(H_BRIDGE_A_PWMB_GPIO_BANK,H_BRIDGE_A_PWMB_GPIO_PIN);
-void a_yaw_control_forward()
+#define _yaw_control_shutdown() 	GPIO_ResetBits(H_BRIDGE_A_PWMB_GPIO_BANK,H_BRIDGE_A_PWMB_GPIO_PIN)
+#define _yaw_control_poweron()  GPIO_SetBits(H_BRIDGE_A_PWMB_GPIO_BANK,H_BRIDGE_A_PWMB_GPIO_PIN);
+void _yaw_control_forward();
+void _yaw_control_back();
+void test_h_bridge(Uart_t *uarts)
 {
-	a_yaw_control_shutdown();
-	GPIO_SetBits(H_BRIDGE_A_CTRL3_BANK,H_BRIDGE_A_CTRL3_PIN);
-	GPIO_ResetBits(H_BRIDGE_A_CTRL4_BANK,H_BRIDGE_A_CTRL4_PIN);
-	a_yaw_control_poweron();
-}
-void a_yaw_control_back()
-{
-	a_yaw_control_shutdown();
-	GPIO_ResetBits(H_BRIDGE_A_CTRL3_BANK,H_BRIDGE_A_CTRL3_PIN);
-	GPIO_SetBits(H_BRIDGE_A_CTRL4_BANK,H_BRIDGE_A_CTRL4_PIN);
-	a_yaw_control_poweron();
-}
-void test_h_bridge()
-{
-	uint32_t pwm=0;
+	unsigned char pwm=0;
 
-	if(read_num_by_uart( &Uart2,&pwm ) == 1)
-	{
-		if( pwm == 0 ){
-			Uart_PutString(&Uart2,"back\r\n");
-			a_yaw_control_back();
-		}else if( pwm == 1){
-			Uart_PutString(&Uart2,"stop\r\n");
-			a_yaw_control_shutdown();
-		}else if( pwm == 2){
-			Uart_PutString(&Uart2,"forward\r\n");
-			a_yaw_control_forward();
+	while( Uart_GetChar(uarts, &pwm) <= 0 )delay_us(1000);
+
+		if( pwm == 'b' ){
+			Uart_PutString(uarts,"back\r\n");
+			_yaw_control_back();
+		}else if( pwm == 's'){
+			Uart_PutString(uarts,"stop\r\n");
+			_yaw_control_shutdown();
+		}else if( pwm == 'f'){
+			Uart_PutString(uarts,"forward\r\n");
+			_yaw_control_forward();
 		}
-	}
+	
 }
 
 unsigned char char_to_hex(char data)
@@ -194,7 +174,6 @@ unsigned char char_to_hex(char data)
 }
 void cmd_uart_485cmd(Uart_t *uarts, Uart_t *uartd)
 {
-	static char step=0;
 	char tmp,data[32];
 	unsigned char sendbuff[32];
 	int len,i,j;
@@ -223,35 +202,70 @@ void cmd_uart_485cmd(Uart_t *uarts, Uart_t *uartd)
 	Uart_PutChar(uartd,crc&0x00ff);
 	Uart_PutChar(uartd,crc>>8);
 }
+void test_dam_cmd(unsigned char addr_id, unsigned char num_id, unsigned int cmd);
+void dam_control_test(Uart_t *uarts)
+{
+	char tmp;
+	char numid,cmd,addr;
+	
+	// cmd : #4#410 , control addr=4 ,the 1 path switch, cmd 0 [0 off,1 on,2 flash off,3 flash on] 
+	while( Uart_GetChar(uarts, &tmp) <= 0 )delay_us(1000);
+	addr = tmp-0x30;
+	while( Uart_GetChar(uarts, &tmp) <= 0 )delay_us(1000);
+	numid = tmp-0x30;
+	while( Uart_GetChar(uarts, &tmp) <= 0 )delay_us(1000);
+	cmd = tmp-0x30;
+	
+	test_dam_cmd(addr,numid,cmd);
+}
+
+
 void listen_cmd(Uart_t *uart)
 {
 	uint32_t cmd;
 	if(read_num_by_uart(uart, &cmd ) == 1)
 	{
-		//print_uint(uart,cmd);
-		//Uart_PutString(uart,"\r\n");
-
-		if( cmd == 1 ){
-			Uart_PutString(uart,"angle;isa;iol>>");
-			print_uint(uart,Get_PUMP_ANGLE_Adc_value());Uart_PutChar(uart,' ');
-			print_uint(uart,Get_ISA_Adc_value());Uart_PutChar(uart,' ');
-			print_uint(uart,Get_Oil_Mass_Adc_value());
-			Uart_PutString(uart,"\r\n");
-		}
 		if(cmd == 0  ){
 			Uart_PutString(uart,"jump \r\n");
 			Iap_Jump();
 		}
+		
+		if( cmd == 1 ){
+			//#1##201#    -> set pwm = 201  [0-400]
+			test_pwm(&Uart1);
+		}
 		if(cmd==3){
-			//uart 转发
+			//uart 转发 #3#[len][byte][][][][] : len=byte's count; byte= hex( 0= 00 1= 01 10= 0a ...)
+			// #3#6010400010002 addr=0x01 func=0x04 reg=0x0001 len=0x0002
 			cmd_uart_485cmd(&Uart1,&Uart2);
 		}
 		if(cmd==4){
-			//uart 转发
-			cmd_uart_485cmd(&Uart1,&Uart2);
+			//#4#210  #4#[485addr][1,2,3,4...][0:off, 1:on, 2:flash off: 3: flash on]
+			dam_control_test(&Uart1);
+		}
+		if(cmd==5){
+			//#5#s[s,f,b]
+			test_h_bridge(&Uart1);
 		}
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 void main_setup()
@@ -289,21 +303,12 @@ void main_loop()
 	//Esc_Yaw_Control_Event();
 	
 	if( check_systick_time(&report_t) ){
-		//test_can_send();
-		//Th11sb_485_runtime();
-		//Rtu_485_Runtime_sendCmd(0x33,0x03,0x00,0x02);
-		//logd_uint("wet:",Th11sb_get_wet()/10);
-		//logd_uint("tempture:",Th11sb_get_tempture()/10);
-		//Rtu_485_Runtime_sendCmd(0x04,0x05,0,0xff00);
+		
 	}
-	//test_pwm();
-	//test_h_bridge();
+
 	listen_cmd(&Uart1);
-	//test_can1();
-	//uart_echo_test(&Uart2);
-	//if( Uart_GetChar(&Uart2, &data) > 0 ){
-	//	Uart_PutChar(&Uart1,data);
-	//}
+
+	Listen_Can1();
 
 	
 	
