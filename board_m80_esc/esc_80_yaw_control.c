@@ -28,8 +28,10 @@
 
 // 推杆最大角度ADC值范围  TODO config
 #define YAW_DEFAULT_ANGLE_MIDDLE_ADC_VALUE 2048
-#define YAW_DEFAULT_ANGLE_MAX_ADC_VALUE 3072
-#define YAW_DEFAULT_ANGLE_MIN_ADC_VALUE 1024
+#define YAW_DEFAULT_ANGLE_MAX_ADC_VALUE (2048+512)
+#define YAW_DEFAULT_ANGLE_MIN_ADC_VALUE (2048-512)
+#define YAW_DEFAULT_ANGLE_FAILSAFE_MAX_ADC_VALUE (2048+1024)
+#define YAW_DEFAULT_ANGLE_FAILSAFE_MIN_ADC_VALUE (2048-1024)
 u16 yawAngleLowPartAdcValueR = YAW_DEFAULT_ANGLE_MIDDLE_ADC_VALUE - YAW_DEFAULT_ANGLE_MIN_ADC_VALUE;
 u16 yawAngleHightPartAdcValueR = YAW_DEFAULT_ANGLE_MAX_ADC_VALUE - YAW_DEFAULT_ANGLE_MIDDLE_ADC_VALUE ;
 
@@ -57,7 +59,8 @@ int yawControlInited = 0;
 systick_time_t _yaw_t;
 
 
-
+// 出现 failsafe 时的时间
+uint32_t _failsafe_time_ms = 0;
 
 
 
@@ -224,6 +227,7 @@ int _is_failsafe()
 void yaw_control_failsafe()
 {
 	_yaw_control_shutdown();
+	_failsafe_time_ms = get_system_ms();
 }
 
 //call by adc dma irq or loop in main for listen the current and angle 
@@ -236,7 +240,7 @@ int _check_current_failsafe()
 }
 int _check_angle_failsafe()
 {
-	if( yawAngleAdcValue >= YAW_DEFAULT_ANGLE_MAX_ADC_VALUE  || yawAngleAdcValue <= YAW_DEFAULT_ANGLE_MIN_ADC_VALUE)
+	if( yawAngleAdcValue >= YAW_DEFAULT_ANGLE_FAILSAFE_MAX_ADC_VALUE  || yawAngleAdcValue <= YAW_DEFAULT_ANGLE_FAILSAFE_MIN_ADC_VALUE)
 		return 1;
 	return 0;
 }
@@ -394,25 +398,36 @@ int _yaw_control_initFunc()
 
 void _try_go_back_in_failsafe()
 {
-			int res , direct;
+		int res , direct;
+		uint32_t now_time_ms;
 				if( 0 == _is_yaw_control_stoped() ){
 					//moving, mean that , we have done failsafe opera
 					if( 0== _check_current_failsafe() && 0 == _check_angle_failsafe() ){
 						failsafe_CurrentOverFlow = 0;
-						failsafe_CurrentOverFlow = 0;
+						failsafe_AngleOverFlow = 0;
 						_yaw_control_shutdown();
-						//TODO if goto failsafe side 
 					}
 				}else{
 					// failsafe , so we have to do failsafe opera
-					direct  = _yaw_control_get_direction();
-					if( _YAW_ANGLE_ADC_ADD_DIRECTION  ==  direct ) // last move is add direction
-						_yaw_control_reduce_angle_adc_value();
-					else if( _YAW_ANGLE_ADC_REDUCE_DIRECTION  ==  direct ){
-						_yaw_control_add_angle_adc_value();
-					}else{
-						logd("unknow status\r\n");
+					now_time_ms = get_system_ms();
+					if( (now_time_ms - _failsafe_time_ms) < 500  || 1 == _check_current_failsafe()) 
+					{// try to moving after 0.5s and current is under safe range
+						return ;
 					}
+					failsafe_CurrentOverFlow = 0; // if just current overflow , it will not into _try_go_back_in_failsafe next time
+					
+					if( failsafe_AngleOverFlow )
+					{
+						direct  = _yaw_control_get_direction();
+						if( _YAW_ANGLE_ADC_ADD_DIRECTION  ==  direct ) // last move is add direction
+							_yaw_control_reduce_angle_adc_value();
+						else if( _YAW_ANGLE_ADC_REDUCE_DIRECTION  ==  direct ){
+							_yaw_control_add_angle_adc_value();
+						}else{
+							logd("unknow status\r\n");
+						}
+					}
+
 				}
 }
 void Esc_Yaw_Control_Event()
