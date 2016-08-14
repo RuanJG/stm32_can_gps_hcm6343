@@ -123,6 +123,12 @@ void Can1_Listener_Report_Event();
 void Can1_Listener_Check_connect_event();
 
 
+//ke4 speed control
+void Ke4_Speed_Control_Loop();
+void Ke4_Set_Speed(uint16_t speed);
+
+
+
 // H Bridge
 
 

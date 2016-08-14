@@ -207,14 +207,40 @@ void Can1_Send_Message(CanTxMsg* TxMessage)
 	CAN_ITConfig (CAN1, CAN_IT_TME, ENABLE);
 }
 
+void Can1_Send_Ext(uint8_t id, uint8_t *data, int len, uint32_t id_type, uint32_t frame_type)
+{
+	CanTxMsg TxMsg;
+	int lest_len,i;
+	uint8_t * point;
+	
+	TxMsg.RTR =  frame_type;//CAN_RTR_DATA; //CAN_RTR_REMOTE
+	TxMsg.IDE = id_type;  // CAN_ID_STD CAN_ID_EXT
+	if( TxMsg.IDE == CAN_ID_EXT ){
+		TxMsg.ExtId = id;
+	}else{
+		TxMsg.StdId = id;
+	}
+	
+	lest_len = len;
+	point = data;
+	while( lest_len > 0 ){
+		TxMsg.DLC = lest_len<8 ? lest_len:8;
+		lest_len -= TxMsg.DLC;
+		for( i = 0; i< TxMsg.DLC ; i++){
+			TxMsg.Data[i] = *point;
+			point++;
+		}
+		 Can1_Send_Message(&TxMsg);
+	}
+}
 void Can1_Send(uint8_t id, uint8_t *data, int len)
 {
 	CanTxMsg TxMsg;
 	int lest_len,i;
 	uint8_t * point;
 	
-	TxMsg.RTR = CAN_RTR_DATA;
-	TxMsg.IDE = CAN_ID_STD;
+	TxMsg.RTR =  CAN_RTR_DATA;//CAN_RTR_DATA; //CAN_RTR_REMOTE
+	TxMsg.IDE = CAN_ID_STD;  // CAN_ID_STD CAN_ID_EXT
 	TxMsg.StdId = id;
 	
 	lest_len = len;

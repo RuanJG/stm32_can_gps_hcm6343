@@ -13,6 +13,7 @@
 
 systick_time_t report_t;
 systick_time_t led_t;
+systick_time_t ke4_speed_t;
 Uart_t Uart1 ;
 Uart_t Uart2 ;
 Uart_t Uart3 ;
@@ -41,13 +42,15 @@ void test_can_send()
 {
 	int i;
 	uint8_t data[12]={0xff,0x1,0x3,0xfe,0xab,0x12,0xff,0x1,0x3,0xfe,0xab,0x12};
-	Can1_Send(0x10,data,12);
+	//Can1_Send(0x10,data,12);
+	Can1_Send_Ext(0x10, data, 12, CAN_ID_EXT, CAN_RTR_DATA);
 	Esc_Led_toggle(LED_YELLOW_ID);
 }
 void test_can1()
 {
 	if( Can1_Get_CanRxMsg(&rxmsg) ){
-		Can1_Send(0x10,rxmsg.Data,rxmsg.DLC);
+		//Can1_Send(0x10,rxmsg.Data,rxmsg.DLC);
+		Can1_Send_Ext(0x10, rxmsg.Data, rxmsg.DLC, CAN_ID_EXT, CAN_RTR_DATA);
 	}
 }
 void test_uart123_can1()
@@ -229,6 +232,38 @@ void dam_control_test(Uart_t *uarts)
 	Rtu_485_Dam_Cmd(addr,numid,cmd,ms);
 }
 
+//#6#id[][][][][][][][]
+			//00 00   03 7D  7F 01  00 00 
+void test_can_send_msg(Uart_t *uarts)
+{
+	int i;
+	CanTxMsg TxMsg;
+	char id;
+	unsigned char data[8];
+	
+	while( Uart_GetChar(uarts, &id ) <= 0 )delay_us(1000);
+	for( i=0; i<8 ; i++)
+	{
+		while( Uart_GetChar(uarts, &data[i] ) <= 0 )delay_us(1000);
+	}
+	
+	//Can1_Send(id, data, 8);
+	Can1_Send_Ext(id, data, 8, CAN_ID_EXT, CAN_RTR_DATA);
+}
+
+
+
+
+void test_ke4(Uart_t *uarts)
+{//#7##0# [500 - 1000] {500-700}
+	uint32_t pwm=0;
+
+	while(read_num_by_uart(uarts, &pwm ) == 0) delay_us(1000);
+
+	logd_uint("test ke4=",pwm);
+	//_set_ke4_speed(pwm);
+	Ke4_Set_Speed(pwm);
+}
 
 void listen_cmd(Uart_t *uart)
 {
@@ -258,6 +293,15 @@ void listen_cmd(Uart_t *uart)
 		if(cmd==5){
 			//#5#s[s,f,b]
 			test_h_bridge(&Uart1);
+		}
+		if(cmd==6){
+			//#6#id[][][][][][][][]
+			//00 00   03 7D  7F 01  00 00 
+			test_can_send_msg(&Uart1);
+		}
+		if( cmd == 7 ){
+			//#7##0# [0-1000]
+			test_ke4(&Uart1);
 		}
 	}
 }
@@ -296,6 +340,8 @@ void main_setup()
 	//time_t init 
 	systick_time_start(&report_t,CAN1_LISTENER_REPORT_STATUS_MS);//REPORT_STATUS_MS);
 	systick_time_start(&led_t,10);
+	systick_time_start(&ke4_speed_t,100);
+	
 	
 	//system error 
 	//system_error = system_error_get();
@@ -319,8 +365,14 @@ void main_loop()
 	Rtu_485_Event();
 	Rtu_485_Runtime_loop(); // base on rtu_485
 	
+#if 0
+	if( check_systick_time(&ke4_speed_t) ){
+		Ke4_Speed_Control_Loop();
+	}
+#endif 
+	
 	if( check_systick_time(&report_t) ){
-		;//Can1_Listener_Report_Event();
+		Can1_Listener_Report_Event();
 		Can1_Listener_Check_connect_event();
 	}
 	

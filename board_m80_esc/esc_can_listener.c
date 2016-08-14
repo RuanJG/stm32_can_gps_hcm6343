@@ -93,6 +93,13 @@ void Listen_Can1()
 			*/
 			//void Rtu_485_Dam_Cmd(unsigned char addr_id, unsigned char num_id, unsigned int cmd);
 			
+			
+			
+			
+			
+			
+			// volatile uint16_t ke4_speed = 500;
+			
 		}
 		
 		can1_lost_connect_counter=0;
@@ -111,6 +118,7 @@ void Can1_Listener_Check_connect_event()
 }
 
 unsigned char reportBuffer[8];
+
 void Can1_Listener_Report_Event()
 {
 	unsigned int tmp;
@@ -125,20 +133,23 @@ void Can1_Listener_Report_Event()
 	reportBuffer[3] = (tmp&0xff); reportBuffer[4] = ((tmp>>8) &0xff);
 	tmp = Esc_Yaw_Control_GetOilMassAdc();
 	reportBuffer[5] = (tmp&0xff); reportBuffer[6] = ((tmp>>8) &0xff);
-	Can1_Send(MAIN_CONTROLLER_CAN_ID ,reportBuffer,7);
+	//Can1_Send(MAIN_CONTROLLER_CAN_ID ,reportBuffer,7);
+	Can1_Send_Ext(MAIN_CONTROLLER_CAN_ID ,reportBuffer,7,CAN_ID_EXT, CAN_RTR_DATA);
 	
 	//// th11sb_head,th11sb_tail; 0xa 0xb
 	if( th11sb_head.updated ){
 		reportBuffer[0]= 0xa;
 		reportBuffer[1]= (th11sb_head.wet& 0xff); reportBuffer[2]= ((th11sb_head.wet>>8)& 0xff);
 		reportBuffer[3]= (th11sb_head.tempture & 0xff); reportBuffer[4]= ((th11sb_head.tempture >>8)& 0xff);
-		Can1_Send(MAIN_CONTROLLER_CAN_ID ,reportBuffer,5);
+		//Can1_Send(MAIN_CONTROLLER_CAN_ID ,reportBuffer,5);
+		Can1_Send_Ext(MAIN_CONTROLLER_CAN_ID ,reportBuffer,5,CAN_ID_EXT, CAN_RTR_DATA);
 	}
 	if( th11sb_tail.updated ){
 		reportBuffer[0]= 0xa;
 		reportBuffer[1]= (th11sb_tail.wet& 0xff); reportBuffer[2]= ((th11sb_tail.wet>>8)& 0xff);
 		reportBuffer[3]= (th11sb_tail.tempture & 0xff); reportBuffer[4]= ((th11sb_tail.tempture >>8)& 0xff);
-		Can1_Send(MAIN_CONTROLLER_CAN_ID ,reportBuffer,5);
+		//Can1_Send(MAIN_CONTROLLER_CAN_ID ,reportBuffer,5);
+		Can1_Send_Ext(MAIN_CONTROLLER_CAN_ID ,reportBuffer,5,CAN_ID_EXT, CAN_RTR_DATA);
 	}
 	
 	////  //dam4_02,dam4_04,dam4_05,dam16_08,dam4_09;
@@ -147,27 +158,32 @@ void Can1_Listener_Report_Event()
 	if( dam4_02.updated ){
 		reportBuffer[0]= 0x2;
 		reportBuffer[1]= (dam4_02.status & 0xff); reportBuffer[2]= ((dam4_02.status>>8)& 0xff);
-		Can1_Send(MAIN_CONTROLLER_CAN_ID ,reportBuffer,3);
+		//Can1_Send(MAIN_CONTROLLER_CAN_ID ,reportBuffer,3);
+		Can1_Send_Ext(MAIN_CONTROLLER_CAN_ID ,reportBuffer,3,CAN_ID_EXT, CAN_RTR_DATA);
 	}
 	if( dam4_04.updated ){
 		reportBuffer[0]= 0x4;
 		reportBuffer[1]= (dam4_04.status & 0xff); reportBuffer[2]= ((dam4_04.status>>8)& 0xff);
-		Can1_Send(MAIN_CONTROLLER_CAN_ID ,reportBuffer,3);
+		//Can1_Send(MAIN_CONTROLLER_CAN_ID ,reportBuffer,3);
+		Can1_Send_Ext(MAIN_CONTROLLER_CAN_ID ,reportBuffer,3,CAN_ID_EXT, CAN_RTR_DATA);
 	}
 	if( dam4_05.updated ){
 		reportBuffer[0]= 0x5;
 		reportBuffer[1]= (dam4_05.status & 0xff); reportBuffer[2]= ((dam4_05.status>>8)& 0xff);
-		Can1_Send(MAIN_CONTROLLER_CAN_ID ,reportBuffer,3);
+		//Can1_Send(MAIN_CONTROLLER_CAN_ID ,reportBuffer,3);
+		Can1_Send_Ext(MAIN_CONTROLLER_CAN_ID ,reportBuffer,3,CAN_ID_EXT, CAN_RTR_DATA);
 	}
 	if( dam16_08.updated ){
 		reportBuffer[0]= 0x8;
 		reportBuffer[1]= (dam16_08.status & 0xff); reportBuffer[2]= ((dam16_08.status>>8)& 0xff);
-		Can1_Send(MAIN_CONTROLLER_CAN_ID ,reportBuffer,3);
+		//Can1_Send(MAIN_CONTROLLER_CAN_ID ,reportBuffer,3);
+		Can1_Send_Ext(MAIN_CONTROLLER_CAN_ID ,reportBuffer,3,CAN_ID_EXT, CAN_RTR_DATA);
 	}
 	if( dam4_09.updated ){
 		reportBuffer[0]= 0x9;
 		reportBuffer[1]= (dam4_09.status & 0xff); reportBuffer[2]= ((dam4_09.status>>8)& 0xff);
-		Can1_Send(MAIN_CONTROLLER_CAN_ID ,reportBuffer,3);
+		//Can1_Send(MAIN_CONTROLLER_CAN_ID ,reportBuffer,3);
+		Can1_Send_Ext(MAIN_CONTROLLER_CAN_ID ,reportBuffer,3,CAN_ID_EXT, CAN_RTR_DATA);
 	}
 	
 	
@@ -185,36 +201,42 @@ void Can1_Listener_Report_Event()
 		reportBuffer[1]= (powerAdc6_01.adc[0] & 0xff); reportBuffer[2]= ((powerAdc6_01.adc[0]>>8)& 0xff);
 		reportBuffer[3]= (powerAdc6_01.adc[1] & 0xff); reportBuffer[4]= ((powerAdc6_01.adc[1]>>8)& 0xff);
 		reportBuffer[5]= (powerAdc6_01.adc[2] & 0xff); reportBuffer[6]= ((powerAdc6_01.adc[2]>>8)& 0xff);
-		Can1_Send(MAIN_CONTROLLER_CAN_ID ,reportBuffer,7);
+		//Can1_Send(MAIN_CONTROLLER_CAN_ID ,reportBuffer,7);
+		Can1_Send_Ext(MAIN_CONTROLLER_CAN_ID ,reportBuffer,7,CAN_ID_EXT, CAN_RTR_DATA);
 		reportBuffer[0]= 0x11;
 		reportBuffer[1]= (powerAdc6_01.adc[3] & 0xff); reportBuffer[2]= ((powerAdc6_01.adc[3]>>8)& 0xff);
 		reportBuffer[3]= (powerAdc6_01.adc[4] & 0xff); reportBuffer[4]= ((powerAdc6_01.adc[4]>>8)& 0xff);
 		reportBuffer[5]= (powerAdc6_01.adc[5] & 0xff); reportBuffer[6]= ((powerAdc6_01.adc[5]>>8)& 0xff);
-		Can1_Send(MAIN_CONTROLLER_CAN_ID ,reportBuffer,7);
+		//Can1_Send(MAIN_CONTROLLER_CAN_ID ,reportBuffer,7);
+		Can1_Send_Ext(MAIN_CONTROLLER_CAN_ID ,reportBuffer,7,CAN_ID_EXT, CAN_RTR_DATA);
 	}
 	if( powerAdc6_06.updated ){
 		reportBuffer[0]= 0x60;
 		reportBuffer[1]= (powerAdc6_06.adc[0] & 0xff); reportBuffer[2]= ((powerAdc6_06.adc[0]>>8)& 0xff);
 		reportBuffer[3]= (powerAdc6_06.adc[1] & 0xff); reportBuffer[4]= ((powerAdc6_06.adc[1]>>8)& 0xff);
 		reportBuffer[5]= (powerAdc6_06.adc[2] & 0xff); reportBuffer[6]= ((powerAdc6_06.adc[2]>>8)& 0xff);
-		Can1_Send(MAIN_CONTROLLER_CAN_ID ,reportBuffer,7);
+		//Can1_Send(MAIN_CONTROLLER_CAN_ID ,reportBuffer,7);
+		Can1_Send_Ext(MAIN_CONTROLLER_CAN_ID ,reportBuffer,7,CAN_ID_EXT, CAN_RTR_DATA);
 		reportBuffer[0]= 0x61;
 		reportBuffer[1]= (powerAdc6_06.adc[3] & 0xff); reportBuffer[2]= ((powerAdc6_06.adc[3]>>8)& 0xff);
 		reportBuffer[3]= (powerAdc6_06.adc[4] & 0xff); reportBuffer[4]= ((powerAdc6_06.adc[4]>>8)& 0xff);
 		reportBuffer[5]= (powerAdc6_06.adc[5] & 0xff); reportBuffer[6]= ((powerAdc6_06.adc[5]>>8)& 0xff);
-		Can1_Send(MAIN_CONTROLLER_CAN_ID ,reportBuffer,7);
+		//Can1_Send(MAIN_CONTROLLER_CAN_ID ,reportBuffer,7);
+		Can1_Send_Ext(MAIN_CONTROLLER_CAN_ID ,reportBuffer,7,CAN_ID_EXT, CAN_RTR_DATA);
 	}
 	if( powerAdc6_07.updated ){
 		reportBuffer[0]= 0x70;
 		reportBuffer[1]= (powerAdc6_07.adc[0] & 0xff); reportBuffer[2]= ((powerAdc6_07.adc[0]>>8)& 0xff);
 		reportBuffer[3]= (powerAdc6_07.adc[1] & 0xff); reportBuffer[4]= ((powerAdc6_07.adc[1]>>8)& 0xff);
 		reportBuffer[5]= (powerAdc6_07.adc[2] & 0xff); reportBuffer[6]= ((powerAdc6_07.adc[2]>>8)& 0xff);
-		Can1_Send(MAIN_CONTROLLER_CAN_ID ,reportBuffer,7);
+		//Can1_Send(MAIN_CONTROLLER_CAN_ID ,reportBuffer,7);
+		Can1_Send_Ext(MAIN_CONTROLLER_CAN_ID ,reportBuffer,7,CAN_ID_EXT, CAN_RTR_DATA);
 		reportBuffer[0]= 0x71;
 		reportBuffer[1]= (powerAdc6_07.adc[3] & 0xff); reportBuffer[2]= ((powerAdc6_07.adc[3]>>8)& 0xff);
 		reportBuffer[3]= (powerAdc6_07.adc[4] & 0xff); reportBuffer[4]= ((powerAdc6_07.adc[4]>>8)& 0xff);
 		reportBuffer[5]= (powerAdc6_07.adc[5] & 0xff); reportBuffer[6]= ((powerAdc6_07.adc[5]>>8)& 0xff);
-		Can1_Send(MAIN_CONTROLLER_CAN_ID ,reportBuffer,7);
+		//Can1_Send(MAIN_CONTROLLER_CAN_ID ,reportBuffer,7);
+		Can1_Send_Ext(MAIN_CONTROLLER_CAN_ID ,reportBuffer,7,CAN_ID_EXT, CAN_RTR_DATA);
 	}
 
   /*pgw636_03;
@@ -228,7 +250,8 @@ void Can1_Listener_Report_Event()
 		reportBuffer[3]= ((pgw636_03.curren_speed>>16) &0xff);
 		reportBuffer[4]= ((pgw636_03.curren_speed>>24) &0xff);
 
-		Can1_Send(MAIN_CONTROLLER_CAN_ID ,reportBuffer,5);
+		//Can1_Send(MAIN_CONTROLLER_CAN_ID ,reportBuffer,5);
+		Can1_Send_Ext(MAIN_CONTROLLER_CAN_ID ,reportBuffer,5,CAN_ID_EXT, CAN_RTR_DATA);
 	}
 	
 	
