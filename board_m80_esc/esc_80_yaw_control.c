@@ -39,9 +39,7 @@ u16 yawAngleHightPartAdcValueR = YAW_DEFAULT_ANGLE_MAX_ADC_VALUE - YAW_DEFAULT_A
 volatile u16 yawAngleAdcValue = 0;
 
 // 主控发过来的,要求的 角度
-#define YAW_DEFAULE_MIDDLE_ANGLE  1500 // 1000 - 1500 - 2000
-#define YAW_DEFAULE_MAX_ANGLE 2000 // most right
-#define YAW_DEFAULE_MIN_ANGLE 1000 // most Left
+
 float yawExpectAngle = YAW_DEFAULE_MIDDLE_ANGLE;
 u16 yawExpectAngleAdcValue = YAW_DEFAULT_ANGLE_MIDDLE_ADC_VALUE;
 
@@ -338,17 +336,6 @@ int _yaw_control_move_to_expect_adc(uint16_t angle_adc_value)
 
 
 
-void Esc_Yaw_Control_SetAngle(uint16_t  angle)
-{
-	//上层设置期望的角度
-	if( angle <= YAW_DEFAULE_MAX_ANGLE || angle >= YAW_DEFAULE_MIN_ANGLE )
-	{
-		yawExpectAngle = angle;
-		yawExpectAngleAdcValue = _yaw_control_angle_to_adc(angle);
-	}
-}
-
-
 
 int _yaw_control_initFunc()
 {
@@ -410,7 +397,7 @@ void _try_go_back_in_failsafe()
 				}else{
 					// failsafe , so we have to do failsafe opera
 					now_time_ms = get_system_ms();
-					if( (now_time_ms - _failsafe_time_ms) < 500  || 1 == _check_current_failsafe()) 
+					if( (now_time_ms - _failsafe_time_ms) < 500  || 1 == _check_current_failsafe() ) 
 					{// try to moving after 0.5s and current is under safe range
 						return ;
 					}
@@ -430,6 +417,34 @@ void _try_go_back_in_failsafe()
 
 				}
 }
+
+
+unsigned short Esc_Yaw_Control_GetAngleAdc( )
+{
+	return yawAngleAdcValue;
+}
+
+unsigned short Esc_Yaw_Control_GetCurrentAdc()
+{
+	return yawCurrentAdcValue;
+}
+
+unsigned short Esc_Yaw_Control_GetOilMassAdc()
+{
+	return Get_Oil_Mass_Adc_value();
+}
+
+void Esc_Yaw_Control_SetAngle(uint16_t  angle)
+{
+	//上层设置期望的角度
+	if( angle <= YAW_DEFAULE_MAX_ANGLE || angle >= YAW_DEFAULE_MIN_ANGLE )
+	{
+		yawExpectAngle = angle;
+		yawExpectAngleAdcValue = _yaw_control_angle_to_adc(angle);
+	}
+}
+
+
 void Esc_Yaw_Control_Event()
 {
 	int res , direct;
@@ -448,6 +463,13 @@ void Esc_Yaw_Control_Event()
 		}else{
 			failsafe_AdcUpdateError = 0;
 			_esc_yaw_check_adc_hz = 0;
+		}
+		
+		/// check  main controller is losted , shutdown
+		if( is_Can1_Lost_Connect() )
+		{
+			yaw_control_failsafe();
+			return ;
 		}
 		
 		//init 

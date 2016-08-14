@@ -11,7 +11,9 @@ th11sb_t th11sb_head,th11sb_tail;
 void _Th11sb_config()
 {
 	th11sb_head.addr = 0x0a;
+	th11sb_head.updated = 0;
 	th11sb_tail.addr = 0x0b;
+	th11sb_tail.updated = 0;
 }
 int _Th11sb_485_runtime( th11sb_t *th11sb, int step, int res, rtu_485_ack_t *runtime_ack)
 {
@@ -28,6 +30,7 @@ int _Th11sb_485_runtime( th11sb_t *th11sb, int step, int res, rtu_485_ack_t *run
 						//logd("th11sb updated\r\n");
 						th11sb->tempture = ((runtime_ack->data[0]<<8) | runtime_ack->data[1]);
 						th11sb->wet = ((runtime_ack->data[2]<<8) | runtime_ack->data[3]);
+						th11sb->updated = 1;
 						logd_uint("wet:",th11sb_head.wet /10);
 						logd_uint("tempture:",th11sb_head.tempture/10);
 			}else{
@@ -53,22 +56,27 @@ void _dam_config()
 	dam4_02.addr = 0x02;
 	dam4_02.type = 4;
 	dam4_02.status = 0;
+	dam4_02.updated = 0;
 	
 	dam4_04.addr = 0x04;
 	dam4_04.type = 4;
 	dam4_04.status = 0;
+	dam4_04.updated = 0;
 	
 	dam4_05.addr = 0x05;
 	dam4_05.type = 4;
 	dam4_05.status = 0;
+	dam4_05.updated = 0;
 	
 	dam16_08.addr = 0x08;
 	dam16_08.type = 16;
 	dam16_08.status = 0;
+	dam16_08.updated = 0;
 	
 	dam4_09.addr = 0x09;
 	dam4_09.type = 4;
 	dam4_09.status = 0;
+	dam4_09.updated = 0;
 }
 int _dam_485_runtime( dam_t *dam_dev, int step, int res, rtu_485_ack_t *runtime_ack)
 {
@@ -88,6 +96,7 @@ int _dam_485_runtime( dam_t *dam_dev, int step, int res, rtu_485_ack_t *runtime_
 				}else{
 					dam_dev->status = runtime_ack->data[0];
 				}
+				dam_dev->updated = 1;
 				logd_uint("dam",dam_dev->addr);
 				logd_uint(" >",dam_dev->status);
 			}else{
@@ -108,12 +117,12 @@ int _dam_485_send_on_off_cmd(  dam_t *dam_dev, unsigned char num_id, int enable)
 	unsigned short on_off;
 	
 	if( num_id > dam_dev->type ) return 0;
-	on_off = enable? 0xff00:0x0;
+	on_off = (enable==DAM_CMD_ON)? 0xff00:0x0;
 	return Rtu_485_Runtime_sendCmd( dam_dev->addr , 0x05, num_id-1 , on_off);
 }
 
 // flash enable=1 闪开 enable=0 闪断, delaytime ：时间间隔 单位是0.1s 
-int _dam_485_send_flash( dam_t *dam_dev, unsigned char num_id, int enable, int delaytime)
+int _dam_485_send_flash( dam_t *dam_dev, unsigned char num_id, int enable, int delayms)
 {
 	//FE    10   00 03    00 02     04       00 04       00 0A        00 D8
 	//addr func  num_id  cmd count  cmd len   flash type  delay time   crc
@@ -121,7 +130,7 @@ int _dam_485_send_flash( dam_t *dam_dev, unsigned char num_id, int enable, int d
 	//delay time : 0x0a=10 = 10*0.1 s = 1s
 	
 	unsigned char cmd[13]={0};
-	unsigned short crc;
+	unsigned short crc,ms;
 	if( num_id > dam_dev->type)  return 0;
 	
 	cmd[0] = dam_dev->addr;
@@ -129,8 +138,9 @@ int _dam_485_send_flash( dam_t *dam_dev, unsigned char num_id, int enable, int d
 	cmd[2] = 0x00;cmd[3]=num_id-1;
 	cmd[4]= 0x00; cmd [5]= 0x02;
 	cmd[6] = 0x04;
-	cmd[7] = 0x00; cmd[8]= enable? 0x04:0x02;
-	cmd[9] = ((delaytime>>8)&0xff); cmd[10] = (delaytime&0xff);
+	cmd[7] = 0x00; cmd[8]= (enable==DAM_CMD_FLASH_OFF)? 0x02:0x04;
+	ms = delayms/100;
+	cmd[9] = ((ms>>8)&0xff); cmd[10] = (ms&0xff);
 	crc = crc_calculate(cmd,11);
 	cmd[11]=(crc&0xff);
 	cmd[12]=((crc>>8) & 0xff);
@@ -139,7 +149,44 @@ int _dam_485_send_flash( dam_t *dam_dev, unsigned char num_id, int enable, int d
 }
 
 
-void test_dam_cmd(unsigned char addr_id, unsigned char num_id, unsigned int cmd)
+// 自定义的闪开与闪关的功能
+volatile unsigned int _dam_flash_delay_ms = 0;
+volatile unsigned int _dam_flash_ms_counter = 0;
+unsigned char _dam_flash_numId=0;
+unsigned char _dam_flash_on_off=0;
+dam_t *_dam_flash_dev = NULL;
+
+void _dam_flash_on_off_cmd(dam_t *dam_dev, unsigned char num_id, int enable, int delayms)
+{
+	if( _dam_flash_delay_ms > 0 ) return ; // has flash cmd running
+	
+	_dam_flash_dev = dam_dev;
+	_dam_flash_numId = num_id;
+	_dam_flash_on_off = (enable==DAM_CMD_FLASH_OFF)? DAM_CMD_ON:DAM_CMD_OFF;
+	_dam_flash_delay_ms = delayms;
+	_dam_flash_ms_counter = 0;
+	_dam_485_send_on_off_cmd(dam_dev,num_id, (enable==DAM_CMD_FLASH_OFF)? DAM_CMD_OFF:DAM_CMD_ON );
+	
+}
+void _dam_flash_on_off_loop(uint32_t loop_ms)
+{
+	if( _dam_flash_delay_ms > 0 )
+	{ // have set flash time
+		_dam_flash_ms_counter += loop_ms;
+		
+		if( _dam_flash_ms_counter >= _dam_flash_delay_ms ){
+			//is time to run flash cmd
+			_dam_485_send_on_off_cmd( _dam_flash_dev, _dam_flash_numId, _dam_flash_on_off);
+			_dam_flash_delay_ms = 0;
+			_dam_flash_ms_counter = 0;
+		}
+
+	}
+}
+
+
+
+void Rtu_485_Dam_Cmd(unsigned char addr_id, unsigned char num_id, unsigned int cmd, unsigned int ms)
 {
 	//cmd =1 on ;0 close ; 2 flash off ; 3 flash on
 	 dam_t *dam_dev=NULL;
@@ -151,10 +198,11 @@ void test_dam_cmd(unsigned char addr_id, unsigned char num_id, unsigned int cmd)
 		case 9:{ dam_dev = &dam4_09; break;}
 	}
 	if( dam_dev == NULL ) return;
-	if( cmd <= 1 ){
+	if( cmd <= DAM_CMD_ON ){
 		_dam_485_send_on_off_cmd( dam_dev, num_id, cmd);
 	}else{
-		_dam_485_send_flash(dam_dev, num_id, cmd-2 , 40);
+		//_dam_485_send_flash(dam_dev, num_id, cmd , ms);
+		_dam_flash_on_off_cmd(dam_dev, num_id, cmd , ms);
 	}
 }
 
@@ -166,8 +214,11 @@ powerAdc6_t powerAdc6_01,powerAdc6_06,powerAdc6_07;
 void powerAdc6_config()
 {
 	powerAdc6_01.addr = 0x03;
+	powerAdc6_01.updated = 0;
 	powerAdc6_06.addr = 0x06;
+	powerAdc6_06.updated = 0;
 	powerAdc6_07.addr = 0x07;
+	powerAdc6_07.updated = 0;
 }
 
 int _powerAdc_485_runtime( powerAdc6_t *padc_dev, int step, int res, rtu_485_ack_t *runtime_ack)
@@ -188,6 +239,7 @@ int _powerAdc_485_runtime( powerAdc6_t *padc_dev, int step, int res, rtu_485_ack
 					for(i=0; i< runtime_ack->len; i+=2){
 						padc_dev->adc[i/2] = ((runtime_ack->data[i]<<8) | runtime_ack->data[i+1] );
 					}
+					padc_dev->updated = 1;
 				}else{
 					logd("poweradc error ack\r\n");
 					return -1;
@@ -216,6 +268,7 @@ void pgw636_config()
 	pgw636_03.curren_speed = 0;
 	pgw636_03.max_speed = 0;
 	pgw636_03.min_speed = 0;
+	pgw636_03.updated = 0;
 }
 
 
@@ -238,6 +291,7 @@ int _pgw636_485_runtime( pgw636_t *pgw_dev, int step, int res, rtu_485_ack_t *ru
 					pgw_dev->curren_speed = (int)(runtime_ack->data[2]<<24) | (runtime_ack->data[3]<<16) | (runtime_ack->data[0]<<8) | (runtime_ack->data[1]) ;
 					pgw_dev->max_speed = (int)(runtime_ack->data[6]<<24) | (runtime_ack->data[7]<<16) | (runtime_ack->data[4]<<8) | (runtime_ack->data[5]) ;
 					pgw_dev->min_speed = (int)(runtime_ack->data[10]<<24) | (runtime_ack->data[11]<<16) | (runtime_ack->data[8]<<8) | (runtime_ack->data[9]) ;
+					pgw_dev->updated = 1;
 					logd_uint("speed: ",pgw_dev->curren_speed);
 				}else{
 					logd("pgw636 error ack\r\n");
@@ -284,7 +338,7 @@ int _rtu_485_devices_runtime(int step, int res, rtu_485_ack_t *runtime_ack)
 	int ret;
 	
 	switch(_485_device_seq){
-#if 0
+#if 1
 		case 0:{
 			ret = _Th11sb_485_runtime(&th11sb_head,step,res,runtime_ack);
 			break;
@@ -328,7 +382,7 @@ int _rtu_485_devices_runtime(int step, int res, rtu_485_ack_t *runtime_ack)
 		}
 		
 		case 10:{
-			ret = _pgw636_485_runtime(&pwg636_03,step,res,runtime_ack);
+			ret = _pgw636_485_runtime(&pgw636_03,step,res,runtime_ack);
 			break;
 		}
 		
@@ -352,9 +406,16 @@ int _rtu_485_devices_runtime(int step, int res, rtu_485_ack_t *runtime_ack)
 			ret = _Th11sb_485_runtime(&th11sb_head,step,res,runtime_ack);
 			break;
 		}*/
-		
-
-		
+		case 0:{
+			ret = _powerAdc_485_runtime(&powerAdc6_06,step,res,runtime_ack);
+			break;
+		}		
+		case 1:{
+			_485_device_seq = 0;
+			ret = 0;
+			_rtu_485_devices_report_counter ++;
+			break;
+		}
 #endif
 	}
 	if ( step == 1){
@@ -513,11 +574,6 @@ void Rtu_485_Devices_runtime_loop()
 			step = 0;
 			_rtu_485_runtime_running = 0;
 			ret = _rtu_485_devices_runtime(1,res,g_ack);
-			#if 1// debug
-			
-			if( res == -1 || ret == -1 )
-				logd("_485_devices error\r\n");
-			#endif
 		}
 	}
 	
@@ -548,10 +604,10 @@ void Rtu_485_Runtime_loop()
 {
 	char _to_send_cmd = 0;
 	
-	if( 8 < fifo_avail(&rtu_485_cmd_fifo) )
-		_to_send_cmd = 1;
-	
 	if( check_systick_time(&rtu_485_time_t) ){
+		// check flash cmd 
+		_dam_flash_on_off_loop(_485_LOOP_MS);
+		
 		// check report hz
 		loop_counter++;
 		if( loop_counter >= (1000/_485_LOOP_MS) )
@@ -561,6 +617,11 @@ void Rtu_485_Runtime_loop()
 			_rtu_485_devices_report_counter = 0;
 			logd_uint("rtu 485 report hz=",_rtu_485_devices_report_hz);
 		}
+		
+		//check cmd	
+		if( 8 < fifo_avail(&rtu_485_cmd_fifo) )
+			_to_send_cmd = 1;
+		
 		// run runtime loop
 		if( _rtu_485_loop_type == _485_DEVICES_LOOP)
 		{

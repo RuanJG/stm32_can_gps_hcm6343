@@ -172,7 +172,7 @@ unsigned char char_to_hex(char data)
 		return (data-0x30);
 	
 }
-void cmd_uart_485cmd(Uart_t *uarts, Uart_t *uartd)
+void cmd_uart_485cmd(Uart_t *uarts)
 {
 	char tmp,data[32];
 	unsigned char sendbuff[32];
@@ -194,29 +194,39 @@ void cmd_uart_485cmd(Uart_t *uarts, Uart_t *uartd)
 	for( i=0,j=0; i< len;)
 	{
 		tmp = char_to_hex(data[i])*16 + char_to_hex(data[i+1]);
-		Uart_PutChar(uartd,tmp);
 		sendbuff[j++]=tmp;
 		i+=2;
 	}
 	crc = crc_calculate(sendbuff,j);
-	Uart_PutChar(uartd,crc&0x00ff);
-	Uart_PutChar(uartd,crc>>8);
+	sendbuff[j++]=(crc&0xff);
+	sendbuff[j++]=((crc>>8)&0xff);
+	
+	Rtu_485_Runtime_send_RawCmd(sendbuff,j);
+	
 }
-void test_dam_cmd(unsigned char addr_id, unsigned char num_id, unsigned int cmd);
+
 void dam_control_test(Uart_t *uarts)
 {
 	char tmp;
 	char numid,cmd,addr;
+	int ms;
 	
 	// cmd : #4#410 , control addr=4 ,the 1 path switch, cmd 0 [0 off,1 on,2 flash off,3 flash on] 
+	// cmd : #4#4134 , cmd 3 flash on , delay 4s
 	while( Uart_GetChar(uarts, &tmp) <= 0 )delay_us(1000);
 	addr = tmp-0x30;
 	while( Uart_GetChar(uarts, &tmp) <= 0 )delay_us(1000);
 	numid = tmp-0x30;
 	while( Uart_GetChar(uarts, &tmp) <= 0 )delay_us(1000);
 	cmd = tmp-0x30;
+	if( cmd >= 2) 
+	{// delay time for flash on off
+		while( Uart_GetChar(uarts, &tmp) <= 0 )delay_us(1000);
+		ms = tmp-0x30;
+		ms = ms*1000;
+	}
 	
-	test_dam_cmd(addr,numid,cmd);
+	Rtu_485_Dam_Cmd(addr,numid,cmd,ms);
 }
 
 
@@ -237,10 +247,12 @@ void listen_cmd(Uart_t *uart)
 		if(cmd==3){
 			//uart ×ª·¢ #3#[len][byte][][][][] : len=byte's count; byte= hex( 0= 00 1= 01 10= 0a ...)
 			// #3#6010400010002 addr=0x01 func=0x04 reg=0x0001 len=0x0002
-			cmd_uart_485cmd(&Uart1,&Uart2);
+			cmd_uart_485cmd(&Uart1);
 		}
 		if(cmd==4){
-			//#4#210  #4#[485addr][1,2,3,4...][0:off, 1:on, 2:flash off: 3: flash on]
+			//#4#[485addr][1,2,3,4...][0:off, 1:on, 2:flash off: 3: flash on]{[s]}
+			//#4#210   off 1 path
+			//#4#2133  flash on 1 path , delay 3s
 			dam_control_test(&Uart1);
 		}
 		if(cmd==5){
@@ -272,7 +284,8 @@ void main_setup()
 {
 	SetupPllClock(HSE_CLOCK_6MHZ);
 	Esc_GPIO_Configuration();
-	Can1_Configuration (0x12);
+	//Can1_Configuration (0x12);
+	Can1_Configuration_withRate(0x12,CAN_SJW_1tq,CAN_BS1_5tq,CAN_BS2_2tq,9);
 	Uart_Configuration (&Uart1, USART1, IAP_UART_BAUDRATE, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
 	Uart_Configuration (&Uart2, USART2, 9600, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
 	Uart_Configuration (&Uart3, USART3, 9600, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
@@ -281,7 +294,7 @@ void main_setup()
 	Esc_Led_Configuration();
 	
 	//time_t init 
-	systick_time_start(&report_t,500);//REPORT_STATUS_MS);
+	systick_time_start(&report_t,CAN1_LISTENER_REPORT_STATUS_MS);//REPORT_STATUS_MS);
 	systick_time_start(&led_t,10);
 	
 	//system error 
@@ -299,28 +312,23 @@ void main_setup()
 
 void main_loop()
 {
-	char data;
-	//Esc_Yaw_Control_Event();
-	
-	if( check_systick_time(&report_t) ){
-		
-	}
-
-	listen_cmd(&Uart1);
 
 	Listen_Can1();
+	Esc_Yaw_Control_Event();
 
+	Rtu_485_Event();
+	Rtu_485_Runtime_loop(); // base on rtu_485
 	
-	
-	
+	if( check_systick_time(&report_t) ){
+		;//Can1_Listener_Report_Event();
+		Can1_Listener_Check_connect_event();
+	}
 	
 	if( check_systick_time(&led_t) ){
 		Esc_Led_Event();
 	}
 	
-	Rtu_485_Event();
-	Rtu_485_Runtime_loop(); // base on rtu_485
-	
+	listen_cmd(&Uart1);
 }
 
 

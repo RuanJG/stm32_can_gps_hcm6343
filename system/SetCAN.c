@@ -55,7 +55,7 @@ fifo_void_t can1_rx_msg_fifo;//={.enable = 0,.head=0,.tail=0,};
 
 
 // functio definition
-u8 Can1_Configuration_mask(u8 FilterNumber, u16 ID, u16 ID_Mask)
+u8 Can1_Configuration_mask(u8 FilterNumber, u16 ID, u16 ID_Mask , uint8_t sjw ,uint8_t bs1, uint8_t bs2, uint8_t prescale )
 {
 	CAN_InitTypeDef        CAN_InitStructure;
 	CAN_FilterInitTypeDef  CAN_FilterInitStructure;
@@ -85,17 +85,11 @@ u8 Can1_Configuration_mask(u8 FilterNumber, u16 ID, u16 ID_Mask)
 	CAN_InitStructure.CAN_RFLM = DISABLE;
 	CAN_InitStructure.CAN_TXFP = ENABLE; //DISABLE
 	CAN_InitStructure.CAN_Mode = CAN_Mode_Normal;//CAN_Mode_LoopBack;//CAN_Mode_Normal;
-#if 0 // 1M
-	CAN_InitStructure.CAN_SJW = CAN_SJW_1tq;
-	CAN_InitStructure.CAN_BS1 = CAN_BS1_3tq;
-	CAN_InitStructure.CAN_BS2 = CAN_BS2_5tq;
-	CAN_InitStructure.CAN_Prescaler = 4;//2
-#else // 500k
-	CAN_InitStructure.CAN_SJW = CAN_SJW_1tq;
-	CAN_InitStructure.CAN_BS1 = CAN_BS1_5tq;
-	CAN_InitStructure.CAN_BS2 = CAN_BS2_2tq;
-	CAN_InitStructure.CAN_Prescaler = 9;//2
-#endif
+	CAN_InitStructure.CAN_SJW = sjw;
+	CAN_InitStructure.CAN_BS1 = bs1;
+	CAN_InitStructure.CAN_BS2 = bs2;
+	CAN_InitStructure.CAN_Prescaler = prescale;//2
+
 	Init_state = CAN_Init(CAN1, &CAN_InitStructure);
 	if( Init_state  == 0 ){
 		RCC_APB1PeriphClockCmd(RCC_APB1Periph_CAN1, DISABLE);
@@ -146,9 +140,40 @@ u8 Can1_Configuration_mask(u8 FilterNumber, u16 ID, u16 ID_Mask)
 	return Init_state;
 }
 
-u8 Can1_Configuration(u16 ID)
+u8 Can1_Configuration_withRate(u16 ID, uint8_t sjw ,uint8_t bs1, uint8_t bs2, uint8_t prescale )
 {
-	return Can1_Configuration_mask(0, ID, 0x1ff);
+	/*
+	#if 0 // 1M
+	CAN_InitStructure.CAN_SJW = CAN_SJW_1tq;
+	CAN_InitStructure.CAN_BS1 = CAN_BS1_3tq;
+	CAN_InitStructure.CAN_BS2 = CAN_BS2_5tq;
+	CAN_InitStructure.CAN_Prescaler = 4;//2
+#else // 500k
+	CAN_InitStructure.CAN_SJW = CAN_SJW_1tq;
+	CAN_InitStructure.CAN_BS1 = CAN_BS1_5tq;
+	CAN_InitStructure.CAN_BS2 = CAN_BS2_2tq;
+	CAN_InitStructure.CAN_Prescaler = 9;//2
+#endif
+	*/
+	return Can1_Configuration_mask(0, ID, 0x1ff , sjw, bs1, bs2, prescale);
+}
+u8 Can1_Configuration(u16 ID )
+{
+	/*
+	#if 0 // 1M
+	CAN_InitStructure.CAN_SJW = CAN_SJW_1tq;
+	CAN_InitStructure.CAN_BS1 = CAN_BS1_3tq;
+	CAN_InitStructure.CAN_BS2 = CAN_BS2_5tq;
+	CAN_InitStructure.CAN_Prescaler = 4;//2
+#else // 500k
+	CAN_InitStructure.CAN_SJW = CAN_SJW_1tq;
+	CAN_InitStructure.CAN_BS1 = CAN_BS1_5tq;
+	CAN_InitStructure.CAN_BS2 = CAN_BS2_2tq;
+	CAN_InitStructure.CAN_Prescaler = 9;//2
+#endif
+	*/
+	//defalut 1M
+	return Can1_Configuration_mask(0, ID, 0x1ff , CAN_SJW_1tq, CAN_BS1_3tq, CAN_BS2_5tq, 4);
 }
 
 void Can1_Send_Message(CanTxMsg* TxMessage)

@@ -58,6 +58,7 @@ void Uart_DeInit (Uart_t *uart);
 int Can1_Get_CanRxMsg(CanRxMsg *msg);
 void Can1_Send_Message(CanTxMsg* TxMessage);
 u8 Can1_Configuration(u16 ID);
+u8 Can1_Configuration_withRate(u16 ID, uint8_t sjw ,uint8_t bs1, uint8_t bs2, uint8_t prescale );
 void Can1_Send(uint8_t id, uint8_t *data, int len);
 
 
