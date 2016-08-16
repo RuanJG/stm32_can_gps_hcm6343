@@ -126,19 +126,19 @@ int read_num_by_uart(Uart_t *uart ,uint32_t *num)
 	return 0;
 }
 void yaw_set_yaw_pwm(uint16_t pwm);
-void test_pwm(Uart_t *uarts)
+void test_yaw_pwm(Uart_t *uarts)
 {
 	uint32_t pwm=0;
 
 	while(read_num_by_uart(uarts, &pwm ) == 0) delay_us(1000);
 
-		logd_uint("test pwm=",pwm);
+		logd_uint("yaw pwm=",pwm);
 		yaw_set_yaw_pwm(pwm);
 	
 }
 
 void Esc_Yaw_Control_SetAngle(uint16_t  angle);
-void test_angle(Uart_t *uarts)
+void test_yaw_angle(Uart_t *uarts)
 {
 	uint32_t pwm=0;
 
@@ -148,7 +148,7 @@ void test_angle(Uart_t *uarts)
 		Esc_Yaw_Control_SetAngle(pwm);
 	
 }
-void test_pwm2(Uart_t *uarts)
+void test_pitch(Uart_t *uarts)
 {
 	char pwm;
 	while( Uart_GetChar(uarts, &pwm) <= 0 )delay_us(1000);
@@ -307,23 +307,27 @@ void listen_cmd(Uart_t *uart)
 		}
 		
 		if( cmd == 1 ){
-			//#1##201#    -> set pwm = 201  [0-400]  test[170 - 400] [0-200] test[80-200]
-			test_pwm2(&Uart1);
+			//#1##1800# 0-2000
+			test_yaw_pwm(&Uart1);
 		}
-		if(cmd==3){
-			//uart 转发 #3#[len][byte][][][][] : len=byte's count; byte= hex( 0= 00 1= 01 10= 0a ...)
-			// #3#6010400010002 addr=0x01 func=0x04 reg=0x0001 len=0x0002
-			cmd_uart_485cmd(&Uart1);
+		if( cmd == 2 ){
+			//#2##1000# 1000 - 2000
+			test_yaw_angle(&Uart1);
+		}
+		if( cmd == 3 ){
+			//#3#s[s,l,r]
+			test_h_bridge(&Uart1);
 		}
 		if(cmd==4){
-			//#4#[485addr][1,2,3,4...][0:off, 1:on, 2:flash off: 3: flash on]{[s]}
-			//#4#210   off 1 path
-			//#4#2133  flash on 1 path , delay 3s
-			dam_control_test(&Uart1);
+			//uart 转发 #4#[len][byte][][][][] : len=byte's count; byte= hex( 0= 00 1= 01 10= 0a ...)
+			// #4#6010400010002 addr=0x01 func=0x04 reg=0x0001 len=0x0002
+			cmd_uart_485cmd(&Uart1);
 		}
 		if(cmd==5){
-			//#5#s[s,l,r]
-			test_h_bridge(&Uart1);
+			//#5#[485addr][1,2,3,4...][0:off, 1:on, 2:flash off: 3: flash on]{[s]}
+			//#5#210   off 1 path
+			//#5#2133  flash on 1 path , delay 3s
+			dam_control_test(&Uart1);
 		}
 		if(cmd==6){
 			//#6#id[][][][][][][][]
@@ -334,9 +338,9 @@ void listen_cmd(Uart_t *uart)
 			//#7##0# [0-1000]
 			test_ke4(&Uart1);
 		}
-		if( cmd == 8){
-			//#8##1000# 1000-2000
-			test_angle(&Uart1);
+		if( cmd == 8 ){
+			//#8#m [m,f,b]
+			test_pitch(&Uart1);
 		}
 	}
 }
