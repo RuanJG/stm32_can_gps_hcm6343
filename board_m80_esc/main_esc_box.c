@@ -125,7 +125,7 @@ int read_num_by_uart(Uart_t *uart ,uint32_t *num)
 	}
 	return 0;
 }
-
+void yaw_set_yaw_pwm(uint16_t pwm);
 void test_pwm(Uart_t *uarts)
 {
 	uint32_t pwm=0;
@@ -133,12 +133,43 @@ void test_pwm(Uart_t *uarts)
 	while(read_num_by_uart(uarts, &pwm ) == 0) delay_us(1000);
 
 		logd_uint("test pwm=",pwm);
-		esc_set_pump_pitch_pwm(pwm);
+		yaw_set_yaw_pwm(pwm);
 	
 }
 
+void Esc_Yaw_Control_SetAngle(uint16_t  angle);
+void test_angle(Uart_t *uarts)
+{
+	uint32_t pwm=0;
+
+	while(read_num_by_uart(uarts, &pwm ) == 0) delay_us(1000);
+
+		logd_uint("test angle=",pwm);
+		Esc_Yaw_Control_SetAngle(pwm);
+	
+}
+void test_pwm2(Uart_t *uarts)
+{
+	char pwm;
+	while( Uart_GetChar(uarts, &pwm) <= 0 )delay_us(1000);
+	if( pwm == 'm'){
+		logd("middle\r\n");
+		Esc_Pump_Pitch_Middle();
+	}else if( pwm == 'f'){
+		logd("forward\r\n");
+		Esc_Pump_Pitch_Forward();
+	}else if( pwm == 'b'){
+		logd("back\r\n");
+		Esc_Pump_Pitch_Back();
+	}
+}
+#if 0
 #define _yaw_control_shutdown() 	GPIO_ResetBits(H_BRIDGE_A_PWMB_GPIO_BANK,H_BRIDGE_A_PWMB_GPIO_PIN)
 #define _yaw_control_poweron()  GPIO_SetBits(H_BRIDGE_A_PWMB_GPIO_BANK,H_BRIDGE_A_PWMB_GPIO_PIN);
+#else
+void _yaw_control_shutdown();
+void _yaw_control_poweron();
+#endif
 void _yaw_control_forward();
 void _yaw_control_back();
 void test_h_bridge(Uart_t *uarts)
@@ -147,15 +178,15 @@ void test_h_bridge(Uart_t *uarts)
 
 	while( Uart_GetChar(uarts, &pwm) <= 0 )delay_us(1000);
 
-		if( pwm == 'b' ){
-			Uart_PutString(uarts,"back\r\n");
-			_yaw_control_back();
+		if( pwm == 'l' ){
+			Uart_PutString(uarts,"left\r\n");
+			_yaw_control_forward();
 		}else if( pwm == 's'){
 			Uart_PutString(uarts,"stop\r\n");
 			_yaw_control_shutdown();
-		}else if( pwm == 'f'){
-			Uart_PutString(uarts,"forward\r\n");
-			_yaw_control_forward();
+		}else if( pwm == 'r'){
+			Uart_PutString(uarts,"right\r\n");
+			_yaw_control_back();
 		}
 	
 }
@@ -276,8 +307,8 @@ void listen_cmd(Uart_t *uart)
 		}
 		
 		if( cmd == 1 ){
-			//#1##201#    -> set pwm = 201  [0-400]
-			test_pwm(&Uart1);
+			//#1##201#    -> set pwm = 201  [0-400]  test[170 - 400] [0-200] test[80-200]
+			test_pwm2(&Uart1);
 		}
 		if(cmd==3){
 			//uart ×ª·¢ #3#[len][byte][][][][] : len=byte's count; byte= hex( 0= 00 1= 01 10= 0a ...)
@@ -291,7 +322,7 @@ void listen_cmd(Uart_t *uart)
 			dam_control_test(&Uart1);
 		}
 		if(cmd==5){
-			//#5#s[s,f,b]
+			//#5#s[s,l,r]
 			test_h_bridge(&Uart1);
 		}
 		if(cmd==6){
@@ -302,6 +333,10 @@ void listen_cmd(Uart_t *uart)
 		if( cmd == 7 ){
 			//#7##0# [0-1000]
 			test_ke4(&Uart1);
+		}
+		if( cmd == 8){
+			//#8##1000# 1000-2000
+			test_angle(&Uart1);
 		}
 	}
 }
@@ -335,7 +370,7 @@ void main_setup()
 	Uart_Configuration (&Uart3, USART3, 9600, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
 	Esc_Pump_Pitch_Config();
 	Esc_Yaw_Control_Configure(); 
-	Esc_Led_Configuration();
+	//Esc_Led_Configuration();
 	
 	//time_t init 
 	systick_time_start(&report_t,CAN1_LISTENER_REPORT_STATUS_MS);//REPORT_STATUS_MS);
@@ -353,12 +388,13 @@ void main_setup()
 	
 	//test
 	//Esc_Led_set_toggle(LED_RED_ID,100);//100*10ms each toggle
-	Esc_Led_set_toggle(LED_GREEN_ID,50);//50*10ms each toggle
+	//Esc_Led_set_toggle(LED_GREEN_ID,50);//50*10ms each toggle
 }
+
 
 void main_loop()
 {
-
+//volatile int yaw_test_angle = 1000;
 	Listen_Can1();
 	Esc_Yaw_Control_Event();
 
@@ -372,8 +408,18 @@ void main_loop()
 #endif 
 	
 	if( check_systick_time(&report_t) ){
-		Can1_Listener_Report_Event();
-		Can1_Listener_Check_connect_event();
+		//Can1_Listener_Report_Event();
+		//Can1_Listener_Check_connect_event();
+		//logd_uint("current: ",Esc_Yaw_Control_GetCurrentAdc());
+		//logd_uint("angle:   ",Esc_Yaw_Control_GetAngleAdc());
+		//logd_uint("oil mass:",Esc_Yaw_Control_GetOilMassAdc());
+		/*
+		Esc_Yaw_Control_SetAngle(yaw_test_angle);
+		yaw_test_angle += 10;
+		if( yaw_test_angle > 2000){
+			yaw_test_angle = 1000;
+		}
+		*/
 	}
 	
 	if( check_systick_time(&led_t) ){

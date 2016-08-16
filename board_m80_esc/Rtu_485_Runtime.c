@@ -158,7 +158,7 @@ dam_t *_dam_flash_dev = NULL;
 
 void _dam_flash_on_off_cmd(dam_t *dam_dev, unsigned char num_id, int enable, int delayms)
 {
-	if( _dam_flash_delay_ms > 0 ) return ; // has flash cmd running
+	if( _dam_flash_delay_ms > 0 && delayms <= 0 ) return ; // has flash cmd running
 	
 	_dam_flash_dev = dam_dev;
 	_dam_flash_numId = num_id;
@@ -188,7 +188,10 @@ void _dam_flash_on_off_loop(uint32_t loop_ms)
 
 void Rtu_485_Dam_Cmd(unsigned char addr_id, unsigned char num_id, unsigned int cmd, unsigned int ms)
 {
+	//addr_id 485_addr
+	//num_id the switch number 1-4 or 1-16
 	//cmd =1 on ;0 close ; 2 flash off ; 3 flash on
+	// ms : if on/close no need , if flash on/off for delay ms for keey on/off status
 	 dam_t *dam_dev=NULL;
 	switch (addr_id){
 		case 2:{ dam_dev = &dam4_02; break;}

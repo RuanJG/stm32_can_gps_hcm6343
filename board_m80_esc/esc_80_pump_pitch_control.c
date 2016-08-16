@@ -41,7 +41,7 @@ void TIM3_Mode_Config(void)
 	 
    //TIM3的时间基数单位设置         10khz
    TIM_TimeBaseStructure.TIM_Period = MAX_PUMP_PITCH_PWM_VALUE-1; //       
-   TIM_TimeBaseStructure.TIM_Prescaler = systemClk/10000/MAX_PUMP_PITCH_PWM_VALUE-1; // (prescale+1) =72000000/10k/MAX_PWM_VALUE (10khz)            
+   TIM_TimeBaseStructure.TIM_Prescaler = systemClk/4000/MAX_PUMP_PITCH_PWM_VALUE-1; // (prescale+1) =72000000/10k/MAX_PWM_VALUE (10khz)            
    TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1 ;
    TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up; 
    TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);
@@ -69,10 +69,97 @@ void TIM3_Mode_Config(void)
    TIM_Cmd(TIM3, ENABLE);//使能TIM3              
  }
 
+void _esc_pump_pin_control_forward()
+{
+	GPIO_InitTypeDef GPIO_InitStructure;	
+	
+	GPIO_StructInit(&GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_14;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOC, &GPIO_InitStructure);
+	GPIO_ResetBits(GPIOC,GPIO_Pin_14);
+	
+	GPIO_StructInit(&GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOC, &GPIO_InitStructure);
+
+	GPIO_StructInit(&GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOC, &GPIO_InitStructure);
+}
+
+void _esc_pump_pin_control_back()
+{
+	GPIO_InitTypeDef GPIO_InitStructure;	
+	
+	GPIO_StructInit(&GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOC, &GPIO_InitStructure);
+	
+	GPIO_StructInit(&GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_14;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOC, &GPIO_InitStructure);
+	
+	GPIO_StructInit(&GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOC, &GPIO_InitStructure);
+	
+	GPIO_ResetBits(GPIOC,GPIO_Pin_13);
+}
+
+void _esc_pump_pin_control_middle()
+{
+	GPIO_InitTypeDef GPIO_InitStructure;	
+	
+	
+	
+	GPIO_StructInit(&GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOC, &GPIO_InitStructure);
+	GPIO_ResetBits(GPIOC,GPIO_Pin_15);
+	
+	GPIO_StructInit(&GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_14;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOC, &GPIO_InitStructure);
+	
+	GPIO_StructInit(&GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOC, &GPIO_InitStructure);
+}
+ 
+ 
+void Esc_Pump_Pitch_Pin_Control_Config()
+{	
+
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC,ENABLE);
+	_esc_pump_pin_control_middle();
+
+}
 void Esc_Pump_Pitch_Config()
  {
+	 #if 0
 	 TIM3_Mode_Config();
 	 Esc_Pump_Pitch_Middle();
+	 #else
+	 Esc_Pump_Pitch_Pin_Control_Config();
+	 #endif
  }
 int esc_set_pwmA(uint16_t pwm)
 {
@@ -102,13 +189,25 @@ int esc_set_pump_pitch_pwm(uint16_t pwm)
 
 void Esc_Pump_Pitch_Back()
 {
+	#if 0
 	esc_set_pump_pitch_pwm(BACK_PUMP_PITCH_ANGLE_PWM);
+	#else
+	_esc_pump_pin_control_back();
+	#endif
 }
 void Esc_Pump_Pitch_Middle()
 {
+	#if 0
 	esc_set_pump_pitch_pwm(MIDDLE_PUMP_PITCH_ANGLE_PWM);
+	#else
+	_esc_pump_pin_control_middle();
+	#endif
 }
 void Esc_Pump_Pitch_Forward()
 {
+	#if 0
 	esc_set_pump_pitch_pwm(FORWARD_PUMP_PITCH_ANGLE_PWM);
+	#else
+	_esc_pump_pin_control_forward();
+	#endif
 }

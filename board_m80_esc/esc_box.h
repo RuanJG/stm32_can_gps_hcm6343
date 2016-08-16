@@ -14,11 +14,16 @@ void Esc_GPIO_Configuration (void);
 
 
 //pump pitch push_rod
+// x/MAX_PUMP_PITCH_PWM_VALUE = 1.4/3.3 
+//1.4 = 85 //170 //1737 // back pump pitch : 向后喷水
+//2.1 = 127 //254 //2606 // middle , 向下喷水
+//3.3 = 200 //400 // 向前喷水
+
 #define MIN_PUMP_PITCH_PWM_VALUE 0
-#define MAX_PUMP_PITCH_PWM_VALUE 400 //200 400 800
-#define FORWARD_PUMP_PITCH_ANGLE_PWM 0
-#define MIDDLE_PUMP_PITCH_ANGLE_PWM 200
-#define BACK_PUMP_PITCH_ANGLE_PWM 400
+#define MAX_PUMP_PITCH_PWM_VALUE 200 //200 400 800
+#define FORWARD_PUMP_PITCH_ANGLE_PWM 200
+#define MIDDLE_PUMP_PITCH_ANGLE_PWM 127 //254
+#define BACK_PUMP_PITCH_ANGLE_PWM 85 //170
 void Esc_Pump_Pitch_Config();
 void Esc_Pump_Pitch_Back();
 void Esc_Pump_Pitch_Middle();
@@ -44,6 +49,9 @@ void Esc_Yaw_Control_SetAngle(uint16_t  angle);
 unsigned short Esc_Yaw_Control_GetAngleAdc( );
 unsigned short Esc_Yaw_Control_GetCurrentAdc();
 unsigned short Esc_Yaw_Control_GetOilMassAdc();
+unsigned short Esc_Get_Current_Value();
+unsigned short Esc_Get_Angle_Value();
+unsigned short Esc_Get_Oil_Mass_Value();
 
 //led
 void Esc_Led_set_toggle(int id, int _10ms);
