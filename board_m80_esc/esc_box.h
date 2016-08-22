@@ -94,6 +94,7 @@ typedef struct _dam_t{
 	unsigned char updated;
 	unsigned char addr;
 	unsigned char type; // 4 or 16
+	unsigned char input[4];
 }dam_t;
 extern dam_t dam4_02,dam4_04,dam4_05,dam16_08,dam4_09;
 #define DAM_CMD_FLASH_ON 3
@@ -124,7 +125,7 @@ extern pgw636_t pgw636_03;
 
 
 //esc_can_listener
-#define CAN1_LISTENER_REPORT_STATUS_MS 200
+#define CAN1_LISTENER_REPORT_STATUS_MS 100
 void Listen_Can1();
 int is_Can1_Lost_Connect();
 void Can1_Listener_Report_Event();

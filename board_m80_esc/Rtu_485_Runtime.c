@@ -53,10 +53,12 @@ dam_t dam4_02,dam4_04,dam4_05,dam16_08,dam4_09;
 
 void _dam_config()
 {
+	
 	dam4_02.addr = 0x02;
 	dam4_02.type = 4;
 	dam4_02.status = 0;
 	dam4_02.updated = 0;
+	memset(dam4_02.input,0,4);
 	
 	dam4_04.addr = 0x04;
 	dam4_04.type = 4;
@@ -92,13 +94,13 @@ int _dam_485_runtime( dam_t *dam_dev, int step, int res, rtu_485_ack_t *runtime_
 		if( res == 1){
 			if( dam_dev->addr == runtime_ack->addr ){
 				if( runtime_ack->len == 2 ){
-					dam_dev->status = ((runtime_ack->data[0]<<8) | runtime_ack->data[1]); 
+					dam_dev->status = ((runtime_ack->data[1]<<8) | runtime_ack->data[0]); 
 				}else{
 					dam_dev->status = runtime_ack->data[0];
 				}
 				dam_dev->updated = 1;
 				logd_uint("dam",dam_dev->addr);
-				logd_uint(" >",dam_dev->status);
+				logd_uint("status>",dam_dev->status);
 			}else{
 				logd("dam wrong ack\r\n");
 				return -1;
@@ -111,6 +113,47 @@ int _dam_485_runtime( dam_t *dam_dev, int step, int res, rtu_485_ack_t *runtime_
 		return 1;
 	}
 }
+
+int _dam_readInput_485_runtime( dam_t *dam_dev, int step, int res, rtu_485_ack_t *runtime_ack)
+{
+	// 1 : this step run ok ; 0: send cmd fail need retry; -1 ack analize failed
+	// ack analize ( step 1) cannot return 0, if failed , return -1;
+	int ret,i;
+	if( step == 0 ){
+		//send cmd
+		//查询n路继电器的状态
+		return Rtu_485_send_cmd(dam_dev->addr, 2, 0 ,4);
+	}else{
+		//recive ack
+		if( res == 1){
+			if( dam_dev->addr == runtime_ack->addr ){
+				if( runtime_ack->len == 4 ){
+					dam_dev->input[0] = runtime_ack->data[0]; 
+					dam_dev->input[1] = runtime_ack->data[1]; 
+					dam_dev->input[2] = runtime_ack->data[2]; 
+					dam_dev->input[3] = runtime_ack->data[3]; 
+					dam_dev->updated = 1;
+					logd_uint("dam",dam_dev->addr);
+					logd_uint("input1>",dam_dev->input[0]);
+					logd_uint("input2 oil_L>",dam_dev->input[1]);
+					logd_uint("input3 tem_H>",dam_dev->input[2]);
+					logd_uint("input4>",dam_dev->input[3]);
+				}else{
+					logd("dam input wrong ack\r\n");
+				}
+			}else{
+				logd("dam wrong ack\r\n");
+				return -1;
+			}
+		}else{
+			//timeout or failed
+			logd("dam timeout ack\r\n");
+			return -1;
+		}
+		return 1;
+	}
+}
+
 // num_id is from 1-4 or 1-16  enable : 1 or disable 0  , return 0 false 1 ok
 int _dam_485_send_on_off_cmd(  dam_t *dam_dev, unsigned char num_id, int enable)
 {
@@ -283,17 +326,17 @@ int _pgw636_485_runtime( pgw636_t *pgw_dev, int step, int res, rtu_485_ack_t *ru
 	if( step == 0 ){
 		//send cmd
 		//查询当前速度，最大速度，最小速度  
-		return Rtu_485_send_cmd(pgw_dev->addr, 3, 0 ,6);
+		return Rtu_485_send_cmd(pgw_dev->addr, 3, 0 ,2);
 	}else{
 		//recive ack
 		if( res == 1){
 			if( pgw_dev->addr == runtime_ack->addr ){
 				//TODO
-				if( runtime_ack->len == 12){
+				if( runtime_ack->len == 4){
 					//current => (reg1<<8 | reg0 )  reg0= data[0](reg0_H)<<8 | data[1](reg0_L)  reg1 = data[2](reg1_H) << 8 | data[3](reg1_L)
 					pgw_dev->curren_speed = (int)(runtime_ack->data[2]<<24) | (runtime_ack->data[3]<<16) | (runtime_ack->data[0]<<8) | (runtime_ack->data[1]) ;
-					pgw_dev->max_speed = (int)(runtime_ack->data[6]<<24) | (runtime_ack->data[7]<<16) | (runtime_ack->data[4]<<8) | (runtime_ack->data[5]) ;
-					pgw_dev->min_speed = (int)(runtime_ack->data[10]<<24) | (runtime_ack->data[11]<<16) | (runtime_ack->data[8]<<8) | (runtime_ack->data[9]) ;
+					//pgw_dev->max_speed = (int)(runtime_ack->data[6]<<24) | (runtime_ack->data[7]<<16) | (runtime_ack->data[4]<<8) | (runtime_ack->data[5]) ;
+					//pgw_dev->min_speed = (int)(runtime_ack->data[10]<<24) | (runtime_ack->data[11]<<16) | (runtime_ack->data[8]<<8) | (runtime_ack->data[9]) ;
 					pgw_dev->updated = 1;
 					logd_uint("speed: ",pgw_dev->curren_speed);
 				}else{
@@ -331,7 +374,7 @@ int _pgw636_485_runtime( pgw636_t *pgw_dev, int step, int res, rtu_485_ack_t *ru
 
 /***************************************** Rtu 485 Device list config */
 
-#define _485_LOOP_MS 200  // each 10ms enter loop 
+#define _485_LOOP_MS 100  // each 50ms enter loop 
 unsigned int _rtu_485_devices_report_hz = 0;
 unsigned int _rtu_485_devices_report_counter = 0;
 int _rtu_485_devices_runtime(int step, int res, rtu_485_ack_t *runtime_ack)
@@ -388,14 +431,20 @@ int _rtu_485_devices_runtime(int step, int res, rtu_485_ack_t *runtime_ack)
 			ret = _pgw636_485_runtime(&pgw636_03,step,res,runtime_ack);
 			break;
 		}
-		
 		case 11:{
+			ret = _dam_readInput_485_runtime(&dam4_02, step,res,runtime_ack);
+			break;
+		}
+		
+		default:
+		{
 			_485_device_seq = 0;
 			ret = 0;
 			_rtu_485_devices_report_counter ++;
 			break;
 		}
-#else
+
+#else //test
 		/*
 		case 0:{
 			ret = _powerAdc_485_runtime(&powerAdc6_06,step,res,runtime_ack);

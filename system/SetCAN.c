@@ -55,12 +55,12 @@ fifo_void_t can1_rx_msg_fifo;//={.enable = 0,.head=0,.tail=0,};
 
 
 // functio definition
-u8 Can1_Configuration_mask(u8 FilterNumber, u16 ID, u16 ID_Mask , uint8_t sjw ,uint8_t bs1, uint8_t bs2, uint8_t prescale )
+u8 Can1_Configuration_mask(u8 FilterNumber, u16 ID, uint32_t id_type,  u16 ID_Mask , uint8_t sjw ,uint8_t bs1, uint8_t bs2, uint8_t prescale )
 {
 	CAN_InitTypeDef        CAN_InitStructure;
 	CAN_FilterInitTypeDef  CAN_FilterInitStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
-	u8 Init_state;
+	u8 Init_state,id_offset;
 	
 	// software config
 	fifo_void_init (&can1_rx_msg_fifo,MSG_COUNT, can_rx_put_cb, can_rx_get_cb);
@@ -101,10 +101,18 @@ u8 Can1_Configuration_mask(u8 FilterNumber, u16 ID, u16 ID_Mask , uint8_t sjw ,u
 	CAN_FilterInitStructure.CAN_FilterNumber=FilterNumber;
 	CAN_FilterInitStructure.CAN_FilterMode=CAN_FilterMode_IdMask;
 	CAN_FilterInitStructure.CAN_FilterScale=CAN_FilterScale_32bit;
-	CAN_FilterInitStructure.CAN_FilterIdHigh=(ID << 5);
-	CAN_FilterInitStructure.CAN_FilterIdLow=0x0000;
-	CAN_FilterInitStructure.CAN_FilterMaskIdHigh=(ID_Mask << 5);
-	CAN_FilterInitStructure.CAN_FilterMaskIdLow=0x0000;
+	if( id_type == CAN_ID_EXT)
+	{
+		CAN_FilterInitStructure.CAN_FilterIdHigh=0;//(ID << 5);
+		CAN_FilterInitStructure.CAN_FilterIdLow=ID<<3;//0x0000;
+		CAN_FilterInitStructure.CAN_FilterMaskIdHigh=0;//(ID_Mask << 5);
+		CAN_FilterInitStructure.CAN_FilterMaskIdLow=(ID_Mask << 3);//0x0000;
+	}else{
+		CAN_FilterInitStructure.CAN_FilterIdHigh=(ID << 5);
+		CAN_FilterInitStructure.CAN_FilterIdLow=0x0000;
+		CAN_FilterInitStructure.CAN_FilterMaskIdHigh=(ID_Mask << 5);
+		CAN_FilterInitStructure.CAN_FilterMaskIdLow=0x0000;
+	}
 	CAN_FilterInitStructure.CAN_FilterFIFOAssignment=0;
 	CAN_FilterInitStructure.CAN_FilterActivation=ENABLE;
 	CAN_FilterInit(&CAN_FilterInitStructure);
@@ -140,7 +148,7 @@ u8 Can1_Configuration_mask(u8 FilterNumber, u16 ID, u16 ID_Mask , uint8_t sjw ,u
 	return Init_state;
 }
 
-u8 Can1_Configuration_withRate(u16 ID, uint8_t sjw ,uint8_t bs1, uint8_t bs2, uint8_t prescale )
+u8 Can1_Configuration_withRate(u16 ID, uint32_t id_type, uint8_t sjw ,uint8_t bs1, uint8_t bs2, uint8_t prescale )
 {
 	/*
 	#if 0 // 1M
@@ -155,7 +163,7 @@ u8 Can1_Configuration_withRate(u16 ID, uint8_t sjw ,uint8_t bs1, uint8_t bs2, ui
 	CAN_InitStructure.CAN_Prescaler = 9;//2
 #endif
 	*/
-	return Can1_Configuration_mask(0, ID, 0x1ff , sjw, bs1, bs2, prescale);
+	return Can1_Configuration_mask(0,  ID, id_type, 0x1ff , sjw, bs1, bs2, prescale);
 }
 u8 Can1_Configuration(u16 ID )
 {
@@ -173,7 +181,7 @@ u8 Can1_Configuration(u16 ID )
 #endif
 	*/
 	//defalut 1M
-	return Can1_Configuration_mask(0, ID, 0x1ff , CAN_SJW_1tq, CAN_BS1_3tq, CAN_BS2_5tq, 4);
+	return Can1_Configuration_mask(0, ID, CAN_ID_STD, 0x1ff , CAN_SJW_1tq, CAN_BS1_3tq, CAN_BS2_5tq, 4);
 }
 
 void Can1_Send_Message(CanTxMsg* TxMessage)

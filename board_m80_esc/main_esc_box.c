@@ -246,36 +246,44 @@ void dam_control_test(Uart_t *uarts)
 	int ms;
 	
 	// cmd : #4#410 , control addr=4 ,the 1 path switch, cmd 0 [0 off,1 on,2 flash off,3 flash on] 
-	// cmd : #4#4134 , cmd 3 flash on , delay 4s
+	// cmd : #4#41340 , cmd 3 flash on , delay 4s
 	while( Uart_GetChar(uarts, &tmp) <= 0 )delay_us(1000);
 	addr = tmp-0x30;
 	while( Uart_GetChar(uarts, &tmp) <= 0 )delay_us(1000);
-	numid = tmp-0x30;
+	numid = char_to_hex(tmp);
 	while( Uart_GetChar(uarts, &tmp) <= 0 )delay_us(1000);
 	cmd = tmp-0x30;
 	if( cmd >= 2) 
 	{// delay time for flash on off
 		while( Uart_GetChar(uarts, &tmp) <= 0 )delay_us(1000);
-		ms = tmp-0x30;
-		ms = ms*1000;
+		ms = 10*(tmp-0x30);
+		while( Uart_GetChar(uarts, &tmp) <= 0 )delay_us(1000);
+		ms = (ms+(tmp-0x30))*100;
 	}
 	
 	Rtu_485_Dam_Cmd(addr,numid,cmd,ms);
 }
 
 //#6#id[][][][][][][][]
-			//00 00   03 7D  7F 01  00 00 
+			//00 00 00   03 7D  7F 01  00 00 
 void test_can_send_msg(Uart_t *uarts)
 {
 	int i;
 	CanTxMsg TxMsg;
-	char id;
+	char id,tmp;
 	unsigned char data[8];
 	
-	while( Uart_GetChar(uarts, &id ) <= 0 )delay_us(1000);
+	while( Uart_GetChar(uarts, &tmp ) <= 0 )delay_us(1000);
+	id = char_to_hex(tmp); id = id << 8;
+	while( Uart_GetChar(uarts, &tmp ) <= 0 )delay_us(1000);
+	id |= char_to_hex(tmp);
+	
 	for( i=0; i<8 ; i++)
 	{
-		while( Uart_GetChar(uarts, &data[i] ) <= 0 )delay_us(1000);
+		while( Uart_GetChar(uarts, &tmp ) <= 0 )delay_us(1000);
+		data[i] = char_to_hex(tmp); data[i] = data[i] << 8;
+		while( Uart_GetChar(uarts, &tmp ) <= 0 )delay_us(1000);
+		data[i] |= char_to_hex(tmp);
 	}
 	
 	//Can1_Send(id, data, 8);
@@ -286,7 +294,7 @@ void test_can_send_msg(Uart_t *uarts)
 
 
 void test_ke4(Uart_t *uarts)
-{//#7##0# [500 - 1000] {500-700}
+{//#7##500# [500 - 1000] {500-700}
 	uint32_t pwm=0;
 
 	while(read_num_by_uart(uarts, &pwm ) == 0) delay_us(1000);
@@ -326,12 +334,12 @@ void listen_cmd(Uart_t *uart)
 		if(cmd==5){
 			//#5#[485addr][1,2,3,4...][0:off, 1:on, 2:flash off: 3: flash on]{[s]}
 			//#5#210   off 1 path
-			//#5#2133  flash on 1 path , delay 3s
+			//#5#21330  flash on 1 path , delay 3s
 			dam_control_test(&Uart1);
 		}
 		if(cmd==6){
 			//#6#id[][][][][][][][]
-			//00 00   03 7D  7F 01  00 00 
+			//00 00 00   03 7D  7F 01  00 00 
 			test_can_send_msg(&Uart1);
 		}
 		if( cmd == 7 ){
@@ -368,7 +376,7 @@ void main_setup()
 	SetupPllClock(HSE_CLOCK_6MHZ);
 	Esc_GPIO_Configuration();
 	//Can1_Configuration (0x12);
-	Can1_Configuration_withRate(0x12,CAN_SJW_1tq,CAN_BS1_5tq,CAN_BS2_2tq,9);
+	Can1_Configuration_withRate(0x12,CAN_ID_EXT,CAN_SJW_1tq,CAN_BS1_5tq,CAN_BS2_2tq,9);
 	Uart_Configuration (&Uart1, USART1, IAP_UART_BAUDRATE, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
 	Uart_Configuration (&Uart2, USART2, 9600, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
 	Uart_Configuration (&Uart3, USART3, 9600, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
@@ -379,7 +387,7 @@ void main_setup()
 	//time_t init 
 	systick_time_start(&report_t,CAN1_LISTENER_REPORT_STATUS_MS);//REPORT_STATUS_MS);
 	systick_time_start(&led_t,10);
-	systick_time_start(&ke4_speed_t,100);
+	systick_time_start(&ke4_speed_t,500);
 	
 	
 	//system error 
@@ -393,6 +401,16 @@ void main_setup()
 	//test
 	//Esc_Led_set_toggle(LED_RED_ID,100);//100*10ms each toggle
 	//Esc_Led_set_toggle(LED_GREEN_ID,50);//50*10ms each toggle
+	
+	
+	//TODO : make sure these cmd ok
+	Rtu_485_Dam_Cmd(0x08,9,1,0);
+	Rtu_485_Dam_Cmd(0x08,7,1,0);
+	Rtu_485_Dam_Cmd(0x08,8,1,0);
+	Rtu_485_Dam_Cmd(0x08,3,1,0);
+	Rtu_485_Dam_Cmd(0x08,4,1,0);
+	Rtu_485_Dam_Cmd(0x08,5,1,0);
+	Rtu_485_Dam_Cmd(0x08,15,1,0);
 }
 
 
@@ -405,18 +423,18 @@ void main_loop()
 	Rtu_485_Event();
 	Rtu_485_Runtime_loop(); // base on rtu_485
 	
-#if 0
+#if 0  // control by remoter
 	if( check_systick_time(&ke4_speed_t) ){
 		Ke4_Speed_Control_Loop();
 	}
 #endif 
 	
 	if( check_systick_time(&report_t) ){
-		//Can1_Listener_Report_Event();
-		//Can1_Listener_Check_connect_event();
-		//logd_uint("current: ",Esc_Yaw_Control_GetCurrentAdc());
-		//logd_uint("angle:   ",Esc_Yaw_Control_GetAngleAdc());
-		//logd_uint("oil mass:",Esc_Yaw_Control_GetOilMassAdc());
+		Can1_Listener_Report_Event();
+		Can1_Listener_Check_connect_event();
+		logd_uint("current: ",Esc_Yaw_Control_GetCurrentAdc());
+		logd_uint("angle:   ",Esc_Yaw_Control_GetAngleAdc());
+		logd_uint("oil mass:",Esc_Yaw_Control_GetOilMassAdc());
 		/*
 		Esc_Yaw_Control_SetAngle(yaw_test_angle);
 		yaw_test_angle += 10;

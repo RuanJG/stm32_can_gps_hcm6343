@@ -12,17 +12,24 @@ rtu_485_ack_t rtu485_ack;
 volatile char is_485_bus_status = _485_NONE;
 
 
-void _485_cail_ack_len(rtu_485_ack_t* ack, unsigned char abyte)
+int _485_cail_ack_len(rtu_485_ack_t* ack, unsigned char abyte)
 {
 	// if data cmd , will get this abyte = len, if set cmd , ack len == cmd_len
-	
-	if( ack->func == 0x03 || ack->func == 0x04 || ack->func == 0x01 ){
+	unsigned char func;
+	func = ack->func;
+	if( (func & 0x80) != 0 ){
+		logd_uint("485 fail cmd ack",ack->addr);
+		func &= 0x7f;
+	}
+	if( func == 0x03 || func == 0x04 || func == 0x01 || func == 0x02){
 		ack->len = abyte;
-	}else if( ack->func == 0x05 || ack->func == 0x10 ){
+	}else if( func == 0x05 || func == 0x10 ){
 		ack->len = 3;
 	}else{
-		logd("unknow 485 cmd\r\n");
+		logd_uint("unknow 485 cmd",ack->addr);
+		return -1;
 	}
+	return 1;
 }
 
 void rtu_485_ack_init(rtu_485_ack_t* ack)
@@ -56,7 +63,10 @@ int recive_485_parse(rtu_485_ack_t* ack, unsigned char abyte)
 		}
 		case 2:{
 			ack->step++;
-			_485_cail_ack_len(ack, abyte);
+			if( -1 == _485_cail_ack_len(ack, abyte) )
+			{ //get a unknown cmd
+				return -1;
+			}
 			if( ack->len <= 0 ) 
 				ack->step++; // no data
 			ack->index = 0;
