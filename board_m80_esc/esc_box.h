@@ -14,23 +14,44 @@ void Esc_GPIO_Configuration (void);
 
 
 //pump pitch push_rod
+// x/MAX_PUMP_PITCH_PWM_VALUE = 1.4/3.3 
+//1.4 = 85 //170 //1737 // back pump pitch : 向后喷水
+//2.1 = 127 //254 //2606 // middle , 向下喷水
+//3.3 = 200 //400 // 向前喷水
+
 #define MIN_PUMP_PITCH_PWM_VALUE 0
-#define MAX_PUMP_PITCH_PWM_VALUE 400 //200 400 800
-#define FORWARD_PUMP_PITCH_ANGLE_PWM 0
-#define MIDDLE_PUMP_PITCH_ANGLE_PWM 200
-#define BACK_PUMP_PITCH_ANGLE_PWM 400
+#define MAX_PUMP_PITCH_PWM_VALUE 200 //200 400 800
+#define FORWARD_PUMP_PITCH_ANGLE_PWM 200
+#define MIDDLE_PUMP_PITCH_ANGLE_PWM 127 //254
+#define BACK_PUMP_PITCH_ANGLE_PWM 85 //170
 void Esc_Pump_Pitch_Config();
 void Esc_Pump_Pitch_Back();
 void Esc_Pump_Pitch_Middle();
 void Esc_Pump_Pitch_Forward();
-//int esc_set_pump_pitch_pwm(uint16_t pwm);
+int esc_set_pump_pitch_pwm(uint16_t pwm);
 
 
 
 //adc 
-void Esc_ADC_Configuration (void);
+typedef void(*escAdcIrqFunction_t)(void);
+void Esc_ADC_Configuration (escAdcIrqFunction_t irqfunc);
+u16 Get_Oil_Mass_Adc_value();
+u16 Get_ISA_Adc_value();
+u16 Get_PUMP_ANGLE_Adc_value();
 
-
+// yaw control 
+#define YAW_DEFAULE_MIDDLE_ANGLE  1500 // 1000 - 1500 - 2000
+#define YAW_DEFAULE_MAX_ANGLE 2000 // most right
+#define YAW_DEFAULE_MIN_ANGLE 1000 // most Left
+void Esc_Yaw_Control_Event();
+void Esc_Yaw_Control_Configure();
+void Esc_Yaw_Control_SetAngle(uint16_t  angle);
+unsigned short Esc_Yaw_Control_GetAngleAdc( );
+unsigned short Esc_Yaw_Control_GetCurrentAdc();
+unsigned short Esc_Yaw_Control_GetOilMassAdc();
+unsigned short Esc_Get_Current_Value();
+unsigned short Esc_Get_Angle_Value();
+unsigned short Esc_Get_Oil_Mass_Value();
 
 //led
 void Esc_Led_set_toggle(int id, int _10ms);
@@ -41,6 +62,78 @@ void Esc_Led_Configuration();
 #define LED_RED_ID 0
 #define LED_GREEN_ID 1
 #define LED_YELLOW_ID 2
+
+
+
+//log 
+void logd(char *str);
+void logd_uint(char *str, unsigned int num);
+
+
+
+
+
+
+// rtu_485 bus control
+void Rtu_485_Runtime_Configure();
+void Rtu_485_Runtime_loop();
+int Rtu_485_Runtime_sendCmd(unsigned char addr, unsigned char func, unsigned short reg_addr , unsigned short len);
+int Rtu_485_Runtime_send_RawCmd(unsigned char *data, unsigned char len);
+
+	// th11sb
+typedef struct _th11sb_t {
+	unsigned char addr;
+	unsigned char updated;
+	unsigned short wet ;
+	unsigned short tempture;
+}th11sb_t;
+extern th11sb_t th11sb_head,th11sb_tail;
+
+typedef struct _dam_t{
+	unsigned short status;
+	unsigned char updated;
+	unsigned char addr;
+	unsigned char type; // 4 or 16
+}dam_t;
+extern dam_t dam4_02,dam4_04,dam4_05,dam16_08,dam4_09;
+#define DAM_CMD_FLASH_ON 3
+#define DAM_CMD_FLASH_OFF 2
+#define DAM_CMD_ON 1
+#define DAM_CMD_OFF 0
+void Rtu_485_Dam_Cmd(unsigned char addr_id, unsigned char num_id, unsigned int cmd, unsigned int ms);
+
+typedef struct _powerAdc6_t{
+	unsigned char addr;
+	unsigned char updated;
+	unsigned short adc[6];
+}powerAdc6_t;
+extern powerAdc6_t powerAdc6_01,powerAdc6_06,powerAdc6_07;
+typedef struct _pgw636_t{
+	unsigned char addr;
+	unsigned char updated;
+	int curren_speed;  //-8388608  ~  8388607
+	int max_speed;
+	int min_speed;
+}pgw636_t;
+extern pgw636_t pgw636_03;
+
+
+
+
+
+
+
+//esc_can_listener
+#define CAN1_LISTENER_REPORT_STATUS_MS 100
+void Listen_Can1();
+int is_Can1_Lost_Connect();
+void Can1_Listener_Report_Event();
+void Can1_Listener_Check_connect_event();
+
+
+//ke4 speed control
+void Ke4_Speed_Control_Loop();
+void Ke4_Set_Speed(uint16_t speed);
 
 
 
@@ -99,13 +192,13 @@ void Esc_Led_Configuration();
 #define IS_A_GPIO_PIN GPIO_Pin_4
 	// H_BRIDGE Ctrl1 ctrl2 ctrl3 ctrl4 控制方向推动杆，泵喷水方向左右转,yaw
 #define H_BRIDGE_A_CTRL3_BANK GPIOB
-#define H_BRIDGE_A_CTRL3_PIN GPIO_Pin_4
+#define H_BRIDGE_A_CTRL3_PIN GPIO_Pin_6
 #define H_BRIDGE_A_CTRL4_BANK GPIOB
-#define H_BRIDGE_A_CTRL4_PIN GPIO_Pin_5
+#define H_BRIDGE_A_CTRL4_PIN GPIO_Pin_7
 #define H_BRIDGE_B_CTRL1_BANK GPIOB
-#define H_BRIDGE_B_CTRL1_PIN GPIO_Pin_6
+#define H_BRIDGE_B_CTRL1_PIN GPIO_Pin_4
 #define H_BRIDGE_B_CTRL2_BANK GPIOB
-#define H_BRIDGE_B_CTRL2_PIN GPIO_Pin_7
+#define H_BRIDGE_B_CTRL2_PIN GPIO_Pin_5
 	//H_BRIDGE  pwmb pwmj  控制方向推动杆 速度
 	//now use H bridge A , pwmb is use for uart , so  RUDDEREN_A_GPIO is connect to pwmb 
 //#define H_BRIDGE_A_PWMB_GPIO_BANK  GPIOB

@@ -273,26 +273,14 @@ int catch_program_app_head_in_ms(int ms)
 	return 0;
 }
 
-#if IAP_FIRMWARE_BOARD_NAVIGATION
-#include <navigation_box.h>
-#endif
-#if IAP_FIRMWARE_BOARD_80_ESC
-#include <esc_box.h>
-#endif
+
 
 
 void main_setup()
 {
 	int res;
 	
-#if IAP_FIRMWARE_BOARD_80_ESC
-	SetupPllClock(HSE_CLOCK_6MHZ);
-	Esc_GPIO_Configuration();
-#endif
-#if IAP_FIRMWARE_BOARD_NAVIGATION
-	SetupPllClock(HSE_CLOCK_6MHZ);
-	Navi_GPIO_Configuration();
-#endif
+	Iap_GPIO_Configuration();
 	
 	Uart_Configuration (&IapUart, IAP_UART_DEV, IAP_UART_BAUDRATE, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
 	cmdcoder_init(&decoder, 1,  CMD_CODER_CALL_BACK_NULL);
@@ -313,12 +301,10 @@ void main_setup()
 			{
 				jump_to_main_program();
 			}
-			//jump_to_main_program();
 		}else{
 			clean_iap_tag(); // clean tag, and go to listen update
 		}
 	}
-	Esc_Led_on(LED_YELLOW_ID);
 	#endif
 	//no app program or get a program start , it will do main_loop
 }
@@ -326,7 +312,6 @@ void main_deinit()
 {
 	SysTick_Deinit();
 	Uart_DeInit(&IapUart);
-	//Nbl_Led_off(GPS_LED_ID);
 }
 void main_loop()
 {

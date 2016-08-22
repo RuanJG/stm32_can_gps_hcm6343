@@ -37,29 +37,20 @@ void Esc_Pump_Pitch_Pin_Control_Config()
 
 }
 
-void Esc_Yaw_configure()
-{
-	GPIO_InitTypeDef GPIO_InitStructure;
-	
-	GPIO_StructInit(&GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = H_BRIDGE_A_PWMB_GPIO_PIN;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_Init(H_BRIDGE_A_PWMB_GPIO_BANK, &GPIO_InitStructure);
-	GPIO_SetBits(H_BRIDGE_A_PWMB_GPIO_BANK,H_BRIDGE_A_PWMB_GPIO_PIN);
 
-	GPIO_StructInit(&GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = H_BRIDGE_A_CTRL3_PIN;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_Init(H_BRIDGE_A_CTRL3_BANK, &GPIO_InitStructure);
-	
-	GPIO_StructInit(&GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = H_BRIDGE_A_CTRL4_PIN;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_Init(H_BRIDGE_A_CTRL4_BANK, &GPIO_InitStructure);
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
 void Esc_GPIO_Configuration (void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -119,6 +110,7 @@ void Esc_GPIO_Configuration (void)
 	
 
 
+	Esc_Yaw_Control_Configure();
 	Esc_Pump_Pitch_Pin_Control_Config();
 	
 	//remap
