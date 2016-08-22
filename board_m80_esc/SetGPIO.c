@@ -1,6 +1,65 @@
 #include "stm32f10x.h" 	
 #include "esc_box.h"
 
+
+void a_esc_pump_pin_control_middle()
+{
+	GPIO_InitTypeDef GPIO_InitStructure;	
+	
+	
+	
+	GPIO_StructInit(&GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOC, &GPIO_InitStructure);
+	GPIO_ResetBits(GPIOC,GPIO_Pin_15);
+	
+	GPIO_StructInit(&GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_14;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOC, &GPIO_InitStructure);
+	
+	GPIO_StructInit(&GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOC, &GPIO_InitStructure);
+}
+ 
+ 
+void Esc_Pump_Pitch_Pin_Control_Config()
+{	
+
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC,ENABLE);
+	a_esc_pump_pin_control_middle();
+
+}
+
+void Esc_Yaw_configure()
+{
+	GPIO_InitTypeDef GPIO_InitStructure;
+	
+	GPIO_StructInit(&GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Pin = H_BRIDGE_A_PWMB_GPIO_PIN;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(H_BRIDGE_A_PWMB_GPIO_BANK, &GPIO_InitStructure);
+	GPIO_SetBits(H_BRIDGE_A_PWMB_GPIO_BANK,H_BRIDGE_A_PWMB_GPIO_PIN);
+
+	GPIO_StructInit(&GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Pin = H_BRIDGE_A_CTRL3_PIN;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(H_BRIDGE_A_CTRL3_BANK, &GPIO_InitStructure);
+	
+	GPIO_StructInit(&GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Pin = H_BRIDGE_A_CTRL4_PIN;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(H_BRIDGE_A_CTRL4_BANK, &GPIO_InitStructure);
+}
 void Esc_GPIO_Configuration (void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -59,24 +118,8 @@ void Esc_GPIO_Configuration (void)
 	GPIO_Init(GPIOA, &GPIO_InitStructure);	
 	
 
-	//接近开关，检测是否方向推动杆推动泵的roll方向yaw 是否到达最左，最右，中间，的位置
-// 采用中断来做处理
-	GPIO_StructInit(&GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = LIMIT_L_GPIO_PIN;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
-	GPIO_Init(LIMIT_L_GPIO_BANK, &GPIO_InitStructure);
-	
-	GPIO_StructInit(&GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = LIMIT_M_GPIO_PIN;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
-	GPIO_Init(LIMIT_M_GPIO_BANK, &GPIO_InitStructure);
-	
-	GPIO_StructInit(&GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = LIMIT_R_GPIO_PIN;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
-	GPIO_Init(LIMIT_R_GPIO_BANK, &GPIO_InitStructure);
-	
 
+	Esc_Pump_Pitch_Pin_Control_Config();
 	
 	//remap
 	GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);

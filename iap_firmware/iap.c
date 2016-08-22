@@ -214,7 +214,10 @@ char  handle_packget(unsigned char *data, int len)
 	
 	//check seq
 	new_seq = (program_data_frame_seq+1)% PACKGET_MAX_DATA_SEQ;
-	if( new_seq != data[0] )
+	if( new_seq > data[0] )
+	{
+		return 0;
+	}else if( new_seq < data[0] )
 	{
 		return PACKGET_ACK_FALSE_SEQ_FALSE;
 	}
@@ -285,7 +288,6 @@ void main_setup()
 #if IAP_FIRMWARE_BOARD_80_ESC
 	SetupPllClock(HSE_CLOCK_6MHZ);
 	Esc_GPIO_Configuration();
-	Esc_Led_Configuration();
 #endif
 #if IAP_FIRMWARE_BOARD_NAVIGATION
 	SetupPllClock(HSE_CLOCK_6MHZ);
@@ -298,7 +300,7 @@ void main_setup()
 
 	
 	#if 0
-	res = catch_program_app_head_in_ms(500);
+	res = catch_program_app_head_in_ms(300);
 	if(  res == 0 )
 	{
 		jump_to_main_program();
@@ -306,7 +308,12 @@ void main_setup()
 	#else
 	if( 1 == is_main_program_written() ){ // if no main app , just listen update
 		if( 0 == is_iap_tag_set() ){ // if main app set tag, need to listen update 
-			jump_to_main_program();
+			res = catch_program_app_head_in_ms(300);
+			if(  res == 0 )
+			{
+				jump_to_main_program();
+			}
+			//jump_to_main_program();
 		}else{
 			clean_iap_tag(); // clean tag, and go to listen update
 		}
@@ -330,11 +337,11 @@ void main_loop()
 	{
 		if( cmdcoder_Parse_byte(&decoder,ubyte) ){
 			if( decoder.id == PACKGET_START_ID ){
-				if( program_step != PROGRAM_STEP_GET_DATA){
+				//if( program_step != PROGRAM_STEP_GET_DATA){
 					program_step = PROGRAM_STEP_GET_DATA ;
 					flash_process_init();
 					init_program_buff();
-				}
+				//}
 				answer_ack_ok();
 			}else if (decoder.id == PACKGET_DATA_ID){
 				if( program_step != PROGRAM_STEP_GET_DATA ) {
