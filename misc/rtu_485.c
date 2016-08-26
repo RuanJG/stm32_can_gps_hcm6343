@@ -18,7 +18,7 @@ int _485_cail_ack_len(rtu_485_ack_t* ack, unsigned char abyte)
 	unsigned char func;
 	func = ack->func;
 	if( (func & 0x80) != 0 ){
-		logd_uint("485 fail cmd ack",ack->addr);
+		logd_uint("485 fail cmd ack addr=",ack->addr);
 		func &= 0x7f;
 	}
 	if( func == 0x03 || func == 0x04 || func == 0x01 || func == 0x02){
@@ -26,7 +26,8 @@ int _485_cail_ack_len(rtu_485_ack_t* ack, unsigned char abyte)
 	}else if( func == 0x05 || func == 0x10 ){
 		ack->len = 3;
 	}else{
-		logd_uint("unknow 485 cmd",ack->addr);
+		logd_uint("unknow 485 addr=",ack->addr);
+		logd_uint("func=",func);
 		return -1;
 	}
 	return 1;
@@ -160,11 +161,23 @@ void Rtu_485_Event()
 		unsigned char data;
 		char res;
 	
-		if( is_485_bus_status != _485_CMD_PENDING )return ;
+		if( is_485_bus_status != _485_CMD_PENDING )
+		{
+			
+			if( Uart_GetChar(rtu485_uart,&data) > 0 ){
+				;//Uart_PutChar(rtu485_uart,data);
+				//logd_uint("get data=",data);
+			}
+			return ;
+		}
 		
 		if( _rtu_ms == 0 ) _rtu_ms = get_system_ms();
 	
 		if( Uart_GetChar(rtu485_uart,&data) > 0 ){
+			/*
+			Uart_PutChar(rtu485_uart,data);
+			logd_uint("get data=",data);
+			*/
 			res = recive_485_parse( &rtu485_ack,data);
 			if( res != 0 ){
 				_rtu_ms = 0;

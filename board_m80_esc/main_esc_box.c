@@ -386,7 +386,7 @@ void main_setup()
 	
 	//time_t init 
 	systick_time_start(&report_t,CAN1_LISTENER_REPORT_STATUS_MS);//REPORT_STATUS_MS);
-	systick_time_start(&led_t,10);
+	systick_time_start(&led_t,100);
 	systick_time_start(&ke4_speed_t,500);
 	
 	
@@ -402,8 +402,10 @@ void main_setup()
 	//Esc_Led_set_toggle(LED_RED_ID,100);//100*10ms each toggle
 	//Esc_Led_set_toggle(LED_GREEN_ID,50);//50*10ms each toggle
 	
+	Esc_Limit_Configuration();
 	
 	//TODO : make sure these cmd ok
+	
 	Rtu_485_Dam_Cmd(0x08,9,1,0);
 	Rtu_485_Dam_Cmd(0x08,7,1,0);
 	Rtu_485_Dam_Cmd(0x08,8,1,0);
@@ -411,8 +413,12 @@ void main_setup()
 	Rtu_485_Dam_Cmd(0x08,4,1,0);
 	Rtu_485_Dam_Cmd(0x08,5,1,0);
 	Rtu_485_Dam_Cmd(0x08,15,1,0);
+	
+	//Rtu_485_Dam_Cmd(0x08,3,DAM_CMD_FLASH_ON,10000);
 }
 
+
+uint32_t speeker_ms = 1;
 
 void main_loop()
 {
@@ -422,6 +428,8 @@ void main_loop()
 
 	Rtu_485_Event();
 	Rtu_485_Runtime_loop(); // base on rtu_485
+
+	esc_check_limit_gpio_loop();
 	
 #if 0  // control by remoter
 	if( check_systick_time(&ke4_speed_t) ){
@@ -435,17 +443,19 @@ void main_loop()
 		logd_uint("current: ",Esc_Yaw_Control_GetCurrentAdc());
 		logd_uint("angle:   ",Esc_Yaw_Control_GetAngleAdc());
 		logd_uint("oil mass:",Esc_Yaw_Control_GetOilMassAdc());
-		/*
-		Esc_Yaw_Control_SetAngle(yaw_test_angle);
-		yaw_test_angle += 10;
-		if( yaw_test_angle > 2000){
-			yaw_test_angle = 1000;
-		}
-		*/
 	}
 	
 	if( check_systick_time(&led_t) ){
-		Esc_Led_Event();
+		//Esc_Led_Event();
+		if( speeker_ms > 0 )
+		{
+			speeker_ms += 100;
+			if( speeker_ms > 10000 ){
+				Rtu_485_Dam_Cmd(0x08,3,0,0);
+				speeker_ms = 0;
+			}
+		}
+		
 	}
 	
 	listen_cmd(&Uart1);

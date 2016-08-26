@@ -431,6 +431,7 @@ int _rtu_485_devices_runtime(int step, int res, rtu_485_ack_t *runtime_ack)
 			ret = _pgw636_485_runtime(&pgw636_03,step,res,runtime_ack);
 			break;
 		}
+		
 		case 11:{
 			ret = _dam_readInput_485_runtime(&dam4_02, step,res,runtime_ack);
 			break;
@@ -673,7 +674,7 @@ void Rtu_485_Runtime_loop()
 		//check cmd	
 		if( 8 < fifo_avail(&rtu_485_cmd_fifo) )
 			_to_send_cmd = 1;
-		
+		//_to_send_cmd = 1;
 		// run runtime loop
 		if( _rtu_485_loop_type == _485_DEVICES_LOOP)
 		{

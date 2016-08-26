@@ -149,6 +149,10 @@ void Ke4_Set_Speed(uint16_t speed);
 #define LIMIT_M_GPIO_PIN GPIO_Pin_1
 #define LIMIT_R_GPIO_BANK GPIOA
 #define LIMIT_R_GPIO_PIN GPIO_Pin_7
+void Esc_Limit_Configuration (void);
+void esc_check_limit_gpio_loop();
+uint8_t get_esc_limit_gpio_status();
+void Alarm_limit_Position();
 
 //PWMA 控制倒车斗 即喷泵的pitch方向, 主要设置三个值，即前，中，后 ;  pwmB no use
 #define PWMA_GPIO_BANK GPIOB
