@@ -303,6 +303,11 @@ void main_setup()
 			}
 		}else{
 			clean_iap_tag(); // clean tag, and go to listen update
+			res = catch_program_app_head_in_ms(5000);
+			if(  res == 0 )
+			{
+				jump_to_main_program();
+			}
 		}
 	}
 	#endif
