@@ -304,9 +304,12 @@ void test_ke4(Uart_t *uarts)
 	Ke4_Set_Speed(pwm);
 }
 
+extern volatile char main_control_stop_listen_dma;
 void listen_cmd(Uart_t *uart)
 {
 	uint32_t cmd;
+	char tmp;
+	
 	if(read_num_by_uart(uart, &cmd ) == 1)
 	{
 		if(cmd == 0  ){
@@ -350,6 +353,14 @@ void listen_cmd(Uart_t *uart)
 			//#8#m [m,f,b]
 			test_pitch(&Uart1);
 		}
+		if( cmd == 9 ){
+			//#9#1 [1 0] //1:stop 485 runtime 0 : continue 485 runtime
+			while( Uart_GetChar(&Uart1, &tmp) <= 0 ) delay_us(1000);
+			if( tmp == '0' )
+				main_control_stop_listen_dma = 0;
+			else if( tmp == '1')
+				main_control_stop_listen_dma = 1;
+		}
 	}
 }
 
@@ -363,7 +374,23 @@ void listen_cmd(Uart_t *uart)
 
 
 
-
+uint32_t speeker_ms = 1;
+void dam_devices_second_init()
+{
+		
+	//TODO : make sure these cmd ok
+	
+	Rtu_485_Dam_Cmd(0x08,9,1,0);
+	Rtu_485_Dam_Cmd(0x08,7,1,0);
+	Rtu_485_Dam_Cmd(0x08,8,1,0);
+	Rtu_485_Dam_Cmd(0x08,3,1,0);
+	Rtu_485_Dam_Cmd(0x08,4,1,0);
+	Rtu_485_Dam_Cmd(0x08,5,1,0);
+	Rtu_485_Dam_Cmd(0x08,6,1,0);
+	Rtu_485_Dam_Cmd(0x08,15,1,0);
+	
+	//Rtu_485_Dam_Cmd(0x08,3,DAM_CMD_FLASH_ON,10000);
+}
 
 
 
@@ -404,25 +431,14 @@ void main_setup()
 	
 	Esc_Limit_Configuration();
 	
-	//TODO : make sure these cmd ok
-	
-	Rtu_485_Dam_Cmd(0x08,9,1,0);
-	Rtu_485_Dam_Cmd(0x08,7,1,0);
-	Rtu_485_Dam_Cmd(0x08,8,1,0);
-	Rtu_485_Dam_Cmd(0x08,3,1,0);
-	Rtu_485_Dam_Cmd(0x08,4,1,0);
-	Rtu_485_Dam_Cmd(0x08,5,1,0);
-	Rtu_485_Dam_Cmd(0x08,15,1,0);
-	
-	//Rtu_485_Dam_Cmd(0x08,3,DAM_CMD_FLASH_ON,10000);
+	//dam_devices_second_init();
+
 }
 
 
-uint32_t speeker_ms = 1;
-
 void main_loop()
 {
-//volatile int yaw_test_angle = 1000;
+
 	Listen_Can1();
 	Esc_Yaw_Control_Event();
 
@@ -450,7 +466,10 @@ void main_loop()
 		if( speeker_ms > 0 )
 		{
 			speeker_ms += 100;
-			if( speeker_ms > 10000 ){
+			if( speeker_ms > 1000 ){
+				dam_devices_second_init();
+				//Rtu_485_Dam_Cmd(0x08,3,1,0);
+			}else if( speeker_ms > 11000){
 				Rtu_485_Dam_Cmd(0x08,3,0,0);
 				speeker_ms = 0;
 			}

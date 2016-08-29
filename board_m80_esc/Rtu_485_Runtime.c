@@ -653,6 +653,8 @@ void Rtu_485_Runtime_Configure()
 #define _485_DEVICES_LOOP 2
 volatile char _rtu_485_loop_type = _485_DEVICES_LOOP;
 unsigned int loop_counter=0;
+volatile char main_control_stop_listen_dma = 0;
+
 void Rtu_485_Runtime_loop()
 {
 	char _to_send_cmd = 0;
@@ -672,7 +674,7 @@ void Rtu_485_Runtime_loop()
 		}
 		
 		//check cmd	
-		if( 8 < fifo_avail(&rtu_485_cmd_fifo) )
+		if( 8 < fifo_avail(&rtu_485_cmd_fifo) || main_control_stop_listen_dma == 1)
 			_to_send_cmd = 1;
 		//_to_send_cmd = 1;
 		// run runtime loop
