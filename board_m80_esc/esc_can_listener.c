@@ -130,6 +130,9 @@
   // 当前电调测到的 转向推杆的 电流（单位A），舵机角度（1000-1500-2000）， 油量（0-100）单位% 
 	[0x1a][currentL][currentH] [angleL][angleH] [oilL][oilH]
 	
+	
+	//如果发生漏水，则上报漏水状态
+	[0xa1] [head][middle][back]  // head==1：前舱漏水；middle==1：中间漏水；back==1：后舱漏水
 
 */
 
@@ -237,17 +240,10 @@ unsigned char reportBuffer[8];
 void Can1_Listener_Report_Event()
 {
 	unsigned int tmp;
-	static unsigned char step=0;
 	uint8_t lim_status ;
+	static unsigned char step=0;
 	
-	lim_status = get_esc_limit_gpio_status();
-	if( lim_status != 0){
-		logd_uint("Alarm Gpio=",lim_status);
-		//Alarm_limit_Position();
-		reportBuffer[0]= 0xa1;
-		reportBuffer[1]= lim_status;
-		Can1_Send_Ext(MAIN_CONTROLLER_CAN_ID ,reportBuffer,2,CAN_ID_EXT, CAN_RTR_DATA);
-	}
+
 	switch(step)
 	{
 		case 0:
@@ -418,6 +414,23 @@ void Can1_Listener_Report_Event()
 
 				//Can1_Send(MAIN_CONTROLLER_CAN_ID ,reportBuffer,5);
 				Can1_Send_Ext(MAIN_CONTROLLER_CAN_ID ,reportBuffer,5,CAN_ID_EXT, CAN_RTR_DATA);
+			}
+			step++;
+			break;
+		}
+		
+		case 9:
+		{//漏水检测
+			lim_status = get_esc_limit_gpio_status();
+			if( lim_status != 0){
+				reportBuffer[0]= 0xa1;
+				reportBuffer[1]= ((lim_status & LEAK_HEAD_SENSOR_TAG)==0) ? 0:1 ;
+				if( reportBuffer[1] == 1 ) logd("leak head!\r\n");
+				reportBuffer[2]= ((lim_status & LEAK_MIDDLE_SENSOR_TAG)==0) ? 0:1 ;
+				if( reportBuffer[2] == 1 ) logd("leak middle!\r\n");
+				reportBuffer[3]= ((lim_status & LEAK_BACK_SENSOR_TAG)==0) ? 0:1 ;
+				if( reportBuffer[3] == 1 ) logd("leak back!\r\n");
+				Can1_Send_Ext(MAIN_CONTROLLER_CAN_ID ,reportBuffer,4,CAN_ID_EXT, CAN_RTR_DATA);
 			}
 			step++;
 			break;

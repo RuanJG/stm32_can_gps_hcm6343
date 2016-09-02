@@ -141,14 +141,16 @@ void Ke4_Set_Speed(uint16_t speed);
 // H Bridge
 
 
-//接近开关，检测是否方向推动杆推动泵的roll方向yaw 是否到达最左，最右，中间，的位置
-// 采用中断来做处理
+//漏水检测，三个GPIO，底电平表示漏水
 #define LIMIT_L_GPIO_BANK GPIOA
 #define LIMIT_L_GPIO_PIN GPIO_Pin_0
 #define LIMIT_M_GPIO_BANK GPIOA
 #define LIMIT_M_GPIO_PIN GPIO_Pin_1
 #define LIMIT_R_GPIO_BANK GPIOA
 #define LIMIT_R_GPIO_PIN GPIO_Pin_7
+#define LEAK_HEAD_SENSOR_TAG 0x01
+#define LEAK_MIDDLE_SENSOR_TAG 0x02
+#define LEAK_BACK_SENSOR_TAG 0x04
 void Esc_Limit_Configuration (void);
 void esc_check_limit_gpio_loop();
 uint8_t get_esc_limit_gpio_status();

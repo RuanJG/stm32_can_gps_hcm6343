@@ -425,10 +425,6 @@ void main_setup()
 	Rtu_485_Configure(&Uart2);
 	Rtu_485_Runtime_Configure(); //  base on rtu_485
 	
-	//test
-	//Esc_Led_set_toggle(LED_RED_ID,100);//100*10ms each toggle
-	//Esc_Led_set_toggle(LED_GREEN_ID,50);//50*10ms each toggle
-	
 	Esc_Limit_Configuration();
 	
 	//dam_devices_second_init();
@@ -445,7 +441,7 @@ void main_loop()
 	Rtu_485_Event();
 	Rtu_485_Runtime_loop(); // base on rtu_485
 
-	esc_check_limit_gpio_loop();
+	
 	
 #if 0  // control by remoter
 	if( check_systick_time(&ke4_speed_t) ){
@@ -462,6 +458,7 @@ void main_loop()
 	}
 	
 	if( check_systick_time(&led_t) ){
+		esc_check_limit_gpio_loop();
 		//Esc_Led_Event();
 		if( speeker_ms > 0 )
 		{

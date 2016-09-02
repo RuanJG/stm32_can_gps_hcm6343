@@ -546,6 +546,11 @@
               <FileType>1</FileType>
               <FilePath>.\board_m80_esc\esc_box_ke4_speed.c</FilePath>
             </File>
+            <File>
+              <FileName>esc_limit_alarm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_m80_esc\esc_limit_alarm.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1224,6 +1229,11 @@
               <FileName>esc_box_ke4_speed.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\board_m80_esc\esc_box_ke4_speed.c</FilePath>
+            </File>
+            <File>
+              <FileName>esc_limit_alarm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_m80_esc\esc_limit_alarm.c</FilePath>
             </File>
           </Files>
         </Group>
