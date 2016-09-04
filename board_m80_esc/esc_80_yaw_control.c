@@ -55,6 +55,28 @@ volatile u16 yawCurrentAdcValue = 0;
 volatile u16 yawCurrentMaxFailSafeAdcValue = 0;
 
 
+
+char yaw_log_en = 0;
+void yaw_log(char * str)
+{
+	if( yaw_log_en )
+	{
+		logd("yaw: ");
+		logd(str);
+	}
+}
+void yaw_log_uint(char * str,int a)
+{
+	if( yaw_log_en )
+	{
+		logd("yaw: ");
+		logd_uint(str,a);
+	}
+}
+
+
+
+
 unsigned short Esc_Get_Current_Value()
 {// reutrn 3  -> 3A
 	int value;
@@ -92,7 +114,7 @@ unsigned short Esc_Get_Angle_Value()
 
 
 // 初始化时，自检
-int yawControlInited = 0; 
+int yawControlInited = 1; 
 systick_time_t _yaw_t;
 
 
@@ -219,22 +241,30 @@ void _yaw_control_back()
 #if YAW_FORWARD_ANGLE_ADC_ADD
 void  _yaw_control_reduce_angle_adc_value()
 {
+	//if( _yaw_angle_direction == _YAW_ANGLE_ADC_REDUCE_DIRECTION ) 
+	//	return ;
 	_yaw_angle_direction = _YAW_ANGLE_ADC_REDUCE_DIRECTION;
 	_yaw_control_back();
 }
 void  _yaw_control_add_angle_adc_value()
 {
+	//if( _yaw_angle_direction == _YAW_ANGLE_ADC_ADD_DIRECTION ) 
+	//	return ;
 	_yaw_angle_direction = _YAW_ANGLE_ADC_ADD_DIRECTION;
 	_yaw_control_forward();
 }
 #else
 void  _yaw_control_reduce_angle_adc_value()
 {
+	//if( _yaw_angle_direction == _YAW_ANGLE_ADC_REDUCE_DIRECTION ) 
+	//	return ;
 	_yaw_angle_direction = _YAW_ANGLE_ADC_REDUCE_DIRECTION;
 	_yaw_control_forward();
 }
 void  _yaw_control_add_angle_adc_value()
 {
+	//if( _yaw_angle_direction == _YAW_ANGLE_ADC_ADD_DIRECTION ) 
+	//	return ;
 	_yaw_angle_direction = _YAW_ANGLE_ADC_ADD_DIRECTION;
 	_yaw_control_back();
 }
@@ -373,20 +403,22 @@ void _esc_yaw_adc_update_event()
 	if( 1 == _check_angle_failsafe() )
 	{
 		failsafe_AngleOverFlow = 1;
-		//yaw_control_failsafe(); // do failsafe in event loop
 	}
 	
+	//update times for check
 	_esc_yaw_check_adc_hz++;
 	
+	
 	// check angle
-/*	
-	if( yawControlInited == 1 && 0 == _is_failsafe() ){
+#if 0
+	if( yawControlInited == 1 && 0 == _is_failsafe() )
+	{
 		if( 1 == is_reach_expect_value(yawExpectAngleAdcValue) )
 		{
 			_yaw_control_shutdown();
 		}
 	}	
-*/	
+#endif
 }
 
 
@@ -399,7 +431,7 @@ int _yaw_control_move_to_expect_adc(uint16_t angle_adc_value)
 	// 0 running 1 ok
 	
 	int direct ;
-	//logd_uint("goto ",angle_adc_value);
+	//yaw_log_uint("goto ",angle_adc_value);
 	
 	//检查是否己经达到
 	if( 1 == is_reach_expect_value(angle_adc_value) )
@@ -407,44 +439,10 @@ int _yaw_control_move_to_expect_adc(uint16_t angle_adc_value)
 		_yaw_control_shutdown();
 		return 1;
 	}
-	
-	// no reach , so check and do sport
-	
-	//check failsafe
-	//if( 1 == failsafe_AdcUpdateError ) return -1;
-	//if( 1 == _is_failsafe() )
-		//	return -1;
-
 	direct  = _yaw_control_get_direction();
 	if( angle_adc_value > yawAngleAdcValue ){
-		
-		#if 0
-		//if is moving , should stop and change direction , or do nothing
-		if( 0 == _is_yaw_control_stoped() ){
-			if( _YAW_ANGLE_ADC_ADD_DIRECTION  ==  direct ){ // last move is add direction
-				return 0 ; //stop do nothing
-			}else{
-				_yaw_control_shutdown();
-				delay_us(2000);
-			}
-		}
-		#endif
-		
-		//start moving
 		_yaw_control_add_angle_adc_value();
 	}else{
-		#if 0
-		//if is moving , should stop and change direction , or do nothing
-		if( 0 == _is_yaw_control_stoped() ){
-			if( _YAW_ANGLE_ADC_REDUCE_DIRECTION  ==  direct ){ // last move is add direction
-				return 0 ; //stop do nothing
-			}else{
-				_yaw_control_shutdown();
-				delay_us(2000);
-			}
-		}
-		#endif
-		
 		_yaw_control_reduce_angle_adc_value();
 	}
 	return 0;
@@ -466,7 +464,7 @@ int _yaw_control_initFunc()
 			//goto min side
 			if( 1 == _yaw_control_move_to_expect_adc( YAW_DEFAULT_ANGLE_MIN_ADC_VALUE )){
 				step++;
-				logd("goto min ok\r\n");
+				yaw_log("goto min ok\r\n");
 			}
 			break;
 		}
@@ -475,7 +473,7 @@ int _yaw_control_initFunc()
 			//goto max side
 			if( 1 == _yaw_control_move_to_expect_adc( YAW_DEFAULT_ANGLE_MAX_ADC_VALUE )){
 				step++;
-				logd("goto max ok\r\n");
+				yaw_log("goto max ok\r\n");
 			}
 			break;
 		}
@@ -485,7 +483,7 @@ int _yaw_control_initFunc()
 			res = _yaw_control_move_to_expect_adc( YAW_DEFAULT_ANGLE_MIDDLE_ADC_VALUE );
 			if( 1 == res ){
 				step=0;
-				logd("goto mid ok\r\n");
+				yaw_log("goto mid ok\r\n");
 				return 1;	
 			}	
 			break;
@@ -502,8 +500,8 @@ void _try_go_back_in_failsafe()
 	
 	if( failsafe_CurrentOverFlow == 1 )
 	{ // has stoped
-		logd_uint("current max failsafe = ",yawCurrentMaxFailSafeAdcValue);
-		logd_uint("current value = ",yawCurrentAdcValue);
+		yaw_log_uint("current max failsafe = ",yawCurrentMaxFailSafeAdcValue);
+		yaw_log_uint("current value = ",yawCurrentAdcValue);
 		//now_time_ms = get_system_ms();
 		//if( (now_time_ms - _failsafe_time_ms) < 500  || 1 == _check_current_failsafe() ) 
 		if( 1 == _check_current_failsafe() )
@@ -515,8 +513,8 @@ void _try_go_back_in_failsafe()
 	
 	if( failsafe_AngleOverFlow == 1)
 	{
-		logd("angle failsafe\r\n");
-		#if 0
+		yaw_log("angle failsafe\r\n");
+		#if 1
 		if( 1 == _yaw_control_move_to_expect_adc( YAW_DEFAULT_ANGLE_MIDDLE_ADC_VALUE ) )
 		{
 			failsafe_AngleOverFlow = 0;
@@ -551,7 +549,7 @@ void Esc_Yaw_Control_SetAngle(uint16_t  angle)
 	{
 		yawExpectAngle = angle;
 		yawExpectAngleAdcValue = _yaw_control_angle_to_adc(angle);
-		//logd_uint("goto angle adc ",yawExpectAngleAdcValue);
+		yaw_log_uint("set expect adc=",yawExpectAngleAdcValue);
 	}
 }
 
@@ -569,7 +567,7 @@ void Esc_Yaw_Control_Event()
 			failsafe_AdcUpdateError = 1;
 			yaw_control_failsafe();
 			_esc_yaw_check_adc_hz = 0;
-			logd("adc update error\r\n");
+			yaw_log("adc update error\r\n");
 			return ; // stop , do nothing
 		}else{
 			failsafe_AdcUpdateError = 0;
@@ -580,14 +578,14 @@ void Esc_Yaw_Control_Event()
 		if( is_Can1_Lost_Connect() )
 		{
 			yaw_control_failsafe();
-			logd("lost cconnect failsafe\r\n");
+			yaw_log("lost cconnect failsafe\r\n");
 			return ;
 		}
 		
 		// check failsafe 
 		if( failsafe_AngleOverFlow == 1 || failsafe_CurrentOverFlow == 1 ){
 			//try to return to normal status
-			logd("do failsafe\r\n");
+			//yaw_log("do failsafe\r\n");
 			_try_go_back_in_failsafe();
 			
 			return;
@@ -596,21 +594,29 @@ void Esc_Yaw_Control_Event()
 		//init 
 		if( yawControlInited == 0 )
 		{
-			//logd("do init\r\n");
 			res = _yaw_control_initFunc();
-			//res = _yaw_control_move_to_expect_adc( YAW_DEFAULT_ANGLE_MAX_ADC_VALUE );
 			if( 1 == res ){
-				logd("Init ok\r\n");
+				yaw_log("Init ok\r\n");
 				yawControlInited = 1;
 			}
 		}else{
-				//goto  expect angle
-			//logd("do yaw check loop\r\n");
 			_yaw_control_move_to_expect_adc(yawExpectAngleAdcValue);
 		}
 	}
 }
 
+void Esc_Yaw_Control_print_status()
+{
+	logd("yaw :");
+	logd(" init="); logd_num(yawControlInited);
+	logd(" expAdc="); logd_num(yawExpectAngleAdcValue);
+	logd(" cutAdc="); logd_num(yawAngleAdcValue);
+	logd(" direct="); logd_num(_yaw_angle_direction);
+	logd(" cutFail="); logd_num(failsafe_CurrentOverFlow);
+	logd(" angleFail="); logd_num(failsafe_AngleOverFlow);
+	
+	logd("\r\n");
+}
 
 void Esc_Yaw_Control_Configure()
 {

@@ -14,6 +14,7 @@
 systick_time_t report_t;
 systick_time_t led_t;
 systick_time_t ke4_speed_t;
+systick_time_t debug_t;
 Uart_t Uart1 ;
 Uart_t Uart2 ;
 Uart_t Uart3 ;
@@ -357,9 +358,9 @@ void listen_cmd(Uart_t *uart)
 			//#9#1 [1 0] //1:stop 485 runtime 0 : continue 485 runtime
 			while( Uart_GetChar(&Uart1, &tmp) <= 0 ) delay_us(1000);
 			if( tmp == '0' )
-				main_control_stop_listen_dma = 0;
+				Rtu_485_Runtime_stop(0);
 			else if( tmp == '1')
-				main_control_stop_listen_dma = 1;
+				Rtu_485_Runtime_stop(1);
 		}
 	}
 }
@@ -379,6 +380,10 @@ void dam_devices_second_init()
 {
 		
 	//TODO : make sure these cmd ok
+	static int inited = 0;
+	
+	if( inited == 1 )
+		return;
 	
 	Rtu_485_Dam_Cmd(0x08,9,1,0);
 	Rtu_485_Dam_Cmd(0x08,7,1,0);
@@ -389,6 +394,7 @@ void dam_devices_second_init()
 	Rtu_485_Dam_Cmd(0x08,6,1,0);
 	Rtu_485_Dam_Cmd(0x08,15,1,0);
 	
+	inited = 1;
 	//Rtu_485_Dam_Cmd(0x08,3,DAM_CMD_FLASH_ON,10000);
 }
 
@@ -415,6 +421,7 @@ void main_setup()
 	systick_time_start(&report_t,CAN1_LISTENER_REPORT_STATUS_MS);//REPORT_STATUS_MS);
 	systick_time_start(&led_t,100);
 	systick_time_start(&ke4_speed_t,500);
+	systick_time_start(&debug_t,500);
 	
 	
 	//system error 
@@ -426,23 +433,19 @@ void main_setup()
 	Rtu_485_Runtime_Configure(); //  base on rtu_485
 	
 	Esc_Limit_Configuration();
-	
-	//dam_devices_second_init();
 
 }
 
 
 void main_loop()
 {
-
 	Listen_Can1();
+	
 	Esc_Yaw_Control_Event();
 
 	Rtu_485_Event();
 	Rtu_485_Runtime_loop(); // base on rtu_485
 
-	
-	
 #if 0  // control by remoter
 	if( check_systick_time(&ke4_speed_t) ){
 		Ke4_Speed_Control_Loop();
@@ -452,26 +455,37 @@ void main_loop()
 	if( check_systick_time(&report_t) ){
 		Can1_Listener_Report_Event();
 		Can1_Listener_Check_connect_event();
-		logd_uint("current: ",Esc_Yaw_Control_GetCurrentAdc());
-		logd_uint("angle:   ",Esc_Yaw_Control_GetAngleAdc());
-		logd_uint("oil mass:",Esc_Yaw_Control_GetOilMassAdc());
 	}
 	
 	if( check_systick_time(&led_t) ){
-		esc_check_limit_gpio_loop();
 		//Esc_Led_Event();
+		
+		//check leak water gpio 
+		esc_check_limit_gpio_loop();
+		
+		//delay 1s to turn on dam 
 		if( speeker_ms > 0 )
 		{
 			speeker_ms += 100;
-			if( speeker_ms > 1000 ){
-				dam_devices_second_init();
-				//Rtu_485_Dam_Cmd(0x08,3,1,0);
-			}else if( speeker_ms > 11000){
+			
+			if( speeker_ms > 11000){
 				Rtu_485_Dam_Cmd(0x08,3,0,0);
 				speeker_ms = 0;
+			}else if( speeker_ms >= 1000){
+				dam_devices_second_init();
+				//Rtu_485_Dam_Cmd(0x08,3,1,0);
 			}
 		}
 		
+	}
+	
+	if( check_systick_time(&debug_t) )
+	{
+		logd_uint("current: ",Esc_Yaw_Control_GetCurrentAdc());
+		//logd_uint("angle:   ",Esc_Yaw_Control_GetAngleAdc());
+		logd_uint("oil mass:",Esc_Yaw_Control_GetOilMassAdc());
+		Esc_Yaw_Control_print_status();
+		logd_uint("leak status=",get_esc_limit_gpio_status());
 	}
 	
 	listen_cmd(&Uart1);

@@ -52,6 +52,7 @@ unsigned short Esc_Yaw_Control_GetOilMassAdc();
 unsigned short Esc_Get_Current_Value();
 unsigned short Esc_Get_Angle_Value();
 unsigned short Esc_Get_Oil_Mass_Value();
+void Esc_Yaw_Control_print_status();
 
 //led
 void Esc_Led_set_toggle(int id, int _10ms);
@@ -67,6 +68,7 @@ void Esc_Led_Configuration();
 
 //log 
 void logd(char *str);
+void logd_num(unsigned int num);
 void logd_uint(char *str, unsigned int num);
 
 
@@ -76,6 +78,7 @@ void logd_uint(char *str, unsigned int num);
 
 // rtu_485 bus control
 void Rtu_485_Runtime_Configure();
+void Rtu_485_Runtime_stop(int stop);
 void Rtu_485_Runtime_loop();
 int Rtu_485_Runtime_sendCmd(unsigned char addr, unsigned char func, unsigned short reg_addr , unsigned short len);
 int Rtu_485_Runtime_send_RawCmd(unsigned char *data, unsigned char len);
@@ -155,6 +158,7 @@ void Esc_Limit_Configuration (void);
 void esc_check_limit_gpio_loop();
 uint8_t get_esc_limit_gpio_status();
 void Alarm_limit_Position();
+void DisAlarm_limit_Position();
 
 //PWMA 控制倒车斗 即喷泵的pitch方向, 主要设置三个值，即前，中，后 ;  pwmB no use
 #define PWMA_GPIO_BANK GPIOB

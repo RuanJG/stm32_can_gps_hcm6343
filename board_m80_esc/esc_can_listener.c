@@ -182,13 +182,17 @@ void Listen_Can1()
 				if( RxMsg.Data[0] == 0x0 && RxMsg.DLC == 5){
 					yaw = RxMsg.Data[1] | (RxMsg.Data[2]<<8);
 					pump_pitch = RxMsg.Data[3] | (RxMsg.Data[4]<<8);
-					//logd_uint("yaw=",yaw);
+					
+					#if 1
+					//logd_uint("yaw can set=",yaw);
 					if( yaw <= YAW_DEFAULE_MAX_ANGLE && yaw >= YAW_DEFAULE_MIN_ANGLE ){
 						Esc_Yaw_Control_SetAngle(yaw);
 					}
+					#endif
 					
+					#if 1
 					// middle is 2000 dead range 500 25%
-					//logd_uint("pitch=",pump_pitch);
+					logd_uint("pitch can =",pump_pitch);
 					if( pump_pitch >= 0 || pump_pitch <= 4000)
 					{
 						if( pump_pitch >=0 && pump_pitch< 1500){
@@ -201,7 +205,7 @@ void Listen_Can1()
 						
 						Ke4_Set_Speed(pump_pitch/8+500);
 					}
-					
+					#endif
 				}
 				break;
 			}
@@ -231,7 +235,7 @@ void Can1_Listener_Check_connect_event()
 	if( can1_lost_connect_counter < CAN1_LISTENER_LOST_CONNECT_MAX_MS ){
 		can1_lost_connect_counter += CAN1_LISTENER_REPORT_STATUS_MS;
 	}else{
-		logd("lost can1 connect\r\n");
+		;//logd("lost can1 connect\r\n");
 	}
 }
 
@@ -425,11 +429,11 @@ void Can1_Listener_Report_Event()
 			if( lim_status != 0){
 				reportBuffer[0]= 0xa1;
 				reportBuffer[1]= ((lim_status & LEAK_HEAD_SENSOR_TAG)==0) ? 0:1 ;
-				if( reportBuffer[1] == 1 ) logd("leak head!\r\n");
+				//if( reportBuffer[1] == 1 ) logd("leak head!\r\n");
 				reportBuffer[2]= ((lim_status & LEAK_MIDDLE_SENSOR_TAG)==0) ? 0:1 ;
-				if( reportBuffer[2] == 1 ) logd("leak middle!\r\n");
+				//if( reportBuffer[2] == 1 ) logd("leak middle!\r\n");
 				reportBuffer[3]= ((lim_status & LEAK_BACK_SENSOR_TAG)==0) ? 0:1 ;
-				if( reportBuffer[3] == 1 ) logd("leak back!\r\n");
+				//if( reportBuffer[3] == 1 ) logd("leak back!\r\n");
 				Can1_Send_Ext(MAIN_CONTROLLER_CAN_ID ,reportBuffer,4,CAN_ID_EXT, CAN_RTR_DATA);
 			}
 			step++;

@@ -31,6 +31,10 @@ void logd(char *str)
 	Uart_PutString(&Uart1,str);
 	//Uart_PutString(&Uart1,"\r\n");
 }
+void logd_num(unsigned int num)
+{
+	_print_uint(&Uart1,num);
+}
 
 void logd_uint(char *str, unsigned int num)
 {
@@ -38,3 +42,4 @@ void logd_uint(char *str, unsigned int num)
 	_print_uint(&Uart1,num);
 	Uart_PutString(&Uart1,"\r\n");
 }
+

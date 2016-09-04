@@ -58,20 +58,36 @@ void esc_check_limit_gpio_loop()
 	//if( limit_status != 0 ){
 	//	logd_uint("Alarm=",limit_status);
 	//}
+	#if 1
 	if( limit_status != 0 )
 	{
-		logd_uint("Alarm=",limit_status);
 		Alarm_limit_Position();
+	}else{
+		DisAlarm_limit_Position();
 	}
+	#endif
 }
 
 uint8_t get_esc_limit_gpio_status()
 {
 	return limit_status ;
 }
-
+extern uint32_t speeker_ms ;
+volatile char limit_belled = 0;
+void DisAlarm_limit_Position()
+{
+	if(speeker_ms==0 && limit_belled == 1){
+			logd("leak close bell");
+			Rtu_485_Dam_Cmd(0x08,3,0,0);
+			limit_belled = 0;
+	}
+}
 void Alarm_limit_Position()
 {
-	if( (dam16_08.status & 0x4) == 0)
+	//if( limit_belled==0 && (dam16_08.status & 0x4) == 0){
+	if( limit_belled==0) {
+		logd("leak start bell");
+		limit_belled = 1;
 		Rtu_485_Dam_Cmd(0x08,3,1,0);
+	}
 }
