@@ -118,7 +118,7 @@ int _dam_485_runtime( dam_t *dam_dev, int step, int res, rtu_485_ack_t *runtime_
 	}
 }
 
-int _dam_readInput_485_runtime( dam_t *dam_dev, int step, int res, rtu_485_ack_t *runtime_ack)
+int _dam_readInput_485_runtime( dam_t *dam_dev, char input_num, int step, int res, rtu_485_ack_t *runtime_ack)
 {
 	// 1 : this step run ok ; 0: send cmd fail need retry; -1 ack analize failed
 	// ack analize ( step 1) cannot return 0, if failed , return -1;
@@ -126,22 +126,16 @@ int _dam_readInput_485_runtime( dam_t *dam_dev, int step, int res, rtu_485_ack_t
 	if( step == 0 ){
 		//send cmd
 		//查询n路继电器的状态
-		return Rtu_485_send_cmd(dam_dev->addr, 2, 0 ,4);
+		return Rtu_485_send_cmd(dam_dev->addr, 2, input_num ,1);
 	}else{
 		//recive ack
 		logd("rtu485 dam"); logd_num(dam_dev->addr);
 		if( res == 1){
 			if( dam_dev->addr == runtime_ack->addr ){
-				if( runtime_ack->len == 4 ){
-					dam_dev->input[0] = runtime_ack->data[0]; 
-					dam_dev->input[1] = runtime_ack->data[1]; 
-					dam_dev->input[2] = runtime_ack->data[2]; 
-					dam_dev->input[3] = runtime_ack->data[3]; 
-					dam_dev->updated = 1;
-					logd(" input="); logd_num(dam_dev->input[0]);
-					logd(",");logd_num(dam_dev->input[1]);
-					logd(",");logd_num(dam_dev->input[2]);
-					logd_uint(",",dam_dev->input[3]);
+				if( runtime_ack->len == 1 && input_num<4){
+					dam_dev->input[input_num] = runtime_ack->data[0];
+					logd(" input");logd_num(input_num);
+					logd_uint("=",dam_dev->input[input_num]);
 				}else{
 					logd(" input bad ack\r\n");
 				}
@@ -442,7 +436,14 @@ int _rtu_485_devices_runtime(int step, int res, rtu_485_ack_t *runtime_ack)
 		}
 		
 		case 11:{
-			ret = _dam_readInput_485_runtime(&dam4_02, step,res,runtime_ack);
+			//low oil warning
+			ret = _dam_readInput_485_runtime(&dam4_02, 1, step,res,runtime_ack);
+			break;
+		}
+		
+		case 12:{
+			// high water tempature
+			ret = _dam_readInput_485_runtime(&dam4_02, 2, step,res,runtime_ack);
 			break;
 		}
 		

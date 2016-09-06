@@ -17,7 +17,7 @@
 // 1,角度adc变化时，对应主控角度[1000,2000]的关系  YAW_ANGLE_ADD_ANGLE_ADC_ADD
 // 2,要让角度adc变化，推杆的控制方向    YAW_FORWARD_ANGLE_ADC_ADD
 
-#define YAW_FORWARD_ANGLE_ADC_ADD 0
+#define YAW_FORWARD_ANGLE_ADC_ADD 1
 #define YAW_ANGLE_ADD_ANGLE_ADC_ADD 1 //angle is from [1000,2000] left->right
 
 #define _YAW_ANGLE_DIFF_RANGE 100 // 当前角度ADC与期望的角度的ADC 之间的差值区间
@@ -27,11 +27,11 @@
 
 
 // 推杆最大角度ADC值范围  TODO config
-#define YAW_DEFAULT_ANGLE_MIDDLE_ADC_VALUE 2910 //2800 
-#define YAW_DEFAULT_ANGLE_MAX_ADC_VALUE 3300
-#define YAW_DEFAULT_ANGLE_MIN_ADC_VALUE 2520 //2300
-#define YAW_DEFAULT_ANGLE_FAILSAFE_MAX_ADC_VALUE 3450 //3610 //2869
-#define YAW_DEFAULT_ANGLE_FAILSAFE_MIN_ADC_VALUE 2150 //1990 //1241
+#define YAW_DEFAULT_ANGLE_MIDDLE_ADC_VALUE 2800 //2900 
+#define YAW_DEFAULT_ANGLE_MAX_ADC_VALUE 3500 //3300
+#define YAW_DEFAULT_ANGLE_MIN_ADC_VALUE 2100 //2500
+#define YAW_DEFAULT_ANGLE_FAILSAFE_MAX_ADC_VALUE 3600 //3450 //3610
+#define YAW_DEFAULT_ANGLE_FAILSAFE_MIN_ADC_VALUE 2000 //2150 //1990
 u16 yawAngleLowPartAdcValueR = YAW_DEFAULT_ANGLE_MIDDLE_ADC_VALUE - YAW_DEFAULT_ANGLE_MIN_ADC_VALUE;
 u16 yawAngleHightPartAdcValueR = YAW_DEFAULT_ANGLE_MAX_ADC_VALUE - YAW_DEFAULT_ANGLE_MIDDLE_ADC_VALUE ;
 
@@ -55,11 +55,15 @@ volatile u16 yawCurrentAdcValue = 0;
 volatile u16 yawCurrentMaxFailSafeAdcValue = 0;
 
 
+#define YAW_MANUAL_MODE 1
+#define YAW_AUTO_MODE 0
+char _yaw_mode = YAW_AUTO_MODE;
 
-char yaw_log_en = 0;
+
+
 void yaw_log(char * str)
 {
-	if( yaw_log_en )
+	if( is_esc_get_more_log() )
 	{
 		logd("yaw: ");
 		logd(str);
@@ -67,7 +71,7 @@ void yaw_log(char * str)
 }
 void yaw_log_uint(char * str,int a)
 {
-	if( yaw_log_en )
+	if( is_esc_get_more_log() )
 	{
 		logd("yaw: ");
 		logd_uint(str,a);
@@ -124,7 +128,7 @@ uint32_t _failsafe_time_ms = 0;
 
 
 
-#define YAW_USE_PWM 1
+#define YAW_USE_PWM 0
 
 //(prescale+1) =72000000/YAW_PWM_RATE/YAW_PWM_MAX_VALUE
 #define YAW_PWM_MAX_VALUE 2000
@@ -196,6 +200,17 @@ void yaw_set_yaw_pwm(uint16_t pwm)
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
 #define _YAW_ANGLE_ADC_ADD_DIRECTION 1
 #define _YAW_ANGLE_ADC_REDUCE_DIRECTION 2
 #define _YAW_ANGLE_ADC_STOP_DIRECTION 3 //may be stop and gpio not init
@@ -203,13 +218,19 @@ volatile char _yaw_angle_direction = _YAW_ANGLE_ADC_STOP_DIRECTION;
 
 void _yaw_control_shutdown() 
 {
-	_yaw_change_pwm(YAW_PWM_MIN_VALUE);
-	GPIOB->BSRR = H_BRIDGE_A_CTRL3_PIN | H_BRIDGE_A_CTRL4_PIN;
+	uint32_t data;
+	//_yaw_change_pwm(YAW_PWM_MIN_VALUE);
+	GPIO_ResetBits(H_BRIDGE_A_PWMB_GPIO_BANK,H_BRIDGE_A_PWMB_GPIO_PIN);
+	data = GPIOB->ODR ;
+	data = (data & (~H_BRIDGE_A_CTRL3_PIN));
+	data = (data & (~H_BRIDGE_A_CTRL4_PIN));
+	GPIOB->ODR = data;
 	_yaw_angle_direction = _YAW_ANGLE_ADC_STOP_DIRECTION;
 }
 void _yaw_control_poweron()
 {
-	_yaw_change_pwm(yaw_pwm);
+	//_yaw_change_pwm(yaw_pwm);
+	GPIO_SetBits(H_BRIDGE_A_PWMB_GPIO_BANK,H_BRIDGE_A_PWMB_GPIO_PIN);
 }
 void _yaw_control_forward()
 {
@@ -384,6 +405,7 @@ volatile uint32_t _esc_yaw_check_adc_hz = 0;
 
 void _esc_yaw_adc_update_event()
 {
+	#if 0
 	// update adc and check error
 	yawCurrentAdcValue = Get_ISA_Adc_value();
 	if( 1 == _check_current_failsafe() )
@@ -398,11 +420,15 @@ void _esc_yaw_adc_update_event()
 	}else{
 		_current_overflow_count = 0 ;
 	}
+	#endif
 	
 	yawAngleAdcValue = Get_PUMP_ANGLE_Adc_value();
 	if( 1 == _check_angle_failsafe() )
 	{
 		failsafe_AngleOverFlow = 1;
+	}else{
+		// Check it is need to reset ?
+		failsafe_AngleOverFlow = 0;
 	}
 	
 	//update times for check
@@ -514,7 +540,7 @@ void _try_go_back_in_failsafe()
 	if( failsafe_AngleOverFlow == 1)
 	{
 		yaw_log("angle failsafe\r\n");
-		#if 1
+		#if 0
 		if( 1 == _yaw_control_move_to_expect_adc( YAW_DEFAULT_ANGLE_MIDDLE_ADC_VALUE ) )
 		{
 			failsafe_AngleOverFlow = 0;
@@ -553,6 +579,19 @@ void Esc_Yaw_Control_SetAngle(uint16_t  angle)
 	}
 }
 
+void Esc_Yaw_Into_Manual_Mode(int enable)
+{
+	if( enable == 1)
+	{
+		_yaw_mode = YAW_MANUAL_MODE;
+		_yaw_control_shutdown();
+	}
+	else
+	{
+		_yaw_mode = YAW_AUTO_MODE;
+		_yaw_control_shutdown();
+	}
+}
 
 void Esc_Yaw_Control_Event()
 {
@@ -567,11 +606,27 @@ void Esc_Yaw_Control_Event()
 			failsafe_AdcUpdateError = 1;
 			yaw_control_failsafe();
 			_esc_yaw_check_adc_hz = 0;
-			yaw_log("adc update error\r\n");
+			logd("adc update error\r\n");
 			return ; // stop , do nothing
 		}else{
 			failsafe_AdcUpdateError = 0;
 			_esc_yaw_check_adc_hz = 0;
+		}
+		
+		//be careful !! , if maunal mode , just turn left or right , without failsafe check
+		if( _yaw_mode == YAW_MANUAL_MODE )
+		{
+			//_yaw_control_move_to_expect_adc(yawExpectAngleAdcValue);
+			return;
+		}
+		
+				// check failsafe 
+		if( failsafe_AngleOverFlow == 1 || failsafe_CurrentOverFlow == 1 ){
+			//try to return to normal status
+			//yaw_log("do failsafe\r\n");
+			_try_go_back_in_failsafe();
+			
+			return;
 		}
 		
 		/// check  main controller is losted , shutdown
@@ -582,14 +637,6 @@ void Esc_Yaw_Control_Event()
 			return ;
 		}
 		
-		// check failsafe 
-		if( failsafe_AngleOverFlow == 1 || failsafe_CurrentOverFlow == 1 ){
-			//try to return to normal status
-			//yaw_log("do failsafe\r\n");
-			_try_go_back_in_failsafe();
-			
-			return;
-		}
 		
 		//init 
 		if( yawControlInited == 0 )
@@ -610,11 +657,16 @@ void Esc_Yaw_Control_print_status()
 	logd("yaw :");
 	logd(" init="); logd_num(yawControlInited);
 	logd(" expAdc="); logd_num(yawExpectAngleAdcValue);
-	logd(" cutAdc="); logd_num(yawAngleAdcValue);
-	logd(" direct="); logd_num(_yaw_angle_direction);
+	logd(" angleAdc="); logd_num(yawAngleAdcValue);
+	logd(" direct="); 
+	if( _yaw_angle_direction== _YAW_ANGLE_ADC_ADD_DIRECTION) logd("add");
+	else if( _yaw_angle_direction== _YAW_ANGLE_ADC_REDUCE_DIRECTION) logd("reduce");
+	else if( _yaw_angle_direction== _YAW_ANGLE_ADC_STOP_DIRECTION) logd("stop");
 	logd(" cutFail="); logd_num(failsafe_CurrentOverFlow);
 	logd(" angleFail="); logd_num(failsafe_AngleOverFlow);
-	
+	logd(" mode=");
+	if( _yaw_mode == YAW_AUTO_MODE) logd("auto"); 
+	else logd("manual");
 	logd("\r\n");
 }
 
@@ -634,7 +686,7 @@ void Esc_Yaw_Control_Configure()
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(H_BRIDGE_A_PWMB_GPIO_BANK, &GPIO_InitStructure);
-	GPIO_SetBits(H_BRIDGE_A_PWMB_GPIO_BANK,H_BRIDGE_A_PWMB_GPIO_PIN);
+	GPIO_ResetBits(H_BRIDGE_A_PWMB_GPIO_BANK,H_BRIDGE_A_PWMB_GPIO_PIN);
 #endif
 	GPIO_StructInit(&GPIO_InitStructure);
 	GPIO_InitStructure.GPIO_Pin = H_BRIDGE_A_CTRL3_PIN;

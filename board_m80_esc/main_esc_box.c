@@ -145,8 +145,8 @@ void test_yaw_angle(Uart_t *uarts)
 
 	while(read_num_by_uart(uarts, &pwm ) == 0) delay_us(1000);
 
-		logd_uint("test angle=",pwm);
-		Esc_Yaw_Control_SetAngle(pwm);
+	Esc_Yaw_Into_Manual_Mode(1);
+	Esc_Yaw_Control_SetAngle(pwm);
 	
 }
 void test_pitch(Uart_t *uarts)
@@ -164,13 +164,9 @@ void test_pitch(Uart_t *uarts)
 		Esc_Pump_Pitch_Back();
 	}
 }
-#if 0
-#define _yaw_control_shutdown() 	GPIO_ResetBits(H_BRIDGE_A_PWMB_GPIO_BANK,H_BRIDGE_A_PWMB_GPIO_PIN)
-#define _yaw_control_poweron()  GPIO_SetBits(H_BRIDGE_A_PWMB_GPIO_BANK,H_BRIDGE_A_PWMB_GPIO_PIN);
-#else
+
 void _yaw_control_shutdown();
 void _yaw_control_poweron();
-#endif
 void _yaw_control_forward();
 void _yaw_control_back();
 void test_h_bridge(Uart_t *uarts)
@@ -305,7 +301,9 @@ void test_ke4(Uart_t *uarts)
 	Ke4_Set_Speed(pwm);
 }
 
+
 extern volatile char main_control_stop_listen_dma;
+extern  char yaw_log_en;
 void listen_cmd(Uart_t *uart)
 {
 	uint32_t cmd;
@@ -362,11 +360,20 @@ void listen_cmd(Uart_t *uart)
 			else if( tmp == '1')
 				Rtu_485_Runtime_stop(1);
 		}
+		if( cmd == 10 ){
+			//#10#1 1:设置控制转向为手动模式
+			while( Uart_GetChar(&Uart1, &tmp) <= 0 ) delay_us(1000);
+			if( tmp == '1' ) Esc_Yaw_Into_Manual_Mode(1);
+			else Esc_Yaw_Into_Manual_Mode(0);
+		}
+		if( cmd == 11 )
+			{// #11#1 1:打开yaw的log
+			while( Uart_GetChar(&Uart1, &tmp) <= 0 ) delay_us(1000);
+			if( tmp == '1' ) esc_set_get_more_log(1);
+			else esc_set_get_more_log(0);
+		}
 	}
 }
-
-
-
 
 
 
@@ -402,8 +409,6 @@ void dam_devices_second_init()
 
 
 
-
-
 void main_setup()
 {
 	SetupPllClock(HSE_CLOCK_6MHZ);
@@ -421,7 +426,7 @@ void main_setup()
 	systick_time_start(&report_t,CAN1_LISTENER_REPORT_STATUS_MS);//REPORT_STATUS_MS);
 	systick_time_start(&led_t,100);
 	systick_time_start(&ke4_speed_t,500);
-	systick_time_start(&debug_t,500);
+	systick_time_start(&debug_t,300);
 	
 	
 	//system error 
@@ -481,7 +486,7 @@ void main_loop()
 	
 	if( check_systick_time(&debug_t) )
 	{
-		logd_uint("current: ",Esc_Yaw_Control_GetCurrentAdc());
+		//logd_uint("current: ",Esc_Yaw_Control_GetCurrentAdc());
 		//logd_uint("angle:   ",Esc_Yaw_Control_GetAngleAdc());
 		logd_uint("oil mass:",Esc_Yaw_Control_GetOilMassAdc());
 		Esc_Yaw_Control_print_status();

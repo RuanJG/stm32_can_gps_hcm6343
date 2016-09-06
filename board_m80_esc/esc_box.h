@@ -53,6 +53,7 @@ unsigned short Esc_Get_Current_Value();
 unsigned short Esc_Get_Angle_Value();
 unsigned short Esc_Get_Oil_Mass_Value();
 void Esc_Yaw_Control_print_status();
+void Esc_Yaw_Into_Manual_Mode(int enable);
 
 //led
 void Esc_Led_set_toggle(int id, int _10ms);
@@ -70,7 +71,8 @@ void Esc_Led_Configuration();
 void logd(char *str);
 void logd_num(unsigned int num);
 void logd_uint(char *str, unsigned int num);
-
+int is_esc_get_more_log();
+void esc_set_get_more_log(int en);
 
 
 
@@ -138,6 +140,8 @@ void Can1_Listener_Check_connect_event();
 //ke4 speed control
 void Ke4_Speed_Control_Loop();
 void Ke4_Set_Speed(uint16_t speed);
+
+
 
 
 

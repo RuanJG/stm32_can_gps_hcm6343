@@ -43,3 +43,18 @@ void logd_uint(char *str, unsigned int num)
 	Uart_PutString(&Uart1,"\r\n");
 }
 
+
+
+
+char more_log_en = 0;
+int is_esc_get_more_log()
+{
+	return more_log_en;
+}
+void esc_set_get_more_log(int en)
+{
+	if( en != 1 )
+		more_log_en = 0;
+	else
+		more_log_en = 1;
+}

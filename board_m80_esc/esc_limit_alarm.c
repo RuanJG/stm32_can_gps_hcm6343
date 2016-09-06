@@ -58,7 +58,7 @@ void esc_check_limit_gpio_loop()
 	//if( limit_status != 0 ){
 	//	logd_uint("Alarm=",limit_status);
 	//}
-	#if 1
+	#if 0
 	if( limit_status != 0 )
 	{
 		Alarm_limit_Position();
