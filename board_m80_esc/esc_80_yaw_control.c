@@ -100,7 +100,7 @@ unsigned short Esc_Get_Oil_Mass_Value()
 	int value;
 
 	value = Get_Oil_Mass_Adc_value();
-	value = (value-OIL_MASS_MIN_ADC_VALUE)/(OIL_MASS_MAX_ADC_VALUE-OIL_MASS_MIN_ADC_VALUE);
+	value = ((value-OIL_MASS_MIN_ADC_VALUE)*100)/(OIL_MASS_MAX_ADC_VALUE-OIL_MASS_MIN_ADC_VALUE);
 	if (value < 0 ) value =0;
 	
 	return value;
