@@ -68,7 +68,7 @@ uint32_t _failsafe_time_ms = 0;
 
 
 
-#define YAW_USE_PWM 1
+#define YAW_USE_PWM 0
 
 //(prescale+1) =72000000/YAW_PWM_RATE/YAW_PWM_MAX_VALUE
 #define YAW_PWM_MAX_VALUE 2000
@@ -191,7 +191,7 @@ void Esc_Yaw_Control_Configure()
 	 RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA,ENABLE);
 	 RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO,ENABLE);
 	
-#if YAW_USE_PWM
+#if 0
 	TIM1_Pwm_Config();
 #else
 	GPIO_StructInit(&GPIO_InitStructure);
@@ -199,24 +199,22 @@ void Esc_Yaw_Control_Configure()
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(H_BRIDGE_A_PWMB_GPIO_BANK, &GPIO_InitStructure);
-	GPIO_SetBits(H_BRIDGE_A_PWMB_GPIO_BANK,H_BRIDGE_A_PWMB_GPIO_PIN);
+	GPIO_ResetBits(H_BRIDGE_A_PWMB_GPIO_BANK,H_BRIDGE_A_PWMB_GPIO_PIN);
 #endif
 	GPIO_StructInit(&GPIO_InitStructure);
 	GPIO_InitStructure.GPIO_Pin = H_BRIDGE_A_CTRL3_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(H_BRIDGE_A_CTRL3_BANK, &GPIO_InitStructure);
+	GPIO_ResetBits(H_BRIDGE_A_CTRL3_BANK,H_BRIDGE_A_CTRL3_PIN);
 	
 	GPIO_StructInit(&GPIO_InitStructure);
 	GPIO_InitStructure.GPIO_Pin = H_BRIDGE_A_CTRL4_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(H_BRIDGE_A_CTRL4_BANK, &GPIO_InitStructure);
-	
-	//先关闭，等ADC稳定后再开始自检
-	_yaw_control_shutdown();
+	GPIO_ResetBits(H_BRIDGE_A_CTRL4_BANK,H_BRIDGE_A_CTRL4_PIN);
 
 	//Esc_ADC_Configuration (_esc_yaw_adc_update_event);
-	
 	//systick_time_start(&_yaw_t,_YAW_TIMER_CHECK_MS); //每10ms运行一次检查
 }
