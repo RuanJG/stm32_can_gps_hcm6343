@@ -392,13 +392,16 @@ void dam_devices_second_init()
 	if( inited == 1 )
 		return;
 	
+	//lte
+	Rtu_485_Dam_Cmd(0x09,3,1,0);
+	
 	Rtu_485_Dam_Cmd(0x08,9,1,0);
 	Rtu_485_Dam_Cmd(0x08,7,1,0);
 	Rtu_485_Dam_Cmd(0x08,8,1,0);
 	Rtu_485_Dam_Cmd(0x08,3,1,0);
 	Rtu_485_Dam_Cmd(0x08,4,1,0);
-	Rtu_485_Dam_Cmd(0x08,5,1,0);
-	Rtu_485_Dam_Cmd(0x08,6,1,0);
+	//Rtu_485_Dam_Cmd(0x08,5,1,0); // wifi
+	//Rtu_485_Dam_Cmd(0x08,6,1,0); //radar computer
 	Rtu_485_Dam_Cmd(0x08,15,1,0);
 	
 	inited = 1;

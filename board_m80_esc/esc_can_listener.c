@@ -278,7 +278,7 @@ void Can1_Listener_Report_Event()
 				Can1_Send_Ext(MAIN_CONTROLLER_CAN_ID ,reportBuffer,5,CAN_ID_EXT, CAN_RTR_DATA);
 			}
 			if( th11sb_tail.updated ){
-				reportBuffer[0]= 0xa;
+				reportBuffer[0]= 0xb;
 				reportBuffer[1]= (th11sb_tail.wet& 0xff); reportBuffer[2]= ((th11sb_tail.wet>>8)& 0xff);
 				reportBuffer[3]= (th11sb_tail.tempture & 0xff); reportBuffer[4]= ((th11sb_tail.tempture >>8)& 0xff);
 				//Can1_Send(MAIN_CONTROLLER_CAN_ID ,reportBuffer,5);
