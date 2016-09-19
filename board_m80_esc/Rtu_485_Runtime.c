@@ -35,8 +35,8 @@ int _Th11sb_485_runtime( th11sb_t *th11sb, int step, int res, rtu_485_ack_t *run
 						th11sb->tempture = ((runtime_ack->data[0]<<8) | runtime_ack->data[1]);
 						th11sb->wet = ((runtime_ack->data[2]<<8) | runtime_ack->data[3]);
 						th11sb->updated = 1;
-						logd(" wet="); logd_num(th11sb_head.wet /10);
-						logd_uint(" temp=",th11sb_head.tempture/10);
+						logd(" wet="); logd_num(th11sb->wet /10);
+						logd_uint(" temp=",th11sb->tempture/10);
 			}else{
 				logd("wrong ack\r\n");
 				return -1;
