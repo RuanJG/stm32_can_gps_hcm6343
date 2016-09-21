@@ -22,7 +22,7 @@ uint32_t  program_addr = ApplicationAddress;
 unsigned char program_data_frame_seq = 0;
 
 volatile FLASH_Status FLASHStatus = FLASH_COMPLETE;
-Uart_t Uart1;
+Uart_t IapUart;
 cmdcoder_t decoder;
 cmdcoder_t encoder;
 
@@ -52,16 +52,21 @@ void _memset(void *dst, unsigned char data, unsigned n)
 
 int encodeCallback ( unsigned char c )
 {
-	Uart_PutChar(&Uart1,c);
+	Uart_PutChar(&IapUart,c);
 	return 1;
 }
 
 int is_main_program_written()
 {
+	#if 1
 	if (((*(__IO uint32_t*)ApplicationAddress) & 0x2FFE0000 ) == 0x20000000)
 		return 1;
 	else
 		return 0;
+	
+	#else
+	return 1;
+	#endif
 }
 int is_iap_tag_set()
 {
@@ -209,7 +214,10 @@ char  handle_packget(unsigned char *data, int len)
 	
 	//check seq
 	new_seq = (program_data_frame_seq+1)% PACKGET_MAX_DATA_SEQ;
-	if( new_seq != data[0] )
+	if( new_seq > data[0] )
+	{
+		return 0;
+	}else if( new_seq < data[0] )
 	{
 		return PACKGET_ACK_FALSE_SEQ_FALSE;
 	}
@@ -254,7 +262,7 @@ int catch_program_app_head_in_ms(int ms)
 			break;
 		#endif
 		
-		while( Uart_GetChar(&Uart1,&ubyte) > 0 ){
+		while( Uart_GetChar(&IapUart,&ubyte) > 0 ){
 			if( cmdcoder_Parse_byte(&decoder,ubyte) ){
 				if( decoder.id == PACKGET_START_ID )
 					return 1;
@@ -266,26 +274,21 @@ int catch_program_app_head_in_ms(int ms)
 }
 
 
-#include <navigation_box.h>
-#include <navigation_box_led.h>
+
+
 void main_setup()
 {
 	int res;
 	
-	SetupPllClock(HSE_CLOCK_6MHZ);
-	//Esc_GPIO_Configuration();
-	Navi_GPIO_Configuration();
-	Nbl_Led_Configuration();
-	Uart_Configuration (&Uart1, USART1, 115200, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
+	Iap_GPIO_Configuration();
 	
-	
+	Uart_Configuration (&IapUart, IAP_UART_DEV, IAP_UART_BAUDRATE, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
 	cmdcoder_init(&decoder, 1,  CMD_CODER_CALL_BACK_NULL);
 	cmdcoder_init(&encoder, PACKGET_ACK_ID,  encodeCallback);
 
 	
 	#if 0
-	Nbl_Led_on(GPS_LED_ID);
-	res = catch_program_app_head_in_ms(500);
+	res = catch_program_app_head_in_ms(300);
 	if(  res == 0 )
 	{
 		jump_to_main_program();
@@ -293,35 +296,42 @@ void main_setup()
 	#else
 	if( 1 == is_main_program_written() ){ // if no main app , just listen update
 		if( 0 == is_iap_tag_set() ){ // if main app set tag, need to listen update 
-			jump_to_main_program();
+			res = catch_program_app_head_in_ms(300);
+			if(  res == 0 )
+			{
+				jump_to_main_program();
+			}
 		}else{
 			clean_iap_tag(); // clean tag, and go to listen update
+			res = catch_program_app_head_in_ms(5000);
+			if(  res == 0 )
+			{
+				jump_to_main_program();
+			}
 		}
 	}
-	Nbl_Led_on(GPS_LED_ID);
 	#endif
 	//no app program or get a program start , it will do main_loop
 }
 void main_deinit()
 {
 	SysTick_Deinit();
-	Uart_DeInit(&Uart1);
-	Nbl_Led_off(GPS_LED_ID);
+	Uart_DeInit(&IapUart);
 }
 void main_loop()
 {
 	char ubyte;
 	char  res;
 	
-	if( Uart_GetChar(&Uart1,&ubyte) > 0 )
+	if( Uart_GetChar(&IapUart,&ubyte) > 0 )
 	{
 		if( cmdcoder_Parse_byte(&decoder,ubyte) ){
 			if( decoder.id == PACKGET_START_ID ){
-				if( program_step != PROGRAM_STEP_GET_DATA){
+				//if( program_step != PROGRAM_STEP_GET_DATA){
 					program_step = PROGRAM_STEP_GET_DATA ;
 					flash_process_init();
 					init_program_buff();
-				}
+				//}
 				answer_ack_ok();
 			}else if (decoder.id == PACKGET_DATA_ID){
 				if( program_step != PROGRAM_STEP_GET_DATA ) {
@@ -341,7 +351,7 @@ void main_loop()
 					if( 0 ==  res){
 						answer_ack_ok();
 						if(decoder.data[0] == PACKGET_END_JUMP ){
-							delay_us(50000);
+							delay_us(600000);
 							jump_to_main_program();
 						}
 					}else {

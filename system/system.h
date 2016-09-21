@@ -7,14 +7,20 @@
 
 #define MAIN_CONTROLLER_BOARD 0
 #define NAVIGATION_BOX 0
-#define M80_ESC_BOX 1
+#define M80_ESC_BOX 0
 
 // if make iap firmware 
 // modify keil flash  ; note : if the firmware offset's value is define in iap_firmware/iap.c
-// iap firmware : 0x8000000   0x4000                         ; 0x4000/1024 = 16 = 16kB         
-// app firmware : 0x8004000   0xC000  = (0x10000 - 0x4000) 
-#define IAP_FIRMWARE 0
+// iap firmware : 0x8000000   0xM000                         ; 0x4000/1024 = 16 = 16kB         
+// app firmware : 0x800M000   0xN000  = (0x10000 - 0xM000) 
+#define IAP_FIRMWARE 1
+//chose board , use in setgpio
+#define IAP_FIRMWARE_BOARD_NAVIGATION 1
+#define IAP_FIRMWARE_BOARD_80_ESC 0
+#define IAP_FIRMWARE_BOARD_MAINCONTROLLER 0
+//iap config
 #define IAP_UART_BAUDRATE 9600
+#define IAP_UART_DEV USART1
 
 /*
 *

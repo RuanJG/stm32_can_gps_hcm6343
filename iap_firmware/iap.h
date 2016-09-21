@@ -52,7 +52,7 @@ typedef void(*iapFunction)(void);
 #define PACKGET_ACK_FALSE_SEQ_FALSE 23 // the send data process will restart
 // if has ack false , the flash process shuld be restart
 
-
+void Iap_GPIO_Configuration (void);
 
 
 #endif //_IAP_H

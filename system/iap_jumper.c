@@ -6,6 +6,8 @@
 //#define ApplicationOffset 0x0000
 #define IapAddress  0x08000000
 
+#define IAP_USE_READCALLBACK 1
+
 typedef void(*pFunction)(void);
 
 Uart_t * remoterUart = 0;
@@ -133,7 +135,6 @@ void jump_iap()
 
 
 
-#define IAP_USE_READCALLBACK 1
 
 #if IAP_USE_READCALLBACK
 void iapUartReadCallBack(char c)

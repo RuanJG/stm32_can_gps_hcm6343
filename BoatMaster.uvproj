@@ -307,8 +307,8 @@
               </OCR_RVCT3>
               <OCR_RVCT4>
                 <Type>1</Type>
-                <StartAddress>0x8004000</StartAddress>
-                <Size>0xc000</Size>
+                <StartAddress>0x8000000</StartAddress>
+                <Size>0x4000</Size>
               </OCR_RVCT4>
               <OCR_RVCT5>
                 <Type>1</Type>
@@ -404,156 +404,6 @@
       </TargetOption>
       <Groups>
         <Group>
-          <GroupName>board_mainController</GroupName>
-          <Files>
-            <File>
-              <FileName>ADXL345.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_mainController\ADXL345.c</FilePath>
-            </File>
-            <File>
-              <FileName>Ds18B20.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_mainController\Ds18B20.c</FilePath>
-            </File>
-            <File>
-              <FileName>SetADC.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_mainController\SetADC.c</FilePath>
-            </File>
-            <File>
-              <FileName>user_main_MainController.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_mainController\user_main_MainController.c</FilePath>
-            </File>
-            <File>
-              <FileName>SetTimer.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_mainController\SetTimer.c</FilePath>
-            </File>
-            <File>
-              <FileName>SetGPIO.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_mainController\SetGPIO.c</FilePath>
-            </File>
-            <File>
-              <FileName>ADXL345_SetI2C.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\board_mainController\ADXL345_SetI2C.h</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>board_navigationBox</GroupName>
-          <Files>
-            <File>
-              <FileName>gps.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_navigationBox\gps.c</FilePath>
-            </File>
-            <File>
-              <FileName>HMC6343.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_navigationBox\HMC6343.c</FilePath>
-            </File>
-            <File>
-              <FileName>main_navigation_box.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_navigationBox\main_navigation_box.c</FilePath>
-            </File>
-            <File>
-              <FileName>navigation_box_led.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_navigationBox\navigation_box_led.c</FilePath>
-            </File>
-            <File>
-              <FileName>SetGPIO.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_navigationBox\SetGPIO.c</FilePath>
-            </File>
-            <File>
-              <FileName>navigation_box.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\board_navigationBox\navigation_box.h</FilePath>
-            </File>
-            <File>
-              <FileName>navigation_box_led.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\board_navigationBox\navigation_box_led.h</FilePath>
-            </File>
-            <File>
-              <FileName>gpio_I2C.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\board_navigationBox\gpio_I2C.h</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>board_m80_esc</GroupName>
-          <Files>
-            <File>
-              <FileName>main_esc_box.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_m80_esc\main_esc_box.c</FilePath>
-            </File>
-            <File>
-              <FileName>SetGPIO.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_m80_esc\SetGPIO.c</FilePath>
-            </File>
-            <File>
-              <FileName>esc_box.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\board_m80_esc\esc_box.h</FilePath>
-            </File>
-            <File>
-              <FileName>ADC_config.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_m80_esc\ADC_config.c</FilePath>
-            </File>
-            <File>
-              <FileName>esc_box_led.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_m80_esc\esc_box_led.c</FilePath>
-            </File>
-            <File>
-              <FileName>esc_80_pump_pitch_control.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_m80_esc\esc_80_pump_pitch_control.c</FilePath>
-            </File>
-            <File>
-              <FileName>esc_80_yaw_control.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_m80_esc\esc_80_yaw_control.c</FilePath>
-            </File>
-            <File>
-              <FileName>esc_box_log.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_m80_esc\esc_box_log.c</FilePath>
-            </File>
-            <File>
-              <FileName>Rtu_485_Runtime.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_m80_esc\Rtu_485_Runtime.c</FilePath>
-            </File>
-            <File>
-              <FileName>esc_can_listener.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_m80_esc\esc_can_listener.c</FilePath>
-            </File>
-            <File>
-              <FileName>esc_box_ke4_speed.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_m80_esc\esc_box_ke4_speed.c</FilePath>
-            </File>
-            <File>
-              <FileName>esc_limit_alarm.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_m80_esc\esc_limit_alarm.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>iap_firmware</GroupName>
           <Files>
             <File>
@@ -566,6 +416,11 @@
               <FileType>5</FileType>
               <FilePath>.\iap_firmware\iap.h</FilePath>
             </File>
+            <File>
+              <FileName>iapSetGpio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\iap_firmware\iapSetGpio.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -575,11 +430,6 @@
               <FileName>crc16.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\misc\crc16.c</FilePath>
-            </File>
-            <File>
-              <FileName>rtu_485.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\misc\rtu_485.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1088,156 +938,6 @@
       </TargetOption>
       <Groups>
         <Group>
-          <GroupName>board_mainController</GroupName>
-          <Files>
-            <File>
-              <FileName>ADXL345.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_mainController\ADXL345.c</FilePath>
-            </File>
-            <File>
-              <FileName>Ds18B20.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_mainController\Ds18B20.c</FilePath>
-            </File>
-            <File>
-              <FileName>SetADC.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_mainController\SetADC.c</FilePath>
-            </File>
-            <File>
-              <FileName>user_main_MainController.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_mainController\user_main_MainController.c</FilePath>
-            </File>
-            <File>
-              <FileName>SetTimer.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_mainController\SetTimer.c</FilePath>
-            </File>
-            <File>
-              <FileName>SetGPIO.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_mainController\SetGPIO.c</FilePath>
-            </File>
-            <File>
-              <FileName>ADXL345_SetI2C.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\board_mainController\ADXL345_SetI2C.h</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>board_navigationBox</GroupName>
-          <Files>
-            <File>
-              <FileName>gps.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_navigationBox\gps.c</FilePath>
-            </File>
-            <File>
-              <FileName>HMC6343.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_navigationBox\HMC6343.c</FilePath>
-            </File>
-            <File>
-              <FileName>main_navigation_box.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_navigationBox\main_navigation_box.c</FilePath>
-            </File>
-            <File>
-              <FileName>navigation_box_led.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_navigationBox\navigation_box_led.c</FilePath>
-            </File>
-            <File>
-              <FileName>SetGPIO.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_navigationBox\SetGPIO.c</FilePath>
-            </File>
-            <File>
-              <FileName>navigation_box.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\board_navigationBox\navigation_box.h</FilePath>
-            </File>
-            <File>
-              <FileName>navigation_box_led.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\board_navigationBox\navigation_box_led.h</FilePath>
-            </File>
-            <File>
-              <FileName>gpio_I2C.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\board_navigationBox\gpio_I2C.h</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>board_m80_esc</GroupName>
-          <Files>
-            <File>
-              <FileName>main_esc_box.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_m80_esc\main_esc_box.c</FilePath>
-            </File>
-            <File>
-              <FileName>SetGPIO.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_m80_esc\SetGPIO.c</FilePath>
-            </File>
-            <File>
-              <FileName>esc_box.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\board_m80_esc\esc_box.h</FilePath>
-            </File>
-            <File>
-              <FileName>ADC_config.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_m80_esc\ADC_config.c</FilePath>
-            </File>
-            <File>
-              <FileName>esc_box_led.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_m80_esc\esc_box_led.c</FilePath>
-            </File>
-            <File>
-              <FileName>esc_80_pump_pitch_control.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_m80_esc\esc_80_pump_pitch_control.c</FilePath>
-            </File>
-            <File>
-              <FileName>esc_80_yaw_control.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_m80_esc\esc_80_yaw_control.c</FilePath>
-            </File>
-            <File>
-              <FileName>esc_box_log.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_m80_esc\esc_box_log.c</FilePath>
-            </File>
-            <File>
-              <FileName>Rtu_485_Runtime.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_m80_esc\Rtu_485_Runtime.c</FilePath>
-            </File>
-            <File>
-              <FileName>esc_can_listener.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_m80_esc\esc_can_listener.c</FilePath>
-            </File>
-            <File>
-              <FileName>esc_box_ke4_speed.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_m80_esc\esc_box_ke4_speed.c</FilePath>
-            </File>
-            <File>
-              <FileName>esc_limit_alarm.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\board_m80_esc\esc_limit_alarm.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>iap_firmware</GroupName>
           <Files>
             <File>
@@ -1250,6 +950,11 @@
               <FileType>5</FileType>
               <FilePath>.\iap_firmware\iap.h</FilePath>
             </File>
+            <File>
+              <FileName>iapSetGpio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\iap_firmware\iapSetGpio.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1259,11 +964,6 @@
               <FileName>crc16.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\misc\crc16.c</FilePath>
-            </File>
-            <File>
-              <FileName>rtu_485.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\misc\rtu_485.c</FilePath>
             </File>
           </Files>
         </Group>
