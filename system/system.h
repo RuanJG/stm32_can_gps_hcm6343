@@ -13,8 +13,8 @@
 // modify keil flash  ; note : if the firmware offset's value is define in iap_firmware/iap.c
 // iap firmware : 0x8000000   0x4000                         ; 0x4000/1024 = 16 = 16kB         
 // app firmware : 0x8004000   0xC000  = (0x10000 - 0x4000) 
-#define IAP_FIRMWARE 0
-#define IAP_UART_BAUDRATE 9600
+//#define IAP_FIRMWARE 0
+//#define IAP_UART_BAUDRATE 9600
 
 /*
 *

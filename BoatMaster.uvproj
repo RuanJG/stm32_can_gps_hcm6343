@@ -554,21 +554,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>iap_firmware</GroupName>
-          <Files>
-            <File>
-              <FileName>iap.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\iap_firmware\iap.c</FilePath>
-            </File>
-            <File>
-              <FileName>iap.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\iap_firmware\iap.h</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>misc</GroupName>
           <Files>
             <File>
@@ -1234,21 +1219,6 @@
               <FileName>esc_limit_alarm.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\board_m80_esc\esc_limit_alarm.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>iap_firmware</GroupName>
-          <Files>
-            <File>
-              <FileName>iap.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\iap_firmware\iap.c</FilePath>
-            </File>
-            <File>
-              <FileName>iap.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\iap_firmware\iap.h</FilePath>
             </File>
           </Files>
         </Group>

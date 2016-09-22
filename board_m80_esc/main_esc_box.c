@@ -418,7 +418,7 @@ void main_setup()
 	Esc_GPIO_Configuration();
 	//Can1_Configuration (0x12);
 	Can1_Configuration_withRate(0x12,CAN_ID_EXT,CAN_SJW_1tq,CAN_BS1_5tq,CAN_BS2_2tq,9);
-	Uart_Configuration (&Uart1, USART1, IAP_UART_BAUDRATE, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
+	Uart_Configuration (&Uart1, USART1, 9600, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
 	Uart_Configuration (&Uart2, USART2, 9600, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
 	Uart_Configuration (&Uart3, USART3, 9600, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
 	Esc_Pump_Pitch_Config();

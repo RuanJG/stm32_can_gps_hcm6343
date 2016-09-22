@@ -72,6 +72,7 @@ uint8_t get_esc_limit_gpio_status()
 {
 	return limit_status ;
 }
+/*
 extern uint32_t speeker_ms ;
 volatile char limit_belled = 0;
 void DisAlarm_limit_Position()
@@ -91,3 +92,4 @@ void Alarm_limit_Position()
 		Rtu_485_Dam_Cmd(0x08,3,1,0);
 	}
 }
+*/

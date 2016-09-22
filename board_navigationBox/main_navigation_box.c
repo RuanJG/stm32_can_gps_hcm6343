@@ -299,7 +299,7 @@ void main_setup()
 	SetupPllClock(HSE_CLOCK_6MHZ);
 	Navi_GPIO_Configuration ();
 	Can1_Configuration (0x11);	//0x11CANµÿ÷∑
-	Uart_Configuration (&Uart1, USART1, IAP_UART_BAUDRATE, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
+	Uart_Configuration (&Uart1, USART1, 9600, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
 	Uart_Configuration (&Uart2, USART2, 9600, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
 	//Uart_Configuration (&Uart3, USART3, 115200, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
 	
