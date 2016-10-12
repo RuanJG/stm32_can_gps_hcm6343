@@ -295,7 +295,7 @@ void main_setup()
 	}
 	#else
 	if( 1 == is_main_program_written() ){ // if no main app , just listen update
-		if( 0 == is_iap_tag_set() ){ // if main app set tag, need to listen update 
+		if( 0 == is_iap_tag_set() ){ // if main app no set tag, listen 300ms 
 			res = catch_program_app_head_in_ms(300);
 			if(  res == 0 )
 			{
@@ -303,7 +303,7 @@ void main_setup()
 			}
 		}else{
 			clean_iap_tag(); // clean tag, and go to listen update
-			res = catch_program_app_head_in_ms(5000);
+			res = catch_program_app_head_in_ms(30000);// if main app  set tag, listen 30s 
 			if(  res == 0 )
 			{
 				jump_to_main_program();
