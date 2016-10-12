@@ -9,25 +9,6 @@
 
 
 
-//*******************  may need to configure these paramter
-
-/*
-#if defined (STM32F10X_HD) || defined (STM32F10X_HD_VL) || defined (STM32F10X_CL) || defined (STM32F10X_XL)
-  #define FLASH_PAGE_SIZE    ((uint16_t)0x800)
-#else
-  #define FLASH_PAGE_SIZE    ((uint16_t)0x400)
-#endif
-*/
-#define FLASH_PAGE_SIZE    ((uint16_t)0x400)
-
-
-// Define Application Address Area */
-// iap firmware : 0x8000000   0x4000                         ; 0x4000/1024 = 16 = 16kB         
-// app firmware : 0x8004000   (0x10000 - 0x4000) = 0xC000
-#define ApplicationOffset 0x4000
-#define ApplicationAddress  (0x08000000 | ApplicationOffset)
-
-// ********************************************************************************************************************
 
 
 typedef void(*iapFunction)(void);

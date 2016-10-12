@@ -11,8 +11,9 @@
 
 // if make iap firmware 
 // modify keil flash  ; note : if the firmware offset's value is define in iap_firmware/iap.c
-// iap firmware : 0x8000000   0xM000                         ; 0x4000/1024 = 16 = 16kB         
-// app firmware : 0x800M000   0xN000  = (0x10000 - 0xM000) 
+// iap firmware : 0x8000000   0x4000                         ; 0x4000/1024 = 16 = 16kB
+// iap tag :      0x8004000   0x400
+// app firmware : 0x8004400   0xN000  = (0x10000 - 0xM000) 
 #define IAP_FIRMWARE 1
 //chose board , use in setgpio
 #define IAP_FIRMWARE_BOARD_NAVIGATION 0
@@ -22,6 +23,35 @@
 //iap config
 #define IAP_UART_BAUDRATE 115200
 #define IAP_UART_DEV USART1
+
+
+//*******************  may need to configure these paramter
+/*
+#if defined (STM32F10X_HD) || defined (STM32F10X_HD_VL) || defined (STM32F10X_CL) || defined (STM32F10X_XL)
+  #define FLASH_PAGE_SIZE    ((uint16_t)0x800)
+#else
+  #define FLASH_PAGE_SIZE    ((uint16_t)0x400)
+#endif
+*/
+#define FLASH_PAGE_SIZE    ((uint16_t)0x400)
+
+// Define Application Address Area */
+// iap firmware : 0x8000000   0x4000                         ; 0x4000/1024 = 16 = 16kB         
+// app firmware : 0x8004000   (0x10000 - 0x4000) = 0xC000
+#define ApplicationOffset 0x4400
+#define ApplicationAddress  (0x08000000 | ApplicationOffset)
+#define IAP_TAG_ADRESS 0x8004000
+#define IAP_TAG_UPDATE_VALUE 1
+#define IAP_TAG_JUMP_VALUE 2
+
+// ********************************************************************************************************************
+
+
+
+
+
+
+
 
 /*
 *
@@ -136,23 +166,10 @@ system_error_t* system_error_get();
 
 
 
-
-//iap
-//void jump_iap();
-//void Iap_Event();
 void Iap_Configure(Uart_t *uart);
 void Iap_Jump();
-
-#define IAP_TAG_ADRESS (0x08000000 | 0xFC00)
-#define IAP_TAG_UPDATE_VALUE 1
-#define IAP_TAG_JUMP_VALUE 2
 int set_iap_tag(int tag);
 int get_iap_tag();
-
-
-
-
-
 
 
 
