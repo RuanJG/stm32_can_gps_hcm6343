@@ -5,9 +5,11 @@
 #include "cmdcoder.h"
 #include "base64_data.h"
 
+
 #define MAIN_CONTROLLER_BOARD 0
 #define NAVIGATION_BOX 0
-#define M80_ESC_BOX 1
+#define M80_ESC_BOX 0
+#define STM32F103V_BOARD 1
 
 // if make iap firmware 
 // modify keil flash  ; note : if the firmware offset's value is define in iap_firmware/iap.c
@@ -170,6 +172,12 @@ rtu_485_ack_t * Rtu_485_Get_Ack(int *res);
 void Rtu_485_Event();
 int Rtu_485_send_cmd(unsigned char addr, unsigned char func, unsigned short reg_addr , unsigned short len);
 int Rtu_485_send_raw_cmd(unsigned char *data,int len);
+
+
+
+#include "slog.h"
+#define LOGD_ENABLE 1
+
 
 #endif
 //End of File
