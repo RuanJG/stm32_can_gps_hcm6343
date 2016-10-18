@@ -1,0 +1,10 @@
+*.o
+*.d
+*.crf
+*.htm
+*.axf
+*.hex
+*.lnp
+*.map
+*.sct
+

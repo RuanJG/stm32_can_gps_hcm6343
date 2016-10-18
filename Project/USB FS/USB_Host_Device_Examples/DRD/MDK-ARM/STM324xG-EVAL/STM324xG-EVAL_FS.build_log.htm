@@ -1,0 +1,191 @@
+<html>
+<body>
+<pre>
+<h1>礦ision Build Log</h1>
+<h2>Project:</h2>
+E:\项目\Open4X9I-C\program\Open4X9I-C\Project\USB FS\USB_Host_Device_Examples\DRD\MDK-ARM\USB_Host_device.uvproj
+Project File Date:  07/19/2014
+
+<h2>Output:</h2>
+Build target 'Open4X9I-C'
+compiling stm32f429i_discovery_lcd.c...
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(1690): warning:  #177-D: function "delay" was declared but never referenced
+  static void delay(__IO uint32_t nCount)
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c: 1 warning, 0 errors
+linking...
+Program Size: Code=50984 RO-data=12280 RW-data=796 ZI-data=11844  
+FromELF: creating hex file...
+".\STM324xG-EVAL\STM324xG-EVAL_FS.axf" - 0 Error(s), 1 Warning(s).
+Load "E:\\项目\\Open4X9I-C\\program\\Open4X9I-C\\Project\\USB FS\\USB_Host_Device_Examples\\DRD\\MDK-ARM\\STM324xG-EVAL\\STM324xG-EVAL_FS.axf" 
+No Algorithm found for: 08000000H - 0800F8FBH
+Erase skipped!
+Error: Flash Download failed  -  "Cortex-M4"
+Load "E:\\项目\\Open4X9I-C\\program\\Open4X9I-C\\Project\\USB FS\\USB_Host_Device_Examples\\DRD\\MDK-ARM\\STM324xG-EVAL\\STM324xG-EVAL_FS.axf" 
+Erase Done.
+Programming Done.
+Verify OK.
+Application running ...
+</pre>
+</body>
+</html>
+ warning:  #177-D: function "LCD_LOG_UpdateDisplay" was declared but never referenced
+  static void LCD_LOG_UpdateDisplay (void)
+..\..\..\..\..\Utilities\STM32_EVAL\Common\lcd_log.c: 1 warning, 0 errors
+compiling stm32f429i_discovery_lcd.c...
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(225): error:  #20: identifier "LTDC_InitTypeDef" is undefined
+    LTDC_InitTypeDef       LTDC_InitStruct;
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(253): error:  #20: identifier "LTDC_HSPolarity_AL" is undefined
+    LTDC_InitStruct.LTDC_HSPolarity = LTDC_HSPolarity_AL;     
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(255): error:  #20: identifier "LTDC_VSPolarity_AL" is undefined
+    LTDC_InitStruct.LTDC_VSPolarity = LTDC_VSPolarity_AL;     
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(257): error:  #20: identifier "LTDC_DEPolarity_AL" is undefined
+    LTDC_InitStruct.LTDC_DEPolarity = LTDC_DEPolarity_AL;     
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(259): error:  #20: identifier "LTDC_PCPolarity_IPC" is undefined
+    LTDC_InitStruct.LTDC_PCPolarity = LTDC_PCPolarity_IPC;
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(319): warning:  #223-D: function "LTDC_Init" declared implicitly
+    LTDC_Init(&LTDC_InitStruct); 
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(331): error:  #20: identifier "LTDC_Layer_InitTypeDef" is undefined
+    LTDC_Layer_InitTypeDef LTDC_Layer_InitStruct; 
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(345): error:  #20: identifier "LTDC_Pixelformat_RGB565" is undefined
+    LTDC_Layer_InitStruct.LTDC_PixelFormat = LTDC_Pixelformat_RGB565;
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(354): error:  #20: identifier "LTDC_BlendingFactor1_CA" is undefined
+    LTDC_Layer_InitStruct.LTDC_BlendingFactor_1 = LTDC_BlendingFactor1_CA;    
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(355): error:  #20: identifier "LTDC_BlendingFactor2_CA" is undefined
+    LTDC_Layer_InitStruct.LTDC_BlendingFactor_2 = LTDC_BlendingFactor2_CA;
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(375): warning:  #223-D: function "LTDC_LayerInit" declared implicitly
+    LTDC_LayerInit(LTDC_Layer1, &LTDC_Layer_InitStruct);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(382): error:  #20: identifier "LTDC_BlendingFactor1_PAxCA" is undefined
+    LTDC_Layer_InitStruct.LTDC_BlendingFactor_1 = LTDC_BlendingFactor1_PAxCA;    
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(383): error:  #20: identifier "LTDC_BlendingFactor2_PAxCA" is undefined
+    LTDC_Layer_InitStruct.LTDC_BlendingFactor_2 = LTDC_BlendingFactor2_PAxCA;
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(389): warning:  #223-D: function "LTDC_ReloadConfig" declared implicitly
+    LTDC_ReloadConfig(LTDC_IMReload);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(389): error:  #20: identifier "LTDC_IMReload" is undefined
+    LTDC_ReloadConfig(LTDC_IMReload);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(392): warning:  #223-D: function "LTDC_LayerCmd" declared implicitly
+    LTDC_LayerCmd(LTDC_Layer1, ENABLE); 
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(402): warning:  #223-D: function "LTDC_DitherCmd" declared implicitly
+    LTDC_DitherCmd(ENABLE);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(507): warning:  #223-D: function "LTDC_LayerAlpha" declared implicitly
+      LTDC_LayerAlpha(LTDC_Layer1, transparency);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(511): warning:  #223-D: function "LTDC_LayerAlpha" declared implicitly
+      LTDC_LayerAlpha(LTDC_Layer2, transparency);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(513): warning:  #223-D: function "LTDC_ReloadConfig" declared implicitly
+    LTDC_ReloadConfig(LTDC_IMReload);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(513): error:  #20: identifier "LTDC_IMReload" is undefined
+    LTDC_ReloadConfig(LTDC_IMReload);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(582): error:  #20: identifier "LTDC_ColorKeying_InitTypeDef" is undefined
+    LTDC_ColorKeying_InitTypeDef   LTDC_colorkeying_InitStruct;
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(592): warning:  #223-D: function "LTDC_ColorKeyingConfig" declared implicitly
+      LTDC_ColorKeyingConfig(LTDC_Layer1, &LTDC_colorkeying_InitStruct, ENABLE);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(593): warning:  #223-D: function "LTDC_ReloadConfig" declared implicitly
+      LTDC_ReloadConfig(LTDC_IMReload);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(593): error:  #20: identifier "LTDC_IMReload" is undefined
+      LTDC_ReloadConfig(LTDC_IMReload);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(598): warning:  #223-D: function "LTDC_ColorKeyingConfig" declared implicitly
+      LTDC_ColorKeyingConfig(LTDC_Layer2, &LTDC_colorkeying_InitStruct, ENABLE);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(599): warning:  #223-D: function "LTDC_ReloadConfig" declared implicitly
+      LTDC_ReloadConfig(LTDC_IMReload);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(599): error:  #20: identifier "LTDC_IMReload" is undefined
+      LTDC_ReloadConfig(LTDC_IMReload);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(610): error:  #20: identifier "LTDC_ColorKeying_InitTypeDef" is undefined
+    LTDC_ColorKeying_InitTypeDef   LTDC_colorkeying_InitStruct;
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(615): warning:  #223-D: function "LTDC_ColorKeyingConfig" declared implicitly
+      LTDC_ColorKeyingConfig(LTDC_Layer1, &LTDC_colorkeying_InitStruct, DISABLE);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(616): warning:  #223-D: function "LTDC_ReloadConfig" declared implicitly
+      LTDC_ReloadConfig(LTDC_IMReload);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(616): error:  #20: identifier "LTDC_IMReload" is undefined
+      LTDC_ReloadConfig(LTDC_IMReload);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(621): warning:  #223-D: function "LTDC_ColorKeyingConfig" declared implicitly
+      LTDC_ColorKeyingConfig(LTDC_Layer2, &LTDC_colorkeying_InitStruct, DISABLE);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(622): warning:  #223-D: function "LTDC_ReloadConfig" declared implicitly
+      LTDC_ReloadConfig(LTDC_IMReload);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(622): error:  #20: identifier "LTDC_IMReload" is undefined
+      LTDC_ReloadConfig(LTDC_IMReload);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(717): warning:  #223-D: function "LTDC_LayerPosition" declared implicitly
+      LTDC_LayerPosition(LTDC_Layer1, Xpos, Ypos);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(718): warning:  #223-D: function "LTDC_ReloadConfig" declared implicitly
+      LTDC_ReloadConfig(LTDC_IMReload);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(718): error:  #20: identifier "LTDC_IMReload" is undefined
+      LTDC_ReloadConfig(LTDC_IMReload);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(721): warning:  #223-D: function "LTDC_LayerSize" declared implicitly
+      LTDC_LayerSize(LTDC_Layer1, Width, Height);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(727): warning:  #223-D: function "LTDC_LayerPosition" declared implicitly
+      LTDC_LayerPosition(LTDC_Layer2, Xpos, Ypos);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(728): warning:  #223-D: function "LTDC_ReloadConfig" declared implicitly
+      LTDC_ReloadConfig(LTDC_IMReload); 
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(728): error:  #20: identifier "LTDC_IMReload" is undefined
+      LTDC_ReloadConfig(LTDC_IMReload); 
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(731): warning:  #223-D: function "LTDC_LayerSize" declared implicitly
+      LTDC_LayerSize(LTDC_Layer2, Width, Height);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(757): error:  #20: identifier "DMA2D_InitTypeDef" is undefined
+    DMA2D_InitTypeDef      DMA2D_InitStruct;
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(769): warning:  #223-D: function "DMA2D_DeInit" declared implicitly
+    DMA2D_DeInit();  
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(770): error:  #20: identifier "DMA2D_R2M" is undefined
+    DMA2D_InitStruct.DMA2D_Mode = DMA2D_R2M;       
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(771): error:  #20: identifier "DMA2D_RGB565" is undefined
+    DMA2D_InitStruct.DMA2D_CMode = DMA2D_RGB565;      
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(791): warning:  #223-D: function "DMA2D_Init" declared implicitly
+    DMA2D_Init(&DMA2D_InitStruct);  
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(793): warning:  #223-D: function "DMA2D_StartTransfer" declared implicitly
+    DMA2D_StartTransfer();  
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(795): warning:  #223-D: function "DMA2D_GetFlagStatus" declared implicitly
+    while(DMA2D_GetFlagStatus(DMA2D_FLAG_TC) == RESET)
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(795): error:  #20: identifier "DMA2D_FLAG_TC" is undefined
+    while(DMA2D_GetFlagStatus(DMA2D_FLAG_TC) == RESET)
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(1020): warning:  #223-D: function "LTDC_LayerSize" declared implicitly
+      LTDC_LayerSize(LTDC_Layer1, width, height);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(1021): warning:  #223-D: function "LTDC_ReloadConfig" declared implicitly
+      LTDC_ReloadConfig(LTDC_VBReload);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(1021): error:  #20: identifier "LTDC_VBReload" is undefined
+      LTDC_ReloadConfig(LTDC_VBReload);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(1026): warning:  #223-D: function "LTDC_LayerPixelFormat" declared implicitly
+        LTDC_LayerPixelFormat(LTDC_Layer1, LTDC_Pixelformat_ARGB8888);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(1026): error:  #20: identifier "LTDC_Pixelformat_ARGB8888" is undefined
+        LTDC_LayerPixelFormat(LTDC_Layer1, LTDC_Pixelformat_ARGB8888);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(1031): warning:  #223-D: function "LTDC_LayerPixelFormat" declared implicitly
+        LTDC_LayerPixelFormat(LTDC_Layer1, LTDC_Pixelformat_RGB565);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(1031): error:  #20: identifier "LTDC_Pixelformat_RGB565" is undefined
+        LTDC_LayerPixelFormat(LTDC_Layer1, LTDC_Pixelformat_RGB565);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(1036): warning:  #223-D: function "LTDC_LayerPixelFormat" declared implicitly
+        LTDC_LayerPixelFormat(LTDC_Layer1, LTDC_Pixelformat_RGB888);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(1036): error:  #20: identifier "LTDC_Pixelformat_RGB888" is undefined
+        LTDC_LayerPixelFormat(LTDC_Layer1, LTDC_Pixelformat_RGB888);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(1043): warning:  #223-D: function "LTDC_LayerSize" declared implicitly
+      LTDC_LayerSize(LTDC_Layer2, width, height);
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(1044): warning:  #223-D: function "LTDC_ReloadConfig" declared implicitly
+      LTDC_ReloadConfig(LTDC_VBReload); 
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c(1044): error:  #20: identifier "LTDC_VBReload" is undefined
+      LTDC_ReloadConfig(LTDC_VBReload); 
+..\..\..\..\..\Utilities\STM32_EVAL\STM324x9I_EVAL\stm32f429i_discovery_lcd.c: 33 warnings, 30 errors
+compiling stm32f429i_discovery_sdram.c...
+compiling stm324x9i_eval.c...
+compiling stm324x9i_eval_sdio_sd.c...
+compiling system_stm32f4xx.c...
+assembling startup_stm32f429_439xx.s...
+compiling misc.c...
+compiling stm32f4xx_crc.c...
+compiling stm32f4xx_dma.c...
+compiling stm32f4xx_dma2d.c...
+compiling stm32f4xx_exti.c...
+compiling stm32f4xx_flash.c...
+compiling stm32f4xx_fmc.c...
+compiling stm32f4xx_gpio.c...
+compiling stm32f4xx_hash.c...
+compiling stm32f4xx_iwdg.c...
+compiling stm32f4xx_ltdc.c...
+compiling stm32f4xx_pwr.c...
+compiling stm32f4xx_rcc.c...
+compiling stm32f4xx_rng.c...
+compiling stm32f4xx_rtc.c...
+compiling stm32f4xx_sdio.c...
+compiling stm32f4xx_spi.c...
+compiling stm32f4xx_syscfg.c...
+compiling stm32f4xx_tim.c...
+compiling stm32f4xx_usart.c...
+compiling stm32f4xx_wwdg.c...
+compiling ff.c...
+compiling fattime.c...
+".\STM324xG-EVAL\STM324xG-EVAL_FS.axf" - 31 Error(s), 36 Warning(s).
+Target not created
