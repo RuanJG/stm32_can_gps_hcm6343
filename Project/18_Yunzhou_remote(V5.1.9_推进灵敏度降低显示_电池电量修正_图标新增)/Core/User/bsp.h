@@ -46,7 +46,13 @@ uint32_t LowLevel_Init (void);
 void BSP_Pointer_Update(void);
 void LCD_PWM_Config(uint8_t status);
 void Buzzer_PWM_Config(void);
+	 
+void bsp_ADC1_CH6_DMA_Config(void);
+unsigned char bsp_Get_Battery_Level();
 
+void bsp_Gui_lcd_init();
+void bsp_Init (void);
+	 
 #ifdef __cplusplus
 }
 #endif

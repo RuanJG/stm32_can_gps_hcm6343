@@ -363,7 +363,7 @@
               <MiscControls>--c99 --diag-suppress 111</MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F429_439xx,USE_STM32F429I_DISCO,USE_USB_OTG_HS ,USE_EMBEDDED_PHY, RADIO_TYPE=XTEND915, XTEND915</Define>
               <Undefine></Undefine>
-              <IncludePath>.\..\Config;.\..\Core\Devices\STM32F4xx;.\..\Core\User;.\..\Core\Demo;.\..\Core\Lib;.\..\Core\Test_Program;.\..\..\..\Libraries\STM32_USB_HOST_Library\Core\inc;.\..\..\..\Libraries\STM32_USB_HOST_Library\Class\MSC\inc;.\..\..\..\Libraries\STM32_USB_Device_Library\Core\inc;.\..\..\..\Libraries\STM32_USB_Device_Library\Class\MSC\inc;.\..\..\..\Libraries\STM32_USB_Device_Library\Class\HID\inc;.\..\..\..\Libraries\STM32_USB_Device_Library\Class\Audio\inc;.\..\..\..\Libraries\STM32_USB_OTG_Driver\inc;.\..\..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc;.\..\..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Include;.\..\..\..\Utilities;.\..\..\..\Utilities\Common;.\..\..\..\Utilities\STM32F429i-Discovery;.\..\..\..\Utilities\Third_Party\fat_fs\inc;.\..\..\..\Utilities\Third_Party\FreeRTOS\Source\portable\IAR\ARM_CM4F;.\..\..\..\Utilities\Third_Party\FreeRTOS\Source\include;.\..\..\..\Libraries\STemWinLibrary522_4x9i\inc;.\..\..\..\Libraries\STemWinLibrary522_4x9i\Config;..\Core\User\TouchPanel;..\Core\Demo5.22\</IncludePath>
+              <IncludePath>.\..\Config;.\..\Core\Devices\STM32F4xx;.\..\Core\User;.\..\Core\Demo;.\..\Core\Lib;.\..\Core\Test_Program;.\..\..\..\Libraries\STM32_USB_HOST_Library\Core\inc;.\..\..\..\Libraries\STM32_USB_HOST_Library\Class\MSC\inc;.\..\..\..\Libraries\STM32_USB_Device_Library\Core\inc;.\..\..\..\Libraries\STM32_USB_Device_Library\Class\MSC\inc;.\..\..\..\Libraries\STM32_USB_Device_Library\Class\HID\inc;.\..\..\..\Libraries\STM32_USB_Device_Library\Class\Audio\inc;.\..\..\..\Libraries\STM32_USB_OTG_Driver\inc;.\..\..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc;.\..\..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Include;.\..\..\..\Utilities;.\..\..\..\Utilities\Common;.\..\..\..\Utilities\STM32F429i-Discovery;.\..\..\..\Utilities\Third_Party\fat_fs\inc;.\..\..\..\Utilities\Third_Party\FreeRTOS\Source\portable\IAR\ARM_CM4F;.\..\..\..\Utilities\Third_Party\FreeRTOS\Source\include;.\..\..\..\Libraries\STemWinLibrary522_4x9i\inc;.\..\..\..\Libraries\STemWinLibrary522_4x9i\Config;..\Core\User\TouchPanel;..\Core\Demo5.22\;..\Core\NewApp;..\Core\NewApp\driver</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -815,6 +815,66 @@
               <FileName>port_cm4.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\Utilities\Third_Party\FreeRTOS\Source\portable\RVDS\ARM_CM4F\port_cm4.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>NewApp</GroupName>
+          <Files>
+            <File>
+              <FileName>cmdcoder.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\NewApp\cmdcoder.c</FilePath>
+            </File>
+            <File>
+              <FileName>cmdcoder.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\NewApp\cmdcoder.h</FilePath>
+            </File>
+            <File>
+              <FileName>remoter_sender_jostick.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\NewApp\remoter_sender_jostick.c</FilePath>
+            </File>
+            <File>
+              <FileName>remoter_sender_jostick.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\NewApp\remoter_sender_jostick.h</FilePath>
+            </File>
+            <File>
+              <FileName>remoter_sender_RF.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\NewApp\remoter_sender_RF.c</FilePath>
+            </File>
+            <File>
+              <FileName>remoter_sender_RF.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\NewApp\remoter_sender_RF.h</FilePath>
+            </File>
+            <File>
+              <FileName>remoter_sender_UI.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\NewApp\remoter_sender_UI.c</FilePath>
+            </File>
+            <File>
+              <FileName>remoter_sender_UI.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\NewApp\remoter_sender_UI.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>NewApp_driver</GroupName>
+          <Files>
+            <File>
+              <FileName>driver_xtend900.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\NewApp\driver\driver_xtend900.c</FilePath>
+            </File>
+            <File>
+              <FileName>driver_xtend900.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\NewApp\driver\driver_xtend900.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1629,6 +1689,66 @@
               <FileName>port_cm4.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\Utilities\Third_Party\FreeRTOS\Source\portable\RVDS\ARM_CM4F\port_cm4.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>NewApp</GroupName>
+          <Files>
+            <File>
+              <FileName>cmdcoder.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\NewApp\cmdcoder.c</FilePath>
+            </File>
+            <File>
+              <FileName>cmdcoder.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\NewApp\cmdcoder.h</FilePath>
+            </File>
+            <File>
+              <FileName>remoter_sender_jostick.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\NewApp\remoter_sender_jostick.c</FilePath>
+            </File>
+            <File>
+              <FileName>remoter_sender_jostick.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\NewApp\remoter_sender_jostick.h</FilePath>
+            </File>
+            <File>
+              <FileName>remoter_sender_RF.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\NewApp\remoter_sender_RF.c</FilePath>
+            </File>
+            <File>
+              <FileName>remoter_sender_RF.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\NewApp\remoter_sender_RF.h</FilePath>
+            </File>
+            <File>
+              <FileName>remoter_sender_UI.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\NewApp\remoter_sender_UI.c</FilePath>
+            </File>
+            <File>
+              <FileName>remoter_sender_UI.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\NewApp\remoter_sender_UI.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>NewApp_driver</GroupName>
+          <Files>
+            <File>
+              <FileName>driver_xtend900.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\NewApp\driver\driver_xtend900.c</FilePath>
+            </File>
+            <File>
+              <FileName>driver_xtend900.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\NewApp\driver\driver_xtend900.h</FilePath>
             </File>
           </Files>
         </Group>

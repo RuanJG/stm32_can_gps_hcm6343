@@ -62,6 +62,18 @@ extern char version_number[7];						//版本号
 extern char release_date[9];							//发布日期
 /* Exported functions ------------------------------------------------------- */
 
+
+
+#define USE_REMOTER_SENDER 1
+
+#if USE_REMOTER_SENDER
+#include "remoter_sender_RF.h"
+#include "remoter_sender_UI.h"
+#include "remoter_sender_jostick.h"
+#endif
+
+
+
 #endif /* __GLOBAL_INCLUDES_H__ */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

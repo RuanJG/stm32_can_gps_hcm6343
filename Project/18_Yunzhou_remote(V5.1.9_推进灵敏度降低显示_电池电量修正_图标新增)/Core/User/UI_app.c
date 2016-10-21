@@ -77,6 +77,11 @@ void Graphic_Interface_Task(void * pvParameters)
 	//读出保存的参数
 	load_parameter();
 	
+#if USE_REMOTER_SENDER
+	remoter_sender_UI_Task(pvParameters);
+#endif
+	
+	
   /* Init the STemWin GUI Library */
   GUI_Init(); 
   GUI_SetBkColor(GUI_TRANSPARENT);

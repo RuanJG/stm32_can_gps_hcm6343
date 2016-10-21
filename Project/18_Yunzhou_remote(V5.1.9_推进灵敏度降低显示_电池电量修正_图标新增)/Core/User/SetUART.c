@@ -16,6 +16,8 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "SetUART.h"
+#include "driver_xtend900.h"
+
 
 /* Private variables ---------------------------------------------------------*/
 /* Public variables ---------------------------------------------------------*/
@@ -148,7 +150,7 @@ void mCOMInit(void)
   USART_InitStructure.USART_StopBits = USART_StopBits_1;
   USART_InitStructure.USART_Parity = USART_Parity_No;
   USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-  USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;	
+  USART_InitStructure.USART_Mode = USART_Mode_Tx;	
 	
 	/* Enable GPIO clock */
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
@@ -171,6 +173,15 @@ void mCOMInit(void)
   /* USART configuration */
 	USART_Init(USART2, &USART_InitStructure);
     
+	USART_ITConfig(USART2, USART_IT_RXNE, DISABLE);	 
+	USART_ITConfig(USART2, USART_IT_TXE, ENABLE);	
+	
+	NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;    		//开串口中断1
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 4;   	//制定抢占优先级1
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;    				//指定从优先级
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	//NVIC_Init(&NVIC_InitStructure);
+	
   /* Enable USART */	
 	USART_Cmd(USART2, ENABLE);
 }
@@ -186,15 +197,7 @@ void mCOMInit(void)
 -------------------------------------------------------------------------*/
 void transmit_data(uint8_t *send_buf, uint16_t send_len)
 {
-	uint16_t i;
-	
-  for(i = 0; i < send_len; i++)
-	{
-		/* Loop until the end of transmission */
-		while (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);
 
-		USART_SendData(USART1, send_buf[i]);
-	}
 }
 
 
@@ -207,9 +210,7 @@ void transmit_data(uint8_t *send_buf, uint16_t send_len)
 -------------------------------------------------------------------------*/
 void PutUART(char ch)
 {
-	while (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);
-		
-	USART_SendData(USART1, ch);
+
 }
 
 
@@ -245,7 +246,8 @@ void USART1_IRQHandler(void)
 			receive_good_count++;
 		}		
 
-		OnCommandDataReceived(c);					//信息接收处理函数
+		//OnCommandDataReceived(c);					//信息接收处理函数
+		xtend900_parase(c);
 		
 		
 		//打开捕获RSSI的PWM中断
@@ -261,6 +263,22 @@ void USART1_IRQHandler(void)
 	USART_ClearITPendingBit(USART1, USART_IT_TXE);			//中断标志软复位
 } 
 
+
+void USART2_IRQHandler(void)
+{
+	u8 c;				//char c;
+	
+	//接收中断---------------------------------------------------------
+	if(USART_GetITStatus(USART2, USART_IT_RXNE) != RESET) 
+	{		
+	}	
+	USART_ClearITPendingBit(USART2, USART_IT_RXNE);			//中断标志软复位
+	
+	//发送中断---------------------------------------------------------
+	if(USART_GetITStatus(USART2, USART_IT_TXE) != RESET)
+	{}		
+	USART_ClearITPendingBit(USART2, USART_IT_TXE);			//中断标志软复位
+} 
 
 /**3
 

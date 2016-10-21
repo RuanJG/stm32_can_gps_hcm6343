@@ -27,6 +27,8 @@
 #include "Xtend_900.h"
 
 
+#include "remoter_sender_RF.h"
+
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 #define Background_Task_PRIO    ( tskIDLE_PRIORITY  + 18 )								//±³¾°ÈÎÎñ
@@ -65,7 +67,37 @@ int main(void)
 	 /* Capture error */ 
 	 while (1);
 	}  
-  
+	
+	bsp_Init();
+
+#if USE_REMOTER_SENDER
+
+  xTaskCreate(remoter_sender_RF_Task,
+              (signed char const*)"RF_T",
+              1024,
+              NULL,
+              tskIDLE_PRIORITY+14,
+              &remoter_sender_RF_Task_Handle);	
+							
+  xTaskCreate(remoter_sender_Joystick_Task,
+              (signed char const*)"Joystick_T",
+              256, //stack size
+              NULL,
+              tskIDLE_PRIORITY+12,
+              &remoter_sender_Joystick_Task_Handle);					
+							
+
+  xTaskCreate(remoter_sender_UI_Task,
+              (signed char const*)"GUI_Interface",
+              2000,//stack size
+              NULL,
+              tskIDLE_PRIORITY+10,
+              &remoter_sender_UI_Task_Handle);							
+							
+						
+
+#else				
+
   /* Create Graphic_Interface task */
   xTaskCreate(Graphic_Interface_Task,
               (signed char const*)"GUI_Interface",
@@ -73,7 +105,7 @@ int main(void)
               NULL,
               Graphic_Interface_Task_PRIO,
               &Graphic_Interface_Task_Handle);
-
+							
 	/* Create keyboard sample task */
   xTaskCreate(Keyboard_Task,
               (signed char const*)"Keyboard_T",
@@ -97,6 +129,14 @@ int main(void)
               NULL,
               Background_Task_PRIO,
               &Background_Task_Handle);
+#endif							
+							
+							
+							
+							
+							
+							
+
 	
 
   /* Start the FreeRTOS scheduler */

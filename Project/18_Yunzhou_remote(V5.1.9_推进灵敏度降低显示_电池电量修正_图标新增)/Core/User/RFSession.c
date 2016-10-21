@@ -76,6 +76,10 @@ void GenerateTakeSampleCommandBase64(bool encoded)
 	uint8_t api_checksum;
 	uint8_t tempbyte;
 	
+#if USE_REMOTER_SENDER
+	return;
+#endif
+	
 	if(NeedSendSampleCount > 0){
 		sendBuffer_index = 0;
 		
@@ -167,7 +171,11 @@ void SendSampleFinished(bool encoded)
 	int modBufferEncodedLength;
 	uint8_t api_checksum;
 	uint8_t tempbyte;
-		
+
+#if USE_REMOTER_SENDER
+	return;
+#endif
+	
 	//ÖØÖÃ
 	modeBufferIndex = 0;
 	
@@ -249,6 +257,10 @@ void GenerateAlarmCommandBase64(bool encoded)
 	u8 tempbyte;
 	u16 checksum = 0;
 	uint8_t api_checksum;
+	
+#if USE_REMOTER_SENDER
+	return;
+#endif
 	
 	if(NeedSendAlertLED > 0 || NeedSendSpeaker > 0)
 	{
@@ -394,6 +406,10 @@ void SendCommandAutoMode(bool encoded)
 	int modBufferEncodedLength;
 	uint8_t api_checksum;
 	uint8_t tempbyte;
+	
+#if USE_REMOTER_SENDER
+	return;
+#endif
 	
 		//ÖØÖÃ
 	modeBufferIndex = 0;
@@ -543,6 +559,9 @@ void load_Valve_parameter(void)
 -------------------------------------------------------------------------*/
 void GenerateValveCommand(void)
 {
+#if USE_REMOTER_SENDER
+	return;
+#endif
 	if(NeedSendValveCount > 0)
 	{
 		u8 value = GetValveValue();
@@ -594,6 +613,9 @@ void GenerateEngineStartCommandBase64(bool encoded)
 	uint8_t api_checksum;
 	uint8_t tempbyte;
 
+#if USE_REMOTER_SENDER
+	return;
+#endif
 	if (NeedSendAlertLED > 0)
 	{
 		sendBuffer[0] = 0;
@@ -684,6 +706,9 @@ void GenerateEngineStopCommandBase64(bool encoded)
 	uint8_t api_checksum;
 	uint8_t tempbyte;
 	
+#if USE_REMOTER_SENDER
+	return;
+#endif
 	if (NeedSendSpeaker > 0)
 	{
 		sendBuffer[0] = 0;
@@ -780,7 +805,10 @@ void GenerateCommandBase64(bool encoded)
 	u8 api_checksum;
 	
 	//GenerateValveCommand();
-	
+#if USE_REMOTER_SENDER
+	remoter_sender_RF_sendChannel();
+	return;
+#endif
 	if(NeedSendAutoModeCommandCount > 0 || (MODE_Button == CONTROL_MODE_AUTO && receivedManualMessageCount > 2))
 	{
 		SendCommandAutoMode(TRUE);
@@ -1135,7 +1163,11 @@ void GenerateCommandBase64(bool encoded)
 -------------------------------------------------------------------------*/
 void OnCommandDataReceived(char c)
 {
+#if USE_REMOTER_SENDER
+	remoter_sender_RF_parase(c);
+#else
 	ParseRFComamndByte(c);
+#endif
 }
 
 
