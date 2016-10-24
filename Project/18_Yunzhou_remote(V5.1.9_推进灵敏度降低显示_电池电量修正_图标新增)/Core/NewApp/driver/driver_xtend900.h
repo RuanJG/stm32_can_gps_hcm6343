@@ -22,7 +22,7 @@ typedef void (*xtend900_Recive_Handler_t)(char c);
 char * xtend900_get_TX_Power_string(int power_select);
 void xtend900_putchar(unsigned char c);
 void xtend900_parase(unsigned char c);
-int xtend900_save_param(xtend900_config_t * config);
+int xtend900_save_param(xtend900_config_t * config, xtend900_config_t * reloadConfig);
 int xtend900_load_param(xtend900_config_t * config);
 void xtend900_set_reciver_handler( xtend900_Recive_Handler_t cb);
 

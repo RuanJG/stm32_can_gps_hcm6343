@@ -19,9 +19,11 @@ volatile unsigned short _uart_buffer_index = 0;
 
 
 
-
-
-
+#if 1 //DEBUG
+#define printLog(X...) printf(X...)
+#else
+#define printLog(X...) 
+#endif																	
 
 																	
 void xtend900_set_reciver_handler( xtend900_Recive_Handler_t cb)
@@ -36,10 +38,10 @@ void _xtend_putchar(unsigned char c)
 	USART_SendData(USART1, c);
 }
 
-void _xtend_putstring(unsigned char *str)
+void _xtend_putCmd(unsigned char *str)
 {
 	int i=0;
-	while( str[i] != 0 ) _xtend_putchar(str[i]);
+	while( str[i] != 0 )_xtend_putchar(str[i++]);
 }
 																	
 void xtend900_putchar(unsigned char c)
@@ -138,12 +140,10 @@ int _xtend900_wait_string(char *str, int cmlen, int timeout_ms)
 {
 	int stridx=0,index=0, count=0;
 	
-	for( count=0; count < timeout_ms/10; count++)
+	for( count=0; count < timeout_ms; count++)
 	{
-		for( index =0,stridx=0; index < _uart_buffer_index ; index++)
-		{
-			while (USART_GetFlagStatus(USART2, USART_FLAG_TXE) == RESET);
-			USART_SendData(USART2, _uart_buffer[index]);	
+		while( index < _uart_buffer_index)
+		{	
 			if( str[stridx] == _uart_buffer[index] )
 			{
 				stridx++;
@@ -152,9 +152,10 @@ int _xtend900_wait_string(char *str, int cmlen, int timeout_ms)
 			}else{
 				stridx = 0;
 			}
+			index++;
 		}
 
-		vTaskDelay(10);
+		vTaskDelay(1);
 	}
 	return 0;
 }
@@ -207,6 +208,8 @@ int translate_parma_frome_string(xtend900_config_t *config, unsigned char *buffe
 	unsigned short tmp;
 	
 	buffer[len] = 0;
+	
+	printf("xtend900 translate string:\n");
 	printf(buffer);
 
 	//hp
@@ -262,43 +265,68 @@ int translate_parma_frome_string(xtend900_config_t *config, unsigned char *buffe
 
 
 char _sendBuffer[128];
-int xtend900_save_param(xtend900_config_t * config)
+int xtend900_save_param(xtend900_config_t * config, xtend900_config_t * reloadConfig)
 {
 	int res;
 	
 	_xtend900_lock = 1;
 	
-	vTaskDelay(200);//wait all byte received
+	vTaskDelay(3000);//在进入AT模式前，要停止发送数据 2S 以上 
 	//clear uart buffer
 	_uart_buffer_index = 0;
-	printf("lock=%d",_xtend900_lock);
 	_xtend900_enter_AT_Command(); // 发送AT指令后，xtend900大概要1s后再进入AT模式，并返回"OK\n"三个符  
-	vTaskDelay(200);
-	res = _xtend900_wait_string("OK\r",3, 4000); // 4s delay 
+	res = _xtend900_wait_string("OK\r",3, 2000); // 4s delay 
 	if( res == 0 ){
 		//TODO display timeout
-		printf("save at timeout,index=%d\n",_uart_buffer_index);
-		for( res = 0; res <= _uart_buffer_index; res++)
-			putchar(_uart_buffer[res]);
+		printf("save_param enter at mode timeout\n");
 		goto error_out;
 	}
 	
+	/*
 	
+	ATHP0006,ID3332,MYffff,DTffff,MKffff,PL0004,AP0000,WR,CN
+ATHP0005,ID3332,MYffff,DTffff,MKffff,PL0004,AP0000,WR,CN
+	*/
 	
-	sprintf(_sendBuffer,"ATHP%04x,ID%04x,MY%04x,DT%04x,MK%04x,PL%04x,AP%04x,WR,CN\r",
+	sprintf(_sendBuffer,"ATHP%04x,ID%04x,MY%04x,DT%04x,MK%04x,PL%04x,AP%04x,WR\r",
 												config->hp, config->id, config->my, config->dt, config->mk, config->pl, config->ap);
 	
 	printf(_sendBuffer);
-	vTaskDelay(1000);
 	
 	//clear uart buffer
 	_uart_buffer_index = 0;
-	//_xtend_putstring(_sendBuffer);
-	_xtend900_exit_AT_Command();
-	res = _xtend900_wait_string("OK\r",3, 4000); // 4s delay 
+	_xtend_putCmd(_sendBuffer);
+	res = _xtend900_wait_string("OK\r",3, 2000); // 2s delay 
 	if( res == 0 )
 	{
 		//TODO display timeout
+		printf("safe param set timeout\n");
+		goto error_out;
+	}	
+	
+	//read param again
+	//clear uart buffer
+	_uart_buffer_index = 0;
+	//发送查询命令
+	_xtend900_send_AT_inquiry();
+	res = _xtend900_wait_data_count(29, 2000); // 2s delay 
+	if( res == 0 )
+	{
+		//TODO display timeout
+		printf("save param at inquiry timeout\n");
+		goto error_out;
+	}
+	translate_parma_frome_string(reloadConfig, _uart_buffer, _uart_buffer_index);
+	
+	
+	//clear uart buffer
+	_uart_buffer_index = 0;
+	_xtend900_exit_AT_Command();
+	res = _xtend900_wait_string("OK\r",3, 2000); // 4s delay 
+	if( res == 0 )
+	{
+		//TODO display timeout
+		printf("save param : exit timeout\n");
 		goto error_out;
 	}	
 	
@@ -322,16 +350,19 @@ int xtend900_load_param(xtend900_config_t * config)
 	
 	_xtend900_lock = 1;
 	
-	vTaskDelay(400);//wait all byte received
+	//在进入AT模式前，要停止发送数据 2S 以上 
+	vTaskDelay(3000);
 	//clear uart buffer
 	_uart_buffer_index = 0;
+	//send "+++"
 	_xtend900_enter_AT_Command(); // 发送AT指令后，xtend900大概要1s后再进入AT模式，并返回"OK\n"三个符  
+	//wait return
 	res = _xtend900_wait_string("OK\r",3, 4000); // 4s delay 
 	if( res == 0 )
 	{
 		//TODO display timeout
 		//printf(_uart_buffer);
-		printf("at timeout\n");
+		printf("load param at timeout\n");
 		goto error_out;
 	}
 	
@@ -343,7 +374,7 @@ int xtend900_load_param(xtend900_config_t * config)
 	if( res == 0 )
 	{
 		//TODO display timeout
-		printf("at inquiry timeout\n");
+		printf("load param at inquiry timeout\n");
 		goto error_out;
 	}
 	translate_parma_frome_string(config, _uart_buffer, _uart_buffer_index);

@@ -115,16 +115,13 @@ void remoter_sender_RF_sendChannel()
 int _remoter_sender_RF_loadParam()
 {
 
-	xtend900_load_param(&_sender_rf_config);
-	return 1;
+	return xtend900_load_param(&_sender_rf_config);
+
 }
 
 int _remoter_sender_RF_saveParam()
 {
-
-	xtend900_save_param(&_sender_rf_config);
-	
-	return 1;
+	return xtend900_save_param(&_sender_data.rf_config, &_sender_rf_config);
 }
 
 //******************************  command 
@@ -218,13 +215,14 @@ void remoter_sender_RF_Task(void * pvParameters)
 		//check setting： 在remoter_sender_RF_parase 里接收到命令后，设置更新，这里执行更新
 		if( _sender_data.rf_config.updated == 1 )
 		{
-			//use new config
-			_sender_rf_config = _sender_data.rf_config;
-			_sender_data.rf_config.updated = 0;
 			// ack boat
 			_remter_sender_RF_send_Ack_packget();
+			
 			//start set xtend900
 			_remoter_sender_RF_saveParam(); //block for setting xten900
+			
+			//set status
+			_sender_data.rf_config.updated = 0;
 			
 			//restart count , as setting just over
 			_rf_peroid_send_channel_counter = 0;
