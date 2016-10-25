@@ -36,15 +36,26 @@ void remoter_sender_RF_sendChannel();
 void remoter_sender_RF_parase(unsigned char c);
 int remoter_sender_RF_sendPackget(unsigned char id, unsigned char *data, int len);
 
-int remoter_sender_get_boat_powerLevel();
+int remoter_sender_RF_get_boat_powerLevel();
 void remoter_sender_RF_Task(void * pvParameters);
-xtend900_config_t * remoter_sender_get_rf_config();
+xtend900_config_t * remoter_sender_RF_get_config();
 
 extern xTaskHandle remoter_sender_RF_Task_Handle;
 
 
+// 当前无线程序的状态， _RF_NORMAL_MODE 正常状态，可以发送通信数据； _RF_SETTING_MODE 设置状态
+#define _RF_NORMAL_MODE 0
+#define _RF_SETTING_MODE 1
+#define _RF_LOADING_MODE 2
+char remoter_sender_RF_getMode();
+
+#define _RF_STATUS_OK  0x00
+#define _RF_STATUS_LOAD_PARAM_ERROR  0x01
+#define _RF_STATUS_SAVE_PARAM_ERROR  0x02
+char remoter_sender_RF_getStatus();
 
 
+int remoter_sender_RF_getDecodeRate();
 
 
 

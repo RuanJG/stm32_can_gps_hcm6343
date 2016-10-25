@@ -100,3 +100,8 @@ void TIM3_IRQHandler(void)
 	TIM_ITConfig(TIM3, TIM_IT_CC2, DISABLE);
 }
 
+int timer3_get_rssi()
+{
+	int rdbm = DutyCycle * 2 / 3 - 113;
+	return rdbm;
+}

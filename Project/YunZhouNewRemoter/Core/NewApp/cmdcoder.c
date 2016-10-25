@@ -43,10 +43,55 @@ void cmdcoder_init(cmdcoder_t* packget, unsigned char id, encodeSendCallback sen
 	packget->id = id;
 }
 
+
+void _cmdcoder_count_false_byte(cmdcoder_t* packget, int count) 
+{
+	if ( packget->false_bytes_count < 0x3df00000 ) //1G
+		packget->false_bytes_count += count;
+}
+
+
+
+
+void _cmdcoder_count_all_byte(cmdcoder_t* packget, int count) 
+{
+	if ( packget->all_bytes_count < 0x3df00000 ) //1G
+		packget->all_bytes_count += count;
+}
+
+
+
+void _cmdcoder_update_decode_rate(cmdcoder_t* packget)
+{
+	int rate ;
+	if( packget->all_bytes_count > 10 )
+	{
+		rate =  100 - ( 100 * packget->false_bytes_count / packget->all_bytes_count );
+		packget->false_bytes_count = 0;
+		packget->all_bytes_count = 0;
+		packget->decode_byte_rate = rate;
+	}
+}
+
+
+
+
+// let the user call this update
+int cmdcoder_update_Decode_Byte_Rate(cmdcoder_t* packget)
+{
+	_cmdcoder_update_decode_rate(packget);
+	return packget->decode_byte_rate ;
+}
+
+
+
+
 int cmdcoder_Parse_byte(cmdcoder_t* packget,unsigned char pbyte )
 {
 	unsigned char  decode_a_packget = 0;
 	unsigned char decode_failed = 0;
+	
+	_cmdcoder_count_all_byte(packget,1);
 	
 	switch( packget->parse_status ){
 		case FIND_DONE:{
@@ -54,11 +99,13 @@ int cmdcoder_Parse_byte(cmdcoder_t* packget,unsigned char pbyte )
 		}
 		case FIND_TAG:{
 			if( pbyte != CMD_CODER_TAG ){
+				_cmdcoder_count_false_byte(packget, packget->last_byte_is_tag+1);
 				packget->last_byte_is_tag=0;
 			}else {
 				if( packget->last_byte_is_tag == 1 ){
 					packget->parse_status++; // found tag,next step
 					packget->last_byte_is_tag = 0; //id no need to check tag last byte
+					packget->tmp_bytes_index = packget->all_bytes_count;
 				}else{
 					packget->last_byte_is_tag=1; //find next 0xff next time
 				}
@@ -165,13 +212,23 @@ int cmdcoder_Parse_byte(cmdcoder_t* packget,unsigned char pbyte )
 			}else{
 				decode_a_packget = 1;
 				packget->parse_status++; //ok ,next packget
+				packget->decode_ok_count++;
 			}
 			break;
 		}
 	}
 	
 	if( decode_failed == 1 ){
+		packget->decode_false_count++;
+		_cmdcoder_count_false_byte(packget, packget->all_bytes_count - packget->tmp_bytes_index);
 		cmdcoder_init(packget,packget->id,packget->send_cb);
+	}
+	
+	if( (packget->decode_false_count + packget->decode_ok_count) >= 10 )
+	{
+		packget->decode_rate =  packget->decode_ok_count*10; // 8/10=80% 
+		packget->decode_false_count = 0;
+		packget->decode_ok_count = 0;
 	}
 	
 	return decode_a_packget;
@@ -228,6 +285,10 @@ int cmdcoder_encode_and_send(cmdcoder_t* packget){
 	
 	return count;
 }
+
+
+
+
 
 void cmdcoder_send_bytes(cmdcoder_t* packget, unsigned char *data,int len)
 {

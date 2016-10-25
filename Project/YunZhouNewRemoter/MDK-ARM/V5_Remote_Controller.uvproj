@@ -861,6 +861,16 @@
               <FileType>5</FileType>
               <FilePath>..\Core\NewApp\remoter_sender_UI.h</FilePath>
             </File>
+            <File>
+              <FileName>PictureResource.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\NewApp\PictureResource.c</FilePath>
+            </File>
+            <File>
+              <FileName>PictureResource.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\NewApp\PictureResource.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1734,6 +1744,16 @@
               <FileName>remoter_sender_UI.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Core\NewApp\remoter_sender_UI.h</FilePath>
+            </File>
+            <File>
+              <FileName>PictureResource.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\NewApp\PictureResource.c</FilePath>
+            </File>
+            <File>
+              <FileName>PictureResource.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\NewApp\PictureResource.h</FilePath>
             </File>
           </Files>
         </Group>

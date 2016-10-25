@@ -19,13 +19,41 @@ volatile unsigned short _uart_buffer_index = 0;
 
 
 
-#if 1 //DEBUG
-#define printLog(X...) printf(X...)
-#else
-#define printLog(X...) 
-#endif																	
+#define _XTEND_DEBUG 1							
+
+#if _XTEND_DEBUG																	
+#define printLog(...) printf(__VA_ARGS__)	
+#else																	
+#define printLog(...) 																		
+#endif															
 
 																	
+																	
+																	
+int timer3_get_rssi();
+int xtend900_get_rssi()
+{
+	return timer3_get_rssi();
+}
+
+
+//根据RSSI显示信号强度		大于-60dbm表示信号好，-80 ~ -60dbm表示信号一般， -80以下表示信号差
+#define _XTEND_RSSI_MAX -60
+#define _XTEND_RSSI_MIN -80
+int xtend900_get_rssi_level()
+{
+	int level;
+	int rssi = xtend900_get_rssi();
+	if( rssi > _XTEND_RSSI_MAX ) rssi = _XTEND_RSSI_MAX;
+	if( rssi < _XTEND_RSSI_MIN ) rssi = _XTEND_RSSI_MIN;
+	
+	level = (rssi - _XTEND_RSSI_MIN) * 100 / ( _XTEND_RSSI_MAX - _XTEND_RSSI_MIN );
+	return level;
+}
+
+
+
+
 void xtend900_set_reciver_handler( xtend900_Recive_Handler_t cb)
 {
 	_xtend900_user_handler = cb;
@@ -209,8 +237,8 @@ int translate_parma_frome_string(xtend900_config_t *config, unsigned char *buffe
 	
 	buffer[len] = 0;
 	
-	printf("xtend900 translate string:\n");
-	printf(buffer);
+	printLog("xtend900 translate string:\n");
+	printLog(buffer);
 
 	//hp
 	if( buffer[0] > 0x30 && buffer[0] < 0x39 && buffer[1] == 0x0d )
@@ -256,7 +284,7 @@ int translate_parma_frome_string(xtend900_config_t *config, unsigned char *buffe
 	//tp
 	config->tp = (hexChar_to_byte(buffer[26])<<4) | hexChar_to_byte(buffer[27]) ;
 	
-	printf("hp=%x,id=%x,my=%x,dt=%x,mk=%x,pl=%x,ap=%x,tp=%x\n",config->hp,config->id,config->my,config->dt,config->mk,config->pl,config->ap,config->tp);
+	printLog("hp=%x,id=%x,my=%x,dt=%x,mk=%x,pl=%x,ap=%x,tp=%x\n",config->hp,config->id,config->my,config->dt,config->mk,config->pl,config->ap,config->tp);
 	
 	return 1;
 }
@@ -271,14 +299,14 @@ int xtend900_save_param(xtend900_config_t * config, xtend900_config_t * reloadCo
 	
 	_xtend900_lock = 1;
 	
-	vTaskDelay(3000);//在进入AT模式前，要停止发送数据 2S 以上 
+	vTaskDelay(2000);//在进入AT模式前，要停止发送数据 2S 以上 
 	//clear uart buffer
 	_uart_buffer_index = 0;
 	_xtend900_enter_AT_Command(); // 发送AT指令后，xtend900大概要1s后再进入AT模式，并返回"OK\n"三个符  
 	res = _xtend900_wait_string("OK\r",3, 2000); // 4s delay 
 	if( res == 0 ){
 		//TODO display timeout
-		printf("save_param enter at mode timeout\n");
+		printLog("save_param enter at mode timeout\n");
 		goto error_out;
 	}
 	
@@ -291,7 +319,7 @@ ATHP0005,ID3332,MYffff,DTffff,MKffff,PL0004,AP0000,WR,CN
 	sprintf(_sendBuffer,"ATHP%04x,ID%04x,MY%04x,DT%04x,MK%04x,PL%04x,AP%04x,WR\r",
 												config->hp, config->id, config->my, config->dt, config->mk, config->pl, config->ap);
 	
-	printf(_sendBuffer);
+	printLog(_sendBuffer);
 	
 	//clear uart buffer
 	_uart_buffer_index = 0;
@@ -300,7 +328,7 @@ ATHP0005,ID3332,MYffff,DTffff,MKffff,PL0004,AP0000,WR,CN
 	if( res == 0 )
 	{
 		//TODO display timeout
-		printf("safe param set timeout\n");
+		printLog("safe param set timeout\n");
 		goto error_out;
 	}	
 	
@@ -313,7 +341,7 @@ ATHP0005,ID3332,MYffff,DTffff,MKffff,PL0004,AP0000,WR,CN
 	if( res == 0 )
 	{
 		//TODO display timeout
-		printf("save param at inquiry timeout\n");
+		printLog("save param at inquiry timeout\n");
 		goto error_out;
 	}
 	translate_parma_frome_string(reloadConfig, _uart_buffer, _uart_buffer_index);
@@ -326,7 +354,7 @@ ATHP0005,ID3332,MYffff,DTffff,MKffff,PL0004,AP0000,WR,CN
 	if( res == 0 )
 	{
 		//TODO display timeout
-		printf("save param : exit timeout\n");
+		printLog("save param : exit timeout\n");
 		goto error_out;
 	}	
 	
@@ -351,18 +379,18 @@ int xtend900_load_param(xtend900_config_t * config)
 	_xtend900_lock = 1;
 	
 	//在进入AT模式前，要停止发送数据 2S 以上 
-	vTaskDelay(3000);
+	vTaskDelay(2000);
 	//clear uart buffer
 	_uart_buffer_index = 0;
 	//send "+++"
 	_xtend900_enter_AT_Command(); // 发送AT指令后，xtend900大概要1s后再进入AT模式，并返回"OK\n"三个符  
 	//wait return
-	res = _xtend900_wait_string("OK\r",3, 4000); // 4s delay 
+	res = _xtend900_wait_string("OK\r",3, 2000); // 4s delay 
 	if( res == 0 )
 	{
 		//TODO display timeout
-		//printf(_uart_buffer);
-		printf("load param at timeout\n");
+		//printLog(_uart_buffer);
+		printLog("load param at timeout\n");
 		goto error_out;
 	}
 	
@@ -374,7 +402,7 @@ int xtend900_load_param(xtend900_config_t * config)
 	if( res == 0 )
 	{
 		//TODO display timeout
-		printf("load param at inquiry timeout\n");
+		printLog("load param at inquiry timeout\n");
 		goto error_out;
 	}
 	translate_parma_frome_string(config, _uart_buffer, _uart_buffer_index);
@@ -386,7 +414,7 @@ int xtend900_load_param(xtend900_config_t * config)
 	if( res == 0 )
 	{
 		//TODO display timeout
-		printf("at exit timeout\n");
+		printLog("at exit timeout\n");
 		goto error_out;
 	}	
 	
@@ -431,3 +459,7 @@ char * xtend900_get_TX_Power_string(int power_select)
 	
 	return "0";
 }
+
+
+
+

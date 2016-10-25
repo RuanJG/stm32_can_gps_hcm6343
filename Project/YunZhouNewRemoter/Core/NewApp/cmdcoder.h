@@ -45,12 +45,21 @@ typedef struct _cmdcoder_t{
 	unsigned int len_multi ; // defalut = 1 , step 128
 	unsigned int index; //default = 0, <PROTOCOL_MAX_DATA_LEN ;
 	encodeSendCallback send_cb;
+	//decode rate //½âÂëÂÊ
+	 unsigned int all_bytes_count;
+	 unsigned int tmp_bytes_index;
+	 unsigned int false_bytes_count;
+	 unsigned char decode_ok_count;
+	 unsigned char decode_false_count;
+	int decode_rate;
+	int decode_byte_rate;
 }cmdcoder_t;
 
 void cmdcoder_init(cmdcoder_t* packget, unsigned char id, encodeSendCallback sendCallback);
 int cmdcoder_Parse_byte( cmdcoder_t* packget, unsigned char pbyte);
 int cmdcoder_encode_and_send(cmdcoder_t* packget);
 void cmdcoder_send_bytes(cmdcoder_t* packget, unsigned char *data,int len);
+int cmdcoder_update_Decode_Byte_Rate(cmdcoder_t* packget);
 
 #define MAINCONTROLLER_BOX_CMDCODER_ID 1
 #define NAVIGATION_BOX_CMDCODER_ID 2
