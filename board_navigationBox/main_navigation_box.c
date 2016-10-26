@@ -11,8 +11,8 @@
 #if NAVIGATION_BOX
 	
 	
-#define TEST_REPORT_IN_UART 0
-	
+#define TEST_REPORT_IN_UART 1
+#define NAVIGATION_BOX_CAN_ID 0x11
 	
 systick_time_t report_t;
 systick_time_t gps_delay_t;
@@ -23,7 +23,7 @@ Uart_t Uart1 ;
 Uart_t Uart2 ;
 cmdcoder_t encoder;
 volatile int key_count=0;
-
+volatile char _navigation_need_recali = 0;
 
 
 CanTxMsg TxMessage1;
@@ -207,99 +207,12 @@ int encodeCallback ( unsigned char c )
 
 
 
-
-void print_uint( Uart_t *uart, int n)
-{
-	int intt,les,count=0;
-	int num = n;
-	char data[16]={0};
-	while(1){
-		intt = num/10;
-		les = num%10;
-		data[count++] = 0x30+les;
-		
-		if( intt == 0 )
-			break;
-		
-		num = intt;
-	}
-	while(count-->0){
-		Uart_PutChar(uart, data[count]);
-	}
-	
-}
-
-int str_to_int(char *data, int len)
-{
-	int i;
-	int res=0,muli=1;
-	for( i=(len-1) ; i>=0; i--)
-	{
-		res += (data[i]-0x30)*muli;
-		muli*=10;
-	}
-	return res;
-}
-int read_num_by_uart1(uint32_t *num)
-{
-	static char data[32];// #200#, num is 200
-	static char tag = 0;
-	static char index = 0;
-	char tmp;
-	if( Uart_GetChar(&Uart1, &tmp) > 0 ){
-		switch(tag)
-		{
-			case 0:{
-				if( tmp == '#'){
-					tag++;
-					index = 0;
-				}
-				break;
-			}
-			case 1:{
-				if( tmp == '#' && index > 0){
-					*num = str_to_int(data,index);
-					tag = 0;
-					index = 0;
-					return 1;
-				}else{
-					data[index++]=tmp;
-				}
-				break;
-			}
-		}
-	}
-	return 0;
-}
-
-void test_h_bridge()
-{
-	uint32_t pwm=0;
-
-	if(read_num_by_uart1( &pwm ) == 1)
-	{
-		if( pwm == 0 ){
-			Uart_PutString(&Uart1,"back\r\n");
-		}else if( pwm == 1){
-			Uart_PutString(&Uart1,"stop\r\n");
-		}else if( pwm == 2){
-			Uart_PutString(&Uart1,"forward\r\n");
-		}
-	}
-
-}
-
-
-
-
-
-
 void main_setup()
 {
 	SetupPllClock(HSE_CLOCK_6MHZ);
 	Navi_GPIO_Configuration ();
-	Can1_Configuration (0x11);	//0x11CANµÿ÷∑
-	Uart_Configuration (&Uart1, USART1, 9600, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
+	Can1_Configuration (NAVIGATION_BOX_CAN_ID);	//0x11CANµÿ÷∑
+	Uart_Configuration (&Uart1, USART1, 115200, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
 	Uart_Configuration (&Uart2, USART2, 9600, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
 	//Uart_Configuration (&Uart3, USART3, 115200, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
 	
@@ -317,13 +230,27 @@ void main_setup()
 	//system error 
 	//system_error = system_error_get();
 }
+
+
+
+
+
 // if use iap , you can setup this function for your deinit
 void main_deinit()
 {
 	// TODO something that import for extern ic or machine befor reset
 }
+
+
+
+unsigned char _cmd_buffer[8];
+unsigned char _index = 0;
+
 void main_loop()
 {
+	CanRxMsg can_msg;
+
+	
 	if( check_systick_time(&gps_delay_t) ){
 		gps_event();
 	}
@@ -338,6 +265,41 @@ void main_loop()
 		navi_report();
 	}
 	
+	
+	//check cammand from can interface
+	if( 0 < Can1_Get_CanRxMsg(&can_msg) )
+	{
+		if( can_msg.StdId == NAVIGATION_BOX_CAN_ID )
+		{
+			//send "cali" for calibration cmd
+			if( can_msg.DLC==4 && can_msg.Data[0] == 'c' && can_msg.Data[1] == 'a' && can_msg.Data[2]=='l' && can_msg.Data[3]=='i')
+			{
+				_navigation_need_recali = 1;
+			}
+			
+		}
+	}		
+
+#if TEST_REPORT_IN_UART
+	//check cammand from uart interface
+	if( 0 < Uart_GetChar(&Uart1, &_cmd_buffer[_index]) )
+	{
+		if( _cmd_buffer[_index] == '\n' )
+		{
+			//check 'cali\n' cmd
+			if( _index >= 4 && _cmd_buffer[_index-4]=='c' && _cmd_buffer[_index-3]=='a' && _cmd_buffer[_index-2]=='l' && _cmd_buffer[_index-1]=='i')
+				_navigation_need_recali = 1;
+			
+			_index=0;
+			
+		}else{
+			_index++;
+			if( _index >= 8 ) _index=0;
+		}
+		
+	}
+#endif
+	
 	if( check_systick_time(&key_dect_t) ){
 		if(GPIO_ReadInputDataBit(KEY_GPIO_BANK ,KEY_GPIO_PIN) ==0){
 					key_count++;
@@ -345,16 +307,24 @@ void main_loop()
 					if( key_count >= 100 ) // more than 4s
 					{
 						key_count = 0;
-						Nbl_Led_on(COMPASS_LED_ID);
-						if(!HMC6343_Calibrate() )
-						{
-							//TODO 
-						}
-						Nbl_Led_toggle(COMPASS_LED_ID);
+						_navigation_need_recali= 1;
 					}
 		}else{
 			key_count = 0;
 		}
+	}
+	
+	
+	if( _navigation_need_recali == 1 )
+	{
+		Nbl_Led_on(COMPASS_LED_ID);
+		if(!HMC6343_Calibrate() )
+		{
+			//TODO 
+		}
+		Nbl_Led_toggle(COMPASS_LED_ID);
+									
+		_navigation_need_recali = 0;
 	}
 	
 
