@@ -11,14 +11,20 @@ void configHisClock()
 {
 		 RCC_DeInit();
 		 RCC_HSEConfig(RCC_HSE_OFF);
+	
 		 RCC_HSICmd(ENABLE);
-
+		 while(RCC_GetFlagStatus(RCC_FLAG_HSIRDY) == RESET){}
+	
 		 /* HCLK(AHB) = SYSCLK /x*/
 		 RCC_HCLKConfig(RCC_SYSCLK_Div1);//x=1,2,4,8,16,64,128,256,512   
 		 /* PCLK2(APB2) = HCLK/x */
 		 RCC_PCLK2Config(RCC_HCLK_Div1);//x=1,2,4,8,16 
 		 /* PCLK1(APB1) = HCLK/x */
 		 RCC_PCLK1Config(RCC_HCLK_Div2);//x=1,2,4,8,16
+
+		 
+		
+			 
 		 /* Configure ADCCLK such as ADCCLK = PCLK2/4 */ 
 		 RCC_ADCCLKConfig(RCC_PCLK2_Div4); 
 		 /* 设置代码延时x周期*/
@@ -26,22 +32,24 @@ void configHisClock()
 		 /* Enable Prefetch Buffer */
 		 FLASH_PrefetchBufferCmd(FLASH_PrefetchBuffer_Enable);
 
-
-		 RCC_PLLConfig(RCC_PLLSource_HSI_Div2,RCC_PLLMul_14);//56M
+  	 RCC_PLLConfig(RCC_PLLSource_HSI_Div2,RCC_PLLMul_14);//56M
 		 systemClk = 56000000;
+		
 		 RCC_PLLCmd(ENABLE);
 		 while(RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET)
 		 {    }
 		 RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
 		 while(RCC_GetSYSCLKSource() != 0x08)
 		 {    }
+
 }
 /*
 * SetupPllClock: setup base system clock  
 * hse_mhz: how much HSE clock is , HSE_CLOCK_6MHZ  HSE_CLOCK_8MHZ, if HSE_CLOCK_NO_USE , use HSI
 */
-int SetupPllClock(unsigned char hse_mhz) 
+int SetupPllClock( unsigned char hse_mhz) 
 {
+	
 	ErrorStatus HSEStartUpStatus;
 	
 	if( hse_mhz != HSE_CLOCK_NO_USE )
@@ -59,7 +67,7 @@ int SetupPllClock(unsigned char hse_mhz)
 		    /* PCLK1(APB1) = HCLK/x */
 		    RCC_PCLK1Config(RCC_HCLK_Div2);//x=1,2,4,8,16
 		    /* 设置代码延时x周期*/
-		    FLASH_SetLatency(FLASH_Latency_2);//此值与系统时钟值有关
+		    FLASH_SetLatency(FLASH_Latency_2);//此值与系统时钟值有关	
 				/* Enable Prefetch Buffer */
 				FLASH_PrefetchBufferCmd(FLASH_PrefetchBuffer_Enable);
 
@@ -77,7 +85,8 @@ int SetupPllClock(unsigned char hse_mhz)
 					systemClk = 72000000;
 				}else{
 					system_Error_Callback(ERROR_HSE_SETUP_TYPE,1);
-					configHisClock();
+					//configHisClock();
+					while(1);
 				}
 				/* Enable PLL */ 
  	  		RCC_PLLCmd(ENABLE);
@@ -91,7 +100,16 @@ int SetupPllClock(unsigned char hse_mhz)
 		    {    }
 		 }else{
 				system_Error_Callback(ERROR_HSE_SETUP_TYPE,1);
-				configHisClock();
+				//configHisClock();
+			  
+			 //关中断
+				__set_PRIMASK(1);
+				__set_FAULTMASK(1);
+				// vectreset reset cm3 but other extern hardword
+				//*((uint32_t*)0xE000ED0C) = 0x05FA0001;
+				// sysresetReq reset all ic hardword system
+				*((uint32_t*)0xE000ED0C) = 0x05FA0004;
+			 while(1);
 		 }
   }else{
 		 configHisClock();

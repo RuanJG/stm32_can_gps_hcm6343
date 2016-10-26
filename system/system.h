@@ -6,15 +6,16 @@
 #include "base64_data.h"
 
 
+
 #define MAIN_CONTROLLER_BOARD 0
 #define NAVIGATION_BOX 0
 #define M80_ESC_BOX 0
 #define STM32F103V_BOARD 1
 
-// if make iap firmware 
-// modify keil flash  ; note : if the firmware offset's value is define in iap_firmware/iap.c
-// iap firmware : 0x8000000   0x4000                         ; 0x4000/1024 = 16 = 16kB         
-// app firmware : 0x8004000   0xC000  = (0x10000 - 0x4000) 
+// if make iap firmware £¬ stm32f103 : start addr =0x8000000-0x8010000 ; size 0x10000 
+// iap firmware : addr=0x8000000   size=0x4000   ; 0x4000/1024 = 16 = 16kB     
+// iap tag : addr = 0x8004000 size=1024 (0x400);
+// app firmware : addr= 0x8004400   size=0xBC00  = (0x10000 - 0x4400) = 47k
 //#define IAP_FIRMWARE 0
 //#define IAP_UART_BAUDRATE 9600
 
@@ -25,7 +26,6 @@
 #define HSE_CLOCK_NO_USE  0
 #define HSE_CLOCK_6MHZ  6
 #define HSE_CLOCK_8MHZ  8
-
 extern uint32_t systemClk ;
 int SetupPllClock(unsigned char hse_mhz) ;
 
@@ -138,7 +138,7 @@ system_error_t* system_error_get();
 void Iap_Configure(Uart_t *uart);
 void Iap_Jump();
 
-#define IAP_TAG_ADRESS (0x08000000 | 0xFC00)
+#define IAP_TAG_ADRESS (0x08000000 | 0x4000)
 #define IAP_TAG_UPDATE_VALUE 1
 #define IAP_TAG_JUMP_VALUE 2
 int set_iap_tag(int tag);

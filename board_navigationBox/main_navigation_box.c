@@ -324,7 +324,6 @@ void main_deinit()
 }
 void main_loop()
 {
-	
 	if( check_systick_time(&gps_delay_t) ){
 		gps_event();
 	}
