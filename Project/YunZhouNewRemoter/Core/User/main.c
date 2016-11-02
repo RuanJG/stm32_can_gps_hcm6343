@@ -14,53 +14,23 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "bsp.h"
+#include "FreeRTOS.h"
+#include "task.h"
 #include "timers.h "
 #include <stddef.h>
 #include "TouchPanel/TouchPanel.h"
 #include "stm32f4xx.h"
-#include "global_includes.h"
-
-#include "UI_app.h"
-#include "keyboard_app.h"
-#include "joystick_app.h"
-//#include "message_app.h"
-#include "Xtend_900.h"
-
-
 #include "remoter_sender_RF.h"
+#include "remoter_sender_UI.h"
+#include "remoter_sender_jostick.h"
 
-/* Private typedef -----------------------------------------------------------*/
-/* Private define ------------------------------------------------------------*/
-#define Background_Task_PRIO    ( tskIDLE_PRIORITY  + 18 )								//背景任务
-#define Background_Task_STACK   ( 128 )
-
-
-/* Private macro -------------------------------------------------------------*/
-/* Private const -------------------------------------------------------------*/
-/* Exported variables ---------------------------------------------------------*/
-char version_number[7] = "V5.1.9";						//版本号
-char release_date[9] = "(151117)";								//发布日期
-
-xTaskHandle                   Background_Task_Handle;
-
-
-/* Private function prototypes -----------------------------------------------*/
-//static void vTimerCallback( xTimerHandle pxTimer );
-void Background_Task(void * pvParameters);
-
-
-/* Private functions ---------------------------------------------------------*/
-
-
-/**
-  * @brief  Main program.
-  * @param  None
-  * @retval None
-  */ 
 int main(void)
 { 
+	
+	//所有中断在组4中，数传串口中断优先级最高=0，adc采样=1，数传读信号强度的timer中断=2
+	// 调试串口uart2中断为6
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
-	 
+	
 	/* Setup SysTick Timer for 1 msec interrupts.*/
 	if (SysTick_Config(SystemCoreClock / 1000))
 	{ 
@@ -68,9 +38,9 @@ int main(void)
 	 while (1);
 	}  
 	
+	
 	bsp_Init();
-
-#if USE_REMOTER_SENDER
+	
 
   xTaskCreate(remoter_sender_RF_Task,
               (signed char const*)"RF_T",
@@ -93,75 +63,13 @@ int main(void)
               NULL,
               tskIDLE_PRIORITY+10,
               &remoter_sender_UI_Task_Handle);							
-							
-						
 
-#else				
-
-  /* Create Graphic_Interface task */
-  xTaskCreate(Graphic_Interface_Task,
-              (signed char const*)"GUI_Interface",
-              Graphic_Interface_Task_STACK,
-              NULL,
-              Graphic_Interface_Task_PRIO,
-              &Graphic_Interface_Task_Handle);
-							
-	/* Create keyboard sample task */
-  xTaskCreate(Keyboard_Task,
-              (signed char const*)"Keyboard_T",
-              Keyboard_Task_STACK,
-              NULL,
-              Keyboard_Task_PRIO,
-              &Keyboard_Task_Handle);
-							
-	/* Create joystick sample task */
-  xTaskCreate(Joystick_Task,
-              (signed char const*)"Joystick_T",
-              Joystick_Task_STACK,
-              NULL,
-              Joystick_Task_PRIO,
-              &Joystick_Task_Handle);
-							
-	/* Create joystick sample task */
-  xTaskCreate(Background_Task,
-              (signed char const*)"Background_T",
-              Background_Task_STACK,
-              NULL,
-              Background_Task_PRIO,
-              &Background_Task_Handle);
-#endif							
 							
 							
-							
-							
-							
-							
-
-	
-
   /* Start the FreeRTOS scheduler */
   vTaskStartScheduler();
 }
 
-
-/**
-  * @brief  Background task
-  * @param  pvParameters not used
-  * @retval None
-  */
-void Background_Task(void * pvParameters)
-{
-	//等待300毫秒板载驱动及液晶屏初始化
-	vTaskDelay(300);
-	LCD_PWM_Config(ENABLE);						//液晶屏幕PWM调节
-	
-	
-	/* Run the Keyboard task */
-  while (1)
-	{
-		vTaskDelay(100);
-	}
-}	
 
 
 /**

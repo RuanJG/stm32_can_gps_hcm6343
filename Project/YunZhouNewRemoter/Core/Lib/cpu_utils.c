@@ -41,8 +41,12 @@ To use this module, the following steps should be followed :
 
 
 /* Includes ------------------------------------------------------------------*/
-#include "cpu_utils.h"
 
+#include "FreeRTOS.h"
+#include "task.h"
+
+#include "cpu_utils.h"
+#include "stm32f4xx.h"
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/

@@ -1,34 +1,14 @@
-/*-------------------------------------------------------------------------
-工程名称：定时中断相关程序
-描述说明：
-修改说明：<<-------------------------------------------------------->>
-					日期   修改人    版本号		修改内容
-					150704 赵铭章    5.0.0		新建立
-																		
-					
-					<<-------------------------------------------------------->>
-					日期   修改人    版本号		修改内容
-					
--------------------------------------------------------------------------*/
 
-
-/* Includes ------------------------------------------------------------------*/
-#include "set_timer.h"
-
+#include "bsp_xtend900_rssi_timer3.h"
+#include "stm32f4xx.h"
+#include "stdio.h"
 
 /* Exported variables ---------------------------------------------------------*/
-volatile uint32_t IC1Value,IC2Value, DutyCycle, Frequency;		//占空比以及频率
-uint8_t RSSI_Interrupt_flag = 1;						//信号强度中断标志
+volatile unsigned int _IC1Value,_IC2Value;
+volatile static int _timeout=0;
 
 
-/* Exported function prototypes -----------------------------------------------*/
-/*-------------------------------------------------------------------------
-	函数名：capture_Timer3_init
-	功  能：定时器3初始化			用于获取数传模块信号强度 RSSI
-	参  数：
-	返回值：
--------------------------------------------------------------------------*/
-void capture_Timer3_init(void)
+void bsp_xtend900_rssi_timer3_init(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
@@ -40,17 +20,15 @@ void capture_Timer3_init(void)
 	
 	TIM_PrescalerConfig(TIM3, 1000, TIM_PSCReloadMode_Update);
 	//TIM_PrescalerConfig(TIM3, 7200, TIM_PSCReloadMode_Update);
- 
-	/* Connect PXx to USARTx_Tx*/
+
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource7, GPIO_AF_TIM3);
-	
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;                               //GPIO配置
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOA, &GPIO_InitStructure);	
 	
 	NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;                     //NVIC配置
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
@@ -71,3 +49,46 @@ void capture_Timer3_init(void)
   TIM_ITConfig(TIM3, TIM_IT_CC2|TIM_IT_Update, ENABLE);     												//打开中断
 }
 
+
+
+void TIM3_IRQHandler(void)
+{
+	if(TIM_GetITStatus(TIM3,TIM_IT_Update)!=RESET)
+	{
+		if( _timeout >= 3 )
+		{
+			_IC1Value = 0;
+			_IC2Value = 0;
+		}else
+			_timeout++;
+		
+		TIM_ClearITPendingBit(TIM3,TIM_IT_Update);
+	}
+	if(TIM_GetITStatus(TIM3,TIM_IT_CC2)!=RESET)
+	{
+		_timeout=0;
+		_IC1Value = TIM_GetCapture1(TIM3);
+		_IC2Value = TIM_GetCapture2(TIM3);
+		TIM_ClearITPendingBit(TIM3, TIM_IT_CC2);
+	}
+}
+
+
+int bsp_xtend900_rssi_timer3_get_rssi()
+{
+	int rdbm;
+	int duty;
+	
+	//printf("ic1=%d,ic2=%d,timeout=%d\r\n",_IC1Value,_IC2Value,_timeout);
+  if(_IC2Value != 0)
+  {
+    duty = (_IC1Value * 100) / _IC2Value;         //读取IC1捕获寄存器的值，并计算占空比
+  }
+  else
+  {
+    duty = 0;
+  }
+	
+	rdbm = duty * 2 / 3 - 113;
+	return rdbm;
+}

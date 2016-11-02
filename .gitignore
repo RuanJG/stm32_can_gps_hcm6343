@@ -1,7 +1,7 @@
 *.o
 *.d
 *.crf
-*.htm
+*.htm
 *.axf
 *.hex
 *.lnp

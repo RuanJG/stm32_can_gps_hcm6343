@@ -5,7 +5,8 @@
 
 #include "m_flash.h"
 #include "driver_xtend900.h"
-
+#include "bsp_xtend900_uart.h"
+#include "bsp_xtend900_rssi_timer3.h"
 
 
 cmdcoder_t encode_packget;
@@ -165,12 +166,20 @@ void remoter_sender_RF_init()
 {
 	int res;
 	
-	cmdcoder_init(&encode_packget,JOSTICK_PACKGET_ID, remoter_sender_RF_putchar);
-	cmdcoder_init(&decode_packget,JOSTICK_PACKGET_ID, CMD_CODER_CALL_BACK_NULL);
-	xtend900_set_reciver_handler(remoter_sender_RF_parase);
 	//init _sender_data
 	_sender_data.powerLevel = 0;
 	_sender_data.updated = 0;
+	
+	//init coder 
+	cmdcoder_init(&encode_packget,JOSTICK_PACKGET_ID, remoter_sender_RF_putchar);
+	cmdcoder_init(&decode_packget,JOSTICK_PACKGET_ID, CMD_CODER_CALL_BACK_NULL);
+	xtend900_set_reciver_handler(remoter_sender_RF_parase);
+	
+	//uart should be last init
+	bsp_xtend900_uart_init();
+	
+	//RSSIÐÅºÅPWM²¶×½³õÊ¼»¯
+	bsp_xtend900_rssi_timer3_init();
 	
 	//init _sender_rf_config
 	vTaskDelay(300); // wait xtend900 running

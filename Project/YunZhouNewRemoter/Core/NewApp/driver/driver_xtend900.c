@@ -1,7 +1,7 @@
 #include "driver_xtend900.h"
 #include "stm32f4xx.h"
 #include "stdio.h"
-
+#include "bsp_xtend900_rssi_timer3.h"
 
 //发送参数查询命令 ATHP,ID,MY,DT,MK,PL,AP,TP<CR>
 //读取信道，VID，本地地址，目的地址，掩码地址，发射功率，API模式，板载温度等信息
@@ -29,17 +29,14 @@ volatile unsigned short _uart_buffer_index = 0;
 
 																	
 																	
-																	
-int timer3_get_rssi();
-int xtend900_get_rssi()
-{
-	return timer3_get_rssi();
-}
-
 
 //根据RSSI显示信号强度		大于-60dbm表示信号好，-80 ~ -60dbm表示信号一般， -80以下表示信号差
 #define _XTEND_RSSI_MAX -60
 #define _XTEND_RSSI_MIN -80
+int xtend900_get_rssi()
+{
+	return bsp_xtend900_rssi_timer3_get_rssi();
+}
 int xtend900_get_rssi_level()
 {
 	int level;

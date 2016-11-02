@@ -22,7 +22,7 @@
 
 
 /* Exported variables ---------------------------------------------------------*/
-extern uint32_t IC2Value, DutyCycle, Frequency;
+extern volatile uint32_t IC2Value, DutyCycle, Frequency;
 extern uint8_t RSSI_Interrupt_flag;						//信号强度中断标志
 
 

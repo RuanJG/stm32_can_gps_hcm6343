@@ -7,7 +7,7 @@
 #include "task.h"
 void remoter_sender_UI_Task(void * param);
 extern xTaskHandle remoter_sender_UI_Task_Handle;
-
+void remoter_sender_UI_setLog(char *str);
 
 
 

@@ -487,59 +487,9 @@
               <FilePath>..\Core\Test_Program\usbd_usr.c</FilePath>
             </File>
             <File>
-              <FileName>SetUART.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\User\SetUART.c</FilePath>
-            </File>
-            <File>
-              <FileName>SetADC.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\User\SetADC.c</FilePath>
-            </File>
-            <File>
-              <FileName>UI_app.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\User\UI_app.c</FilePath>
-            </File>
-            <File>
-              <FileName>keyboard_app.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\User\keyboard_app.c</FilePath>
-            </File>
-            <File>
-              <FileName>joystick_app.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\User\joystick_app.c</FilePath>
-            </File>
-            <File>
-              <FileName>Xtend_900.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\User\Xtend_900.c</FilePath>
-            </File>
-            <File>
-              <FileName>m_flash.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\User\m_flash.c</FilePath>
-            </File>
-            <File>
-              <FileName>local_handle.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\User\local_handle.c</FilePath>
-            </File>
-            <File>
               <FileName>base64.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Core\User\base64.c</FilePath>
-            </File>
-            <File>
-              <FileName>RFSession.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\User\RFSession.c</FilePath>
-            </File>
-            <File>
-              <FileName>set_timer.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\User\set_timer.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -885,6 +835,46 @@
               <FileName>driver_xtend900.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Core\NewApp\driver\driver_xtend900.h</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_lcd_backlight_pwm_timer10.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\NewApp\driver\bsp_lcd_backlight_pwm_timer10.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_lcd_backlight_pwm_timer10.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\NewApp\driver\bsp_lcd_backlight_pwm_timer10.h</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_xtend900_rssi_timer3.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\NewApp\driver\bsp_xtend900_rssi_timer3.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_xtend900_rssi_timer3.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\NewApp\driver\bsp_xtend900_rssi_timer3.h</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_buzzer_pwm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\NewApp\driver\bsp_buzzer_pwm.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_buzzer_pwm.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\NewApp\driver\bsp_buzzer_pwm.h</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_xtend900_uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\NewApp\driver\bsp_xtend900_uart.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_xtend900_uart.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\NewApp\driver\bsp_xtend900_uart.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1371,59 +1361,9 @@
               <FilePath>..\Core\Test_Program\usbd_usr.c</FilePath>
             </File>
             <File>
-              <FileName>SetUART.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\User\SetUART.c</FilePath>
-            </File>
-            <File>
-              <FileName>SetADC.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\User\SetADC.c</FilePath>
-            </File>
-            <File>
-              <FileName>UI_app.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\User\UI_app.c</FilePath>
-            </File>
-            <File>
-              <FileName>keyboard_app.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\User\keyboard_app.c</FilePath>
-            </File>
-            <File>
-              <FileName>joystick_app.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\User\joystick_app.c</FilePath>
-            </File>
-            <File>
-              <FileName>Xtend_900.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\User\Xtend_900.c</FilePath>
-            </File>
-            <File>
-              <FileName>m_flash.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\User\m_flash.c</FilePath>
-            </File>
-            <File>
-              <FileName>local_handle.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\User\local_handle.c</FilePath>
-            </File>
-            <File>
               <FileName>base64.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Core\User\base64.c</FilePath>
-            </File>
-            <File>
-              <FileName>RFSession.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\User\RFSession.c</FilePath>
-            </File>
-            <File>
-              <FileName>set_timer.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\User\set_timer.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1769,6 +1709,46 @@
               <FileName>driver_xtend900.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Core\NewApp\driver\driver_xtend900.h</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_lcd_backlight_pwm_timer10.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\NewApp\driver\bsp_lcd_backlight_pwm_timer10.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_lcd_backlight_pwm_timer10.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\NewApp\driver\bsp_lcd_backlight_pwm_timer10.h</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_xtend900_rssi_timer3.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\NewApp\driver\bsp_xtend900_rssi_timer3.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_xtend900_rssi_timer3.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\NewApp\driver\bsp_xtend900_rssi_timer3.h</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_buzzer_pwm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\NewApp\driver\bsp_buzzer_pwm.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_buzzer_pwm.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\NewApp\driver\bsp_buzzer_pwm.h</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_xtend900_uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\NewApp\driver\bsp_xtend900_uart.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_xtend900_uart.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\NewApp\driver\bsp_xtend900_uart.h</FilePath>
             </File>
           </Files>
         </Group>
