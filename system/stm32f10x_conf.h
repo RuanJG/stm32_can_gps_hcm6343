@@ -89,7 +89,9 @@
 #define MAIN_CONTROLLER_BOARD 0
 #define NAVIGATION_BOX 0
 #define M80_ESC_BOX 0
-#define STM32F103V_BOARD 1
+#define STM32F103V_BOARD 0
+#define NAVIGATION_TEST_BOX 1
+
 
 // if make iap firmware £¬ stm32f103 : start addr =0x8000000-0x8010000 ; size 0x10000 
 // iap firmware : addr=0x8000000   size=0x4000   ; 0x4000/1024 = 16 = 16kB     
@@ -109,7 +111,7 @@
 
 #if STM32F103V_BOARD
 #define HSE_VALUE    ((uint32_t) 8000000)
-#elif NAVIGATION_BOX
+#elif NAVIGATION_BOX | NAVIGATION_TEST_BOX
 #define HSE_VALUE    ((uint32_t) 6000000)
 #else
 #error "define HSE_VALUE for you board in stm32f10x_conf.h !"

@@ -129,6 +129,7 @@ void main_loop()
 	USART_SendData(USART1, 0x01);
 	delay_us(50000);
 	
+	
 	if( 1 == led_status )
 	{
 		led_off();
@@ -137,6 +138,7 @@ void main_loop()
 		led_on();
 		led_status = 1;
 	}
+	
 }
 
 
