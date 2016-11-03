@@ -564,6 +564,21 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>board_navigation_test_box</GroupName>
+          <Files>
+            <File>
+              <FileName>main_navigation_test_box.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_navigation_test_box\main_navigation_test_box.c</FilePath>
+            </File>
+            <File>
+              <FileName>SetGPIO.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_navigation_test_box\SetGPIO.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>misc</GroupName>
           <Files>
             <File>
@@ -605,11 +620,6 @@
               <FileName>SetCAN.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\system\SetCAN.c</FilePath>
-            </File>
-            <File>
-              <FileName>SetClock.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\system\SetClock.c</FilePath>
             </File>
             <File>
               <FileName>SetSysTick.c</FileName>
@@ -661,10 +671,15 @@
               <FileType>1</FileType>
               <FilePath>.\system\slog.c</FilePath>
             </File>
+            <File>
+              <FileName>stm32f10x_conf.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\system\stm32f10x_conf.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
-          <GroupName>New Group</GroupName>
+          <GroupName>Lib</GroupName>
           <Files>
             <File>
               <FileName>misc.c</FileName>
@@ -1483,6 +1498,21 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>board_navigation_test_box</GroupName>
+          <Files>
+            <File>
+              <FileName>main_navigation_test_box.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_navigation_test_box\main_navigation_test_box.c</FilePath>
+            </File>
+            <File>
+              <FileName>SetGPIO.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board_navigation_test_box\SetGPIO.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>misc</GroupName>
           <Files>
             <File>
@@ -1524,11 +1554,6 @@
               <FileName>SetCAN.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\system\SetCAN.c</FilePath>
-            </File>
-            <File>
-              <FileName>SetClock.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\system\SetClock.c</FilePath>
             </File>
             <File>
               <FileName>SetSysTick.c</FileName>
@@ -1580,10 +1605,15 @@
               <FileType>1</FileType>
               <FilePath>.\system\slog.c</FilePath>
             </File>
+            <File>
+              <FileName>stm32f10x_conf.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\system\stm32f10x_conf.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
-          <GroupName>New Group</GroupName>
+          <GroupName>Lib</GroupName>
           <Files>
             <File>
               <FileName>misc.c</FileName>
