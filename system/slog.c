@@ -62,3 +62,13 @@ void slog_init(Uart_t *uart)
 {
 	log_uart = uart;
 }
+
+//for micorlib printf
+int fputc(int ch, FILE *f)
+{
+  if( 1 == is_enable() )
+	{
+		Uart_PutChar(log_uart,(char)ch);
+	}
+  return ch;
+}

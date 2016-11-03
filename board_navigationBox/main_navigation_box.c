@@ -209,7 +209,7 @@ int encodeCallback ( unsigned char c )
 
 void main_setup()
 {
-	SetupPllClock(HSE_CLOCK_6MHZ);
+	//SetupPllClock(HSE_CLOCK_6MHZ);
 	Navi_GPIO_Configuration ();
 	Can1_Configuration (NAVIGATION_BOX_CAN_ID);	//0x11CANµÿ÷∑
 	Uart_Configuration (&Uart1, USART1, 115200, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);

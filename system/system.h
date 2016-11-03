@@ -1,33 +1,11 @@
 #ifndef _global_h_
 #define _global_h_ 
 
-#include <stm32f10x.h>	
+#include <stm32f10x_conf.h>	
 #include "cmdcoder.h"
 #include "base64_data.h"
 
 
-
-#define MAIN_CONTROLLER_BOARD 0
-#define NAVIGATION_BOX 1
-#define M80_ESC_BOX 0
-#define STM32F103V_BOARD 0
-
-// if make iap firmware £¬ stm32f103 : start addr =0x8000000-0x8010000 ; size 0x10000 
-// iap firmware : addr=0x8000000   size=0x4000   ; 0x4000/1024 = 16 = 16kB     
-// iap tag : addr = 0x8004000 size=1024 (0x400);
-// app firmware : addr= 0x8004400   size=0xBC00  = (0x10000 - 0x4400) = 47k
-//#define IAP_FIRMWARE 0
-//#define IAP_UART_BAUDRATE 9600
-
-/*
-*
-*  Pll clock 
-*/
-#define HSE_CLOCK_NO_USE  0
-#define HSE_CLOCK_6MHZ  6
-#define HSE_CLOCK_8MHZ  8
-extern uint32_t systemClk ;
-int SetupPllClock(unsigned char hse_mhz) ;
 
 
 /*
@@ -82,13 +60,7 @@ void Systick_Event();
 void SysTick_Configuration(void);
 void SysTick_Deinit(void);
 
-/*
-*************** Board Config
-*/
-void SetClock(void);
-void NVIC_Configuration(void);
-void GPIO_Configuration (void);
-void GPIO_Initialization(void);
+
 
 
 

@@ -41,7 +41,7 @@ void TIM3_Mode_Config(void)
 	 
    //TIM3的时间基数单位设置         10khz
    TIM_TimeBaseStructure.TIM_Period = MAX_PUMP_PITCH_PWM_VALUE-1; //       
-   TIM_TimeBaseStructure.TIM_Prescaler = systemClk/4000/MAX_PUMP_PITCH_PWM_VALUE-1; // (prescale+1) =72000000/10k/MAX_PWM_VALUE (10khz)            
+   TIM_TimeBaseStructure.TIM_Prescaler = SystemCoreClock/4000/MAX_PUMP_PITCH_PWM_VALUE-1; // (prescale+1) =72000000/10k/MAX_PWM_VALUE (10khz)            
    TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1 ;
    TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up; 
    TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);

@@ -318,7 +318,7 @@ void USB_HP_CAN1_TX_IRQHandler (void)
 		}else if( status == CANTXOK ){
 			//j++;
 			resend_count =0;
-		}else if( status == CANTXFAILED ){
+		}else if( status == CANTXFAILE  ){
 			if( resend_count < CAN_RESEND_MAX_COUNT ){
 				//resend
 				CAN1->TSR |= CAN_TSR_RQCP0|CAN_TSR_RQCP1|CAN_TSR_RQCP2;

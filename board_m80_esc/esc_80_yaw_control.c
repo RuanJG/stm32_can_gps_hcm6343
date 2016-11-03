@@ -159,7 +159,7 @@ void TIM1_Pwm_Config(void)
 	 
    //TIM1的时间基数单位设置     
    TIM_TimeBaseStructure.TIM_Period = YAW_PWM_MAX_VALUE-1; //       
-   TIM_TimeBaseStructure.TIM_Prescaler = systemClk/YAW_PWM_RATE/YAW_PWM_MAX_VALUE-1; // (prescale+1) =72000000/10k/MAX_PWM_VALUE (10khz)            
+   TIM_TimeBaseStructure.TIM_Prescaler = SystemCoreClock/YAW_PWM_RATE/YAW_PWM_MAX_VALUE-1; // (prescale+1) =72000000/10k/MAX_PWM_VALUE (10khz)            
    TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1 ;
    TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up; 
    TIM_TimeBaseInit(TIM1, &TIM_TimeBaseStructure);

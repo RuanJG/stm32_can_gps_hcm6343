@@ -42,10 +42,11 @@
 /* #include "stm32f10x_rtc.h" */
 /* #include "stm32f10x_sdio.h" */
 /* #include "stm32f10x_spi.h" */
- //#include "stm32f10x_tim.h"
+#include "stm32f10x_tim.h"
 #include "stm32f10x_usart.h"
 /* #include "stm32f10x_wwdg.h" */
 #include "misc.h"   /* High level functions for NVIC and SysTick (add-on to CMSIS functions) */
+#include "stm32f10x.h"
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
@@ -71,6 +72,63 @@
   #define assert_param(expr) ((void)0)
 #endif /* USE_FULL_ASSERT */
 
+	
+	
+	
+	
+
+	
+	
+	
+	
+/*
+********************************¡¡¡¡Board config and clock config 
+*
+*/	
+	
+#define MAIN_CONTROLLER_BOARD 0
+#define NAVIGATION_BOX 0
+#define M80_ESC_BOX 0
+#define STM32F103V_BOARD 1
+
+// if make iap firmware £¬ stm32f103 : start addr =0x8000000-0x8010000 ; size 0x10000 
+// iap firmware : addr=0x8000000   size=0x4000   ; 0x4000/1024 = 16 = 16kB     
+// iap tag : addr = 0x8004000 size=1024 (0x400);
+// app firmware : addr= 0x8004400   size=0xBC00  = (0x10000 - 0x4400) = 47k
+//#define IAP_FIRMWARE 0
+//#define IAP_UART_BAUDRATE 9600
+
+
+/*
+************************  clock config
+*           this define use in system_stm32f10x.c SetSysClockTo72() for clock config
+*           it will ignore the HSE_VALUE define in stm32f10x.h
+*						now we support 8000000 6000000
+*/
+#undef HSE_VALUE
+
+#if STM32F103V_BOARD
+#define HSE_VALUE    ((uint32_t) 8000000)
+#elif NAVIGATION_BOX
+#define HSE_VALUE    ((uint32_t) 6000000)
+#else
+#error "define HSE_VALUE for you board in stm32f10x_conf.h !"
+#endif
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 #endif /* __STM32F10x_CONF_H */
 
 /******************* (C) COPYRIGHT 2009 STMicroelectronics *****END OF FILE****/

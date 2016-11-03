@@ -307,8 +307,8 @@
               </OCR_RVCT3>
               <OCR_RVCT4>
                 <Type>1</Type>
-                <StartAddress>0x8004400</StartAddress>
-                <Size>0xbc00</Size>
+                <StartAddress>0x8000000</StartAddress>
+                <Size>0x10000</Size>
               </OCR_RVCT4>
               <OCR_RVCT5>
                 <Type>1</Type>
@@ -363,7 +363,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_MD,USE_STDPERIPH_DRIVER,MAINCONTROLLER_TYPE=MAINCONTROLLER_COMMON</Define>
               <Undefine></Undefine>
-              <IncludePath>.\user;.\user\base64;.\Libraries\CMSIS\Core\CM3;.\Libraries\STM32F10x_StdPeriph_Driver\inc;.\system;.\board_navigationBox;.\board_m80_esc;.\iap_firmware</IncludePath>
+              <IncludePath>.\user;.\user\base64;.\system;.\board_navigationBox;.\board_m80_esc;.\iap_firmware;.\Libraries\CMSIS_new\Device\ST\STM32F10x\Include;.\Libraries\inc;.\Libraries\CMSIS_new\Include</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -380,7 +380,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_MD,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>.\user;.\Libraries\CMSIS\Core\CM3;.\Libraries\STM32F10x_StdPeriph_Driver\inc</IncludePath>
+              <IncludePath>.\user;.\Libraries\inc;.\Libraries\CMSIS_new\Include;.\Libraries\CMSIS_new\Device\ST\STM32F10x\Include</IncludePath>
             </VariousControls>
           </Aads>
           <LDads>
@@ -637,11 +637,6 @@
               <FilePath>.\system\fifo_void.h</FilePath>
             </File>
             <File>
-              <FileName>stm32f10x_conf.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\system\stm32f10x_conf.h</FilePath>
-            </File>
-            <File>
               <FileName>system.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\system\system.h</FilePath>
@@ -669,27 +664,262 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>lib</GroupName>
+          <GroupName>New Group</GroupName>
           <Files>
             <File>
-              <FileName>lib.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>.\Libraries\lib.lib</FilePath>
+              <FileName>misc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\misc.c</FilePath>
             </File>
             <File>
-              <FileName>core_cm3.c</FileName>
+              <FileName>stm32f10x_adc.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Libraries\CMSIS\Core\CM3\core_cm3.c</FilePath>
+              <FilePath>.\Libraries\src\stm32f10x_adc.c</FilePath>
             </File>
             <File>
-              <FileName>system_stm32f10x.c</FileName>
+              <FileName>stm32f10x_bkp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Libraries\CMSIS\Core\CM3\system_stm32f10x.c</FilePath>
+              <FilePath>.\Libraries\src\stm32f10x_bkp.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_can.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_can.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_cec.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_cec.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_crc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_crc.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_dac.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_dac.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_dbgmcu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_dbgmcu.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_dma.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_dma.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_exti.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_exti.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_flash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_flash.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_fsmc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_fsmc.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_gpio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_gpio.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_i2c.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_i2c.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_iwdg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_iwdg.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_pwr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_pwr.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_rcc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_rcc.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_rtc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_rtc.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_sdio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_sdio.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_spi.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_tim.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_tim.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_usart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_usart.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_wwdg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_wwdg.c</FilePath>
+            </File>
+            <File>
+              <FileName>misc.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\misc.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_adc.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_adc.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_bkp.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_bkp.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_can.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_can.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_cec.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_cec.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_crc.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_crc.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_dac.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_dac.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_dbgmcu.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_dbgmcu.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_dma.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_dma.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_exti.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_exti.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_flash.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_flash.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_fsmc.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_fsmc.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_gpio.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_gpio.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_i2c.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_i2c.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_iwdg.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_iwdg.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_pwr.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_pwr.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_rcc.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_rcc.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_rtc.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_rtc.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_sdio.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_sdio.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_spi.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_spi.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_tim.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_tim.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_usart.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_usart.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_wwdg.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_wwdg.h</FilePath>
+            </File>
+            <File>
+              <FileName>core_cm3.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\CMSIS_new\Include\core_cm3.h</FilePath>
             </File>
             <File>
               <FileName>startup_stm32f10x_md.s</FileName>
               <FileType>2</FileType>
-              <FilePath>.\Libraries\CMSIS\Core\CM3\startup\arm\startup_stm32f10x_md.s</FilePath>
+              <FilePath>.\Libraries\CMSIS_new\Device\ST\STM32F10x\Source\Templates\arm\startup_stm32f10x_md.s</FilePath>
+            </File>
+            <File>
+              <FileName>system_stm32f10x.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\CMSIS_new\Device\ST\STM32F10x\Source\Templates\system_stm32f10x.c</FilePath>
+            </File>
+            <File>
+              <FileName>system_stm32f10x.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\CMSIS_new\Device\ST\STM32F10x\Include\system_stm32f10x.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\CMSIS_new\Device\ST\STM32F10x\Include\stm32f10x.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1326,11 +1556,6 @@
               <FilePath>.\system\fifo_void.h</FilePath>
             </File>
             <File>
-              <FileName>stm32f10x_conf.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\system\stm32f10x_conf.h</FilePath>
-            </File>
-            <File>
               <FileName>system.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\system\system.h</FilePath>
@@ -1358,27 +1583,262 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>lib</GroupName>
+          <GroupName>New Group</GroupName>
           <Files>
             <File>
-              <FileName>lib.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>.\Libraries\lib.lib</FilePath>
+              <FileName>misc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\misc.c</FilePath>
             </File>
             <File>
-              <FileName>core_cm3.c</FileName>
+              <FileName>stm32f10x_adc.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Libraries\CMSIS\Core\CM3\core_cm3.c</FilePath>
+              <FilePath>.\Libraries\src\stm32f10x_adc.c</FilePath>
             </File>
             <File>
-              <FileName>system_stm32f10x.c</FileName>
+              <FileName>stm32f10x_bkp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Libraries\CMSIS\Core\CM3\system_stm32f10x.c</FilePath>
+              <FilePath>.\Libraries\src\stm32f10x_bkp.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_can.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_can.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_cec.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_cec.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_crc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_crc.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_dac.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_dac.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_dbgmcu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_dbgmcu.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_dma.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_dma.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_exti.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_exti.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_flash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_flash.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_fsmc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_fsmc.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_gpio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_gpio.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_i2c.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_i2c.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_iwdg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_iwdg.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_pwr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_pwr.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_rcc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_rcc.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_rtc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_rtc.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_sdio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_sdio.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_spi.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_tim.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_tim.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_usart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_usart.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_wwdg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\src\stm32f10x_wwdg.c</FilePath>
+            </File>
+            <File>
+              <FileName>misc.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\misc.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_adc.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_adc.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_bkp.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_bkp.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_can.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_can.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_cec.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_cec.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_crc.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_crc.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_dac.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_dac.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_dbgmcu.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_dbgmcu.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_dma.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_dma.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_exti.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_exti.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_flash.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_flash.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_fsmc.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_fsmc.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_gpio.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_gpio.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_i2c.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_i2c.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_iwdg.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_iwdg.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_pwr.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_pwr.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_rcc.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_rcc.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_rtc.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_rtc.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_sdio.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_sdio.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_spi.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_spi.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_tim.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_tim.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_usart.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_usart.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_wwdg.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\inc\stm32f10x_wwdg.h</FilePath>
+            </File>
+            <File>
+              <FileName>core_cm3.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\CMSIS_new\Include\core_cm3.h</FilePath>
             </File>
             <File>
               <FileName>startup_stm32f10x_md.s</FileName>
               <FileType>2</FileType>
-              <FilePath>.\Libraries\CMSIS\Core\CM3\startup\arm\startup_stm32f10x_md.s</FilePath>
+              <FilePath>.\Libraries\CMSIS_new\Device\ST\STM32F10x\Source\Templates\arm\startup_stm32f10x_md.s</FilePath>
+            </File>
+            <File>
+              <FileName>system_stm32f10x.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\CMSIS_new\Device\ST\STM32F10x\Source\Templates\system_stm32f10x.c</FilePath>
+            </File>
+            <File>
+              <FileName>system_stm32f10x.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\CMSIS_new\Device\ST\STM32F10x\Include\system_stm32f10x.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Libraries\CMSIS_new\Device\ST\STM32F10x\Include\stm32f10x.h</FilePath>
             </File>
           </Files>
         </Group>

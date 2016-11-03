@@ -414,7 +414,6 @@ void dam_devices_second_init()
 
 void main_setup()
 {
-	SetupPllClock(HSE_CLOCK_6MHZ);
 	Esc_GPIO_Configuration();
 	//Can1_Configuration (0x12);
 	Can1_Configuration_withRate(0x12,CAN_ID_EXT,CAN_SJW_1tq,CAN_BS1_5tq,CAN_BS2_2tq,9);

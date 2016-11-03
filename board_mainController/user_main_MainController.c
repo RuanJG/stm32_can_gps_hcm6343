@@ -29,7 +29,7 @@ void ADC_Configuration (void);
 */
 static void Board_Configuration()
 {
-	SetupPllClock(HSE_CLOCK_6MHZ);
+	//SetupPllClock(HSE_CLOCK_6MHZ);
 	GPIO_Configuration ();
 	GPIO_Initialization();
 }

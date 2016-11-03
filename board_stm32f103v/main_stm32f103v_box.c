@@ -101,10 +101,10 @@ void led_off()
 
 void main_setup()
 {
-	SetupPllClock(HSE_CLOCK_8MHZ);
+	//SetupPllClock(HSE_CLOCK_8MHZ);
 	Stm32f103v_GPIO_Configuration ();
 	Can1_Configuration (0x21);	//0x11CANµÿ÷∑
-	Uart_Configuration (&Uart1, USART1, 9600, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
+	Uart_Configuration (&Uart1, USART1, 115200, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
 	Uart_Configuration (&Uart2, USART2, 9600, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
 	//Uart_Configuration (&Uart3, USART3, 115200, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
 	
@@ -123,9 +123,10 @@ void main_loop()
 {
 	static int led_status = 0;
 	
-	//uart_echo_test(&Uart2);
+	//uart_echo_test(&Uart1);
 	//slog_string("stm32\r\n");
-	Uart_PutChar(&Uart2, 0x1);
+	//Uart_PutChar(&Uart1, 0x3);
+	USART_SendData(USART1, 0x01);
 	delay_us(50000);
 	
 	if( 1 == led_status )
