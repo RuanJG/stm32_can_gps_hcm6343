@@ -7,10 +7,19 @@
 #include "driver_xtend900.h"
 #include "bsp_xtend900_uart.h"
 #include "bsp_xtend900_rssi_timer3.h"
+#include "protocol.h"
 
+#define USE_CMDCODER 0
 
+#if USE_CMDCODER
 cmdcoder_t encode_packget;
 cmdcoder_t decode_packget;
+#else
+protocol_t encoder;
+protocol_t decoder;
+
+#endif
+
 //当前船发过来的状态与数据
 remoter_sender_data_t _sender_data;
 //本地的配置参数
@@ -40,8 +49,12 @@ char remoter_sender_RF_getStatus()
 
 int remoter_sender_RF_getDecodeRate()
 {
+#if USE_CMDCODER
 	// return cmdcoder_update_Decode_Byte_Rate(&decode_packget);
 	return decode_packget.decode_rate;
+#else
+	return decoder.decode_rate;
+#endif
 }
 
 /*
@@ -55,12 +68,12 @@ cmdcoder Frame :
 	data:
 	{
 		1，通道包
-		cmdcoder id = 1 , data[]={channel1-16bit,channel2,channle3,channle4,channel5,modebtn-8bit,sampleB-8bit,alarmBtn-8bit}
-		channel1 left-jostick-x; [Byte0][Byte1] 小端
-		channel2 left-jostick-y;
-		channel3 right-jostick-x;
-		channel4 right-jostick-y;
-		channel5 middle-knob 
+		cmdcoder id = 1 , data[]={channel1(16bit),channel2,channle3,channle4,channel5,modebtn(8bit),sampleB-8bit,alarmBtn-8bit}
+		channel1 left-jostick-x; [Byte0][Byte1] 小端, 向从右到左摇摇杆，值从0-4095
+		channel2 left-jostick-y;[Byte0][Byte1] 小端, 向从下到上摇摇杆，值从0-4095
+		channel3 right-jostick-x;[Byte0][Byte1] 小端, 向从右到左摇摇杆，值从0-4095
+		channel4 right-jostick-y;[Byte0][Byte1] 小端, 向从下到上摇摇杆，值从0-4095
+		channel5 middle-knob 顺时针方向，值从0-4095
     modebtn:0-1-2
     sampleBtn: 1-0  1:press key
     alarmbtn: 1-0   1:press key
@@ -98,34 +111,52 @@ int remoter_sender_RF_putchar(unsigned char c)
 }
 void remoter_sender_RF_sendChannel()
 {
-	unsigned char data[16];
+	unsigned char i;
+	unsigned char data[24];
 	remoter_sender_jostick_t *jostick;
 	jostick = remoter_sender_jostick_get_data();
 	
-	data[0]= jostick->left_x & 0xff;
-	data[1]= (jostick->left_x>>8)&0xff;
+	i=0;
 	
-	data[2]= jostick->left_y & 0xff;
-	data[3]= (jostick->left_y>>8)&0xff;
+#if !USE_CMDCODER
+	data[i++] = JOSTICK_PACKGET_ID;
+#endif
 	
-	data[4]= jostick->right_x & 0xff;
-	data[5]= (jostick->right_x>>8)&0xff;
+	data[i++]= jostick->left_x & 0xff;
+	data[i++]= (jostick->left_x>>8)&0xff;
 	
-	data[6]= jostick->right_y & 0xff;
-	data[7]= (jostick->right_y>>8)&0xff;
+	data[i++]= jostick->left_y & 0xff;
+	data[i++]= (jostick->left_y>>8)&0xff;
 	
-	data[8]= jostick->knob & 0xff;
-	data[9]= (jostick->knob>>8)&0xff;
+	data[i++]= jostick->right_x & 0xff;
+	data[i++]= (jostick->right_x>>8)&0xff;
 	
-	data[10]= jostick->key_mode;
-	data[11]= jostick->key_sample;
-	data[12]= jostick->key_alarm;
+	data[i++]= jostick->right_y & 0xff;
+	data[i++]= (jostick->right_y>>8)&0xff;
 	
-	data[13]= jostick->button_menu;
-	data[14]= jostick->button_ok;
-	data[15]= jostick->button_cancel;
+	data[i++]= jostick->knob & 0xff;
+	data[i++]= (jostick->knob>>8)&0xff;
 	
-	remoter_sender_RF_sendPackget(JOSTICK_PACKGET_ID, data , 16);
+	data[i++]= jostick->key_mode;
+	data[i++]= jostick->key_sample;
+	data[i++]= jostick->key_alarm;
+	
+	data[i++]= jostick->button_menu;
+	data[i++]= jostick->button_ok;
+	data[i++]= jostick->button_cancel;
+
+#if USE_CMDCODER
+	remoter_sender_RF_sendPackget(JOSTICK_PACKGET_ID, data , i);
+#else
+	if( 0 == protocol_encode(&encoder,data,i) )
+	{
+		printf("remoter_sender_RF_sendChannel: protocol encoder error\r\n");
+		return;
+	}
+	for( i=0; i< encoder.len; i++)
+		remoter_sender_RF_putchar(encoder.data[i]);
+#endif
+
 
 }
 
@@ -171,8 +202,13 @@ void remoter_sender_RF_init()
 	_sender_data.updated = 0;
 	
 	//init coder 
+#if USE_CMDCODER
 	cmdcoder_init(&encode_packget,JOSTICK_PACKGET_ID, remoter_sender_RF_putchar);
 	cmdcoder_init(&decode_packget,JOSTICK_PACKGET_ID, CMD_CODER_CALL_BACK_NULL);
+#else
+	protocol_init(&encoder);
+	protocol_init(&decoder);
+#endif
 	xtend900_set_reciver_handler(remoter_sender_RF_parase);
 	
 	//uart should be last init
@@ -194,25 +230,35 @@ void remoter_sender_RF_init()
 void remoter_sender_RF_parase(unsigned char c)
 {
 	unsigned short tmp;
+	unsigned int id;
+	unsigned char * data;
 	
+#if USE_CMDCODER
 	if( cmdcoder_Parse_byte(&decode_packget,c) ){
+		id = decode_packget.id;
+		data = decode_packget.data;
+#else
+	if( protocol_parse(&decoder,c) ){
+		id = decoder.data[0];
+		data = &decoder.data[1];
+#endif
 		//TODO 
-		switch (decode_packget.id)
+		switch (id)
 		{
 			case HEART_PACKGET_ID:
-					_sender_data.powerLevel = decode_packget.data[0];
+					_sender_data.powerLevel = data[0];
 				break;
 			case SET_CONFIG_PACKGET_ID:
-				if( decode_packget.data[0] >= XTEND900_MIN_CHANNEL && decode_packget.data[0] <= XTEND900_MAX_CHANNEL )
+				if( data[0] >= XTEND900_MIN_CHANNEL && data[0] <= XTEND900_MAX_CHANNEL )
 				{
-					if( _sender_data.rf_config.hp != decode_packget.data[0] )
+					if( _sender_data.rf_config.hp != data[0] )
 					{
-						_sender_data.rf_config.hp = decode_packget.data[0];
+						_sender_data.rf_config.hp = data[0];
 						_sender_data.rf_config.updated = 1;
 					}
 				}
 				
-				tmp = (decode_packget.data[1]|(decode_packget.data[2]<<8));
+				tmp = (data[1]|(data[2]<<8));
 				if( tmp >= XTEND900_MIN_ID && tmp <= XTEND900_MAX_ID && tmp != _sender_data.rf_config.id )
 				{
 					_sender_data.rf_config.updated = 1;
@@ -226,18 +272,33 @@ void remoter_sender_RF_parase(unsigned char c)
 	}
 }
 
+#if USE_CMDCODER
 int remoter_sender_RF_sendPackget(unsigned char id, unsigned char *data, int len)
 {
 	encode_packget.id = id;
 	cmdcoder_send_bytes( &encode_packget, data, len);
 }
+#endif
 
 
 void _remter_sender_RF_send_Ack_packget()
 {
+	int i;
 	unsigned char ack = 1;
-	
+
+#if USE_CMDCODER
 	remoter_sender_RF_sendPackget(ACK_PACKGET_ID,&ack,1);
+#else
+	unsigned char data[2]={ACK_PACKGET_ID,0};
+	data[1]=ack;
+	if( 0 == protocol_encode(&encoder,data,2) )
+	{
+		printf("_remter_sender_RF_send_Ack_packget: protocol encoder error\r\n");
+		return;
+	}
+	for( i=0; i< encoder.len; i++)
+		remoter_sender_RF_putchar(encoder.data[i]);
+#endif
 }
 
 
