@@ -191,7 +191,7 @@ int _remoter_sender_RF_saveParam()
 }
 
 //******************************  command 
-
+void _remter_sender_RF_send_Ack_packget(unsigned char ack);
 
 void remoter_sender_RF_init()
 {
@@ -232,6 +232,7 @@ void remoter_sender_RF_parase(unsigned char c)
 	unsigned short tmp;
 	unsigned int id;
 	unsigned char * data;
+	unsigned char ack=1;
 	
 #if USE_CMDCODER
 	if( cmdcoder_Parse_byte(&decode_packget,c) ){
@@ -249,6 +250,7 @@ void remoter_sender_RF_parase(unsigned char c)
 					_sender_data.powerLevel = data[0];
 				break;
 			case SET_CONFIG_PACKGET_ID:
+				ack = 1;
 				if( data[0] >= XTEND900_MIN_CHANNEL && data[0] <= XTEND900_MAX_CHANNEL )
 				{
 					if( _sender_data.rf_config.hp != data[0] )
@@ -256,15 +258,20 @@ void remoter_sender_RF_parase(unsigned char c)
 						_sender_data.rf_config.hp = data[0];
 						_sender_data.rf_config.updated = 1;
 					}
-				}
+				}else ack=0;
 				
 				tmp = (data[1]|(data[2]<<8));
 				if( tmp >= XTEND900_MIN_ID && tmp <= XTEND900_MAX_ID && tmp != _sender_data.rf_config.id )
 				{
 					_sender_data.rf_config.updated = 1;
 					_sender_data.rf_config.id = tmp;
-				}
+				}else ack = 0;
 				
+				if( ack == 0 ) _sender_data.rf_config.updated = 0; // error param , do not update
+				
+				// error param ack 0;     difference param ack 1;     the same param ack 1  
+				_remter_sender_RF_send_Ack_packget(ack);
+
 				break;
 			default:
 				break;
@@ -281,10 +288,9 @@ int remoter_sender_RF_sendPackget(unsigned char id, unsigned char *data, int len
 #endif
 
 
-void _remter_sender_RF_send_Ack_packget()
+void _remter_sender_RF_send_Ack_packget(unsigned char ack)
 {
 	int i;
-	unsigned char ack = 1;
 
 #if USE_CMDCODER
 	remoter_sender_RF_sendPackget(ACK_PACKGET_ID,&ack,1);
@@ -325,8 +331,6 @@ void remoter_sender_RF_Task(void * pvParameters)
 		//check setting： 在remoter_sender_RF_parase 里接收到命令后，设置更新，这里执行更新
 		if( _sender_data.rf_config.updated == 1 )
 		{
-			// ack boat
-			_remter_sender_RF_send_Ack_packget();
 			
 			//start set xtend900
 			res = _remoter_sender_RF_saveParam(); //block for setting xten900

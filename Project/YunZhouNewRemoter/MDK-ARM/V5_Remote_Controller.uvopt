@@ -116,6 +116,10 @@
       <TargetDriverDllRegistry>
         <SetRegEntry>
           <Number>0</Number>
+          <Key>DLGUARM</Key>
+        </SetRegEntry>
+        <SetRegEntry>
+          <Number>0</Number>
           <Key>ARMRTXEVENTFLAGS</Key>
           <Name>-L70 -Z18 -C0 -M0 -T1</Name>
         </SetRegEntry>
@@ -128,10 +132,6 @@
           <Number>0</Number>
           <Key>ARMDBGFLAGS</Key>
           <Name></Name>
-        </SetRegEntry>
-        <SetRegEntry>
-          <Number>0</Number>
-          <Key>DLGUARM</Key>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -148,34 +148,18 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>155</LineNumber>
+          <LineNumber>94</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134274656</Address>
+          <Address>134277134</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>C:\RuanJG\project\svn_new\Archment\鎽囨帶鍣?椤圭洰婧愮爜\Project\YunZhouNewRemoter\Core\NewApp\protocol.c</Filename>
+          <Filename>C:\RuanJG\project\svn_new\Archment\鎽囨帶鍣?椤圭洰婧愮爜\Project\YunZhouNewRemoter\Core\NewApp\driver\bsp_xtend900_rssi_timer3.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\STM32F429I_Discovery_Demo\../Core/NewApp/protocol.c\155</Expression>
-        </Bp>
-        <Bp>
-          <Number>1</Number>
-          <Type>0</Type>
-          <LineNumber>147</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134274694</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>C:\RuanJG\project\svn_new\Archment\鎽囨帶鍣?椤圭洰婧愮爜\Project\YunZhouNewRemoter\Core\NewApp\protocol.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\STM32F429I_Discovery_Demo\../Core/NewApp/protocol.c\147</Expression>
+          <Expression>\\STM32F429I_Discovery_Demo\../Core/NewApp/driver/bsp_xtend900_rssi_timer3.c\94</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -360,7 +344,7 @@
 
   <Group>
     <GroupName>Appli</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
