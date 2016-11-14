@@ -42,7 +42,7 @@ u8 Can1_Configuration(u16 ID);
 u8 Can1_Configuration_withRate(u16 ID, uint32_t id_type, uint8_t sjw ,uint8_t bs1, uint8_t bs2, uint8_t prescale );
 void Can1_Send(uint8_t id, uint8_t *data, int len);
 void Can1_Send_Ext(uint8_t id, uint8_t *data, int len, uint32_t id_type, uint32_t frame_type);
-
+u8 Can1_Configuration_with_mask(u16 ID , u16 mask);
 
 /*
 ************* systick 

@@ -5,6 +5,7 @@
 #include <math.h>
 #include <string.h>	
 #include "system.h"
+#include "navigation_box_led.h"
 
 #if NAVIGATION_TEST_BOX
 
@@ -32,8 +33,9 @@ void main_setup()
 {
 	//SetupPllClock(HSE_CLOCK_6MHZ);
 	Navi_Test_box_GPIO_Configuration ();
-	Can1_Configuration (0x10);	//0x11CANµÿ÷∑
-	Uart_Configuration (&Uart1, USART1, 115200, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
+	Nbl_Led_Configuration();
+	Can1_Configuration_with_mask (0x33,0);	//0x11CANµÿ÷∑
+	Uart_Configuration (&Uart1, USART1, 9600, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
 	//Uart_Configuration (&Uart2, USART2, 9600, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
 	//Uart_Configuration (&Uart3, USART3, 115200, USART_WordLength_8b, USART_StopBits_1, USART_Parity_No);
 	
@@ -87,6 +89,8 @@ void main_loop()
 		}
 		
 	}
+	
+	Nbl_Led_on(COMPASS_LED_ID);
 	
 	delay_us(1000);
 }

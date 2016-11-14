@@ -87,10 +87,10 @@
 */	
 	
 #define MAIN_CONTROLLER_BOARD 0
-#define NAVIGATION_BOX 0
+#define NAVIGATION_BOX 1
 #define M80_ESC_BOX 0
 #define STM32F103V_BOARD 0
-#define NAVIGATION_TEST_BOX 1
+#define NAVIGATION_TEST_BOX 0
 
 
 // if make iap firmware £¬ stm32f103 : start addr =0x8000000-0x8010000 ; size 0x10000 

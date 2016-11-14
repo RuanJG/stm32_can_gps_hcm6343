@@ -184,6 +184,27 @@ u8 Can1_Configuration(u16 ID )
 	return Can1_Configuration_mask(0, ID, CAN_ID_STD, 0x1ff , CAN_SJW_1tq, CAN_BS1_3tq, CAN_BS2_5tq, 4);
 }
 
+
+u8 Can1_Configuration_with_mask(u16 ID , u16 mask)
+{
+	/*
+	#if 0 // 1M
+	CAN_InitStructure.CAN_SJW = CAN_SJW_1tq;
+	CAN_InitStructure.CAN_BS1 = CAN_BS1_3tq;
+	CAN_InitStructure.CAN_BS2 = CAN_BS2_5tq;
+	CAN_InitStructure.CAN_Prescaler = 4;//2
+#else // 500k
+	CAN_InitStructure.CAN_SJW = CAN_SJW_1tq;
+	CAN_InitStructure.CAN_BS1 = CAN_BS1_5tq;
+	CAN_InitStructure.CAN_BS2 = CAN_BS2_2tq;
+	CAN_InitStructure.CAN_Prescaler = 9;//2
+#endif
+	*/
+	//defalut 1M
+	return Can1_Configuration_mask(0, ID, CAN_ID_STD, mask , CAN_SJW_1tq, CAN_BS1_3tq, CAN_BS2_5tq, 4);
+}
+
+
 void Can1_Send_Message(CanTxMsg* TxMessage)
 {
 	//TxMessage->RTR = CAN_RTR_DATA;
