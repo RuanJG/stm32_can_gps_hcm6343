@@ -261,10 +261,13 @@ void remoter_sender_RF_parase(unsigned char c)
 				}else ack=0;
 				
 				tmp = (data[1]|(data[2]<<8));
-				if( tmp >= XTEND900_MIN_ID && tmp <= XTEND900_MAX_ID && tmp != _sender_data.rf_config.id )
+				if( tmp >= XTEND900_MIN_ID && tmp <= XTEND900_MAX_ID )
 				{
-					_sender_data.rf_config.updated = 1;
-					_sender_data.rf_config.id = tmp;
+					if( tmp != _sender_data.rf_config.id)
+					{
+						_sender_data.rf_config.updated = 1;
+						_sender_data.rf_config.id = tmp;
+					}
 				}else ack = 0;
 				
 				if( ack == 0 ) _sender_data.rf_config.updated = 0; // error param , do not update

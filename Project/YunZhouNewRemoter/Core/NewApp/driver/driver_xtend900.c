@@ -297,9 +297,10 @@ int xtend900_save_param(xtend900_config_t * config, xtend900_config_t * reloadCo
 	_xtend900_lock = 1;
 	
 	vTaskDelay(2000);//在进入AT模式前，要停止发送数据 2S 以上 
-	//clear uart buffer
-	_uart_buffer_index = 0;
 	_xtend900_enter_AT_Command(); // 发送AT指令后，xtend900大概要1s后再进入AT模式，并返回"OK\n"三个符  
+	//clear uart buffer
+	vTaskDelay(500);
+	_uart_buffer_index = 0;
 	res = _xtend900_wait_string("OK\r",3, 2000); // 4s delay 
 	if( res == 0 ){
 		//TODO display timeout
@@ -377,10 +378,11 @@ int xtend900_load_param(xtend900_config_t * config)
 	
 	//在进入AT模式前，要停止发送数据 2S 以上 
 	vTaskDelay(2000);
-	//clear uart buffer
-	_uart_buffer_index = 0;
 	//send "+++"
-	_xtend900_enter_AT_Command(); // 发送AT指令后，xtend900大概要1s后再进入AT模式，并返回"OK\n"三个符  
+	_xtend900_enter_AT_Command(); // 发送AT指令后，xtend900大概要1s后再进入AT模式，并返回"OK\n"三个符
+	//clear uart buffer
+	vTaskDelay(500);
+	_uart_buffer_index = 0;  
 	//wait return
 	res = _xtend900_wait_string("OK\r",3, 2000); // 4s delay 
 	if( res == 0 )

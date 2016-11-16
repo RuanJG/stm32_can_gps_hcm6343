@@ -831,6 +831,16 @@
               <FileType>5</FileType>
               <FilePath>..\Core\NewApp\protocol.h</FilePath>
             </File>
+            <File>
+              <FileName>fifo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\NewApp\fifo.c</FilePath>
+            </File>
+            <File>
+              <FileName>fifo.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\NewApp\fifo.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1714,6 +1724,16 @@
               <FileName>protocol.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Core\NewApp\protocol.h</FilePath>
+            </File>
+            <File>
+              <FileName>fifo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\NewApp\fifo.c</FilePath>
+            </File>
+            <File>
+              <FileName>fifo.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\NewApp\fifo.h</FilePath>
             </File>
           </Files>
         </Group>

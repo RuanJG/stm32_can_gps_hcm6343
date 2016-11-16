@@ -67,6 +67,7 @@ void USART1_IRQHandler(void)
 	{		
 		c = USART_ReceiveData(USART1);
 		xtend900_parase(c);
+		bps_log_uart1_to_uart2( c);
 		USART_ClearITPendingBit(USART1, USART_IT_RXNE);			//中断标志软复位
 	}
 	//发送中断---------------------------------------------------------

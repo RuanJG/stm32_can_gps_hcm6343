@@ -364,12 +364,20 @@ void bsp_Gui_lcd_init()
 *********************  调试串口
 */
 
+#include "fifo.h"
+#define UART2_TX_BUFFER_SIZE 256
+unsigned char uart2_tx_buffer[UART2_TX_BUFFER_SIZE];
+fifo_t uart2_tx_fifo;
+
+
 void bsp_debug_uart2_init(void)
 {
 	USART_InitTypeDef USART_InitStructure;
   GPIO_InitTypeDef 	GPIO_InitStructure;
 	DMA_InitTypeDef   DMA_InitStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
+	
+	fifo_init(&uart2_tx_fifo,uart2_tx_buffer,UART2_TX_BUFFER_SIZE);
 	
 	//初始化USART2 ---------------------------------------------------------
   USART_InitStructure.USART_BaudRate = 115200;
@@ -398,17 +406,20 @@ void bsp_debug_uart2_init(void)
 	USART_Init(USART2, &USART_InitStructure);
     
 	USART_ITConfig(USART2, USART_IT_RXNE, DISABLE);	 
-	USART_ITConfig(USART2, USART_IT_TXE, DISABLE);	
+	USART_ITConfig(USART2, USART_IT_TXE, DISABLE);
 	
 	NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;    		//开串口中断1
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 6;   	//制定抢占优先级1
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;    				//指定从优先级
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	//NVIC_Init(&NVIC_InitStructure);
+	NVIC_Init(&NVIC_InitStructure);
 	
   /* Enable USART */	
 	USART_Cmd(USART2, ENABLE);
 }
+
+
+
 
 void USART2_IRQHandler(void)
 {
@@ -424,21 +435,53 @@ void USART2_IRQHandler(void)
 	if(USART_GetITStatus(USART2, USART_IT_TXE) != RESET)
 	{
 		USART_ClearITPendingBit(USART2, USART_IT_TXE);			//中断标志软复位
+		
+		//if( USART_GetFlagStatus(USART2, USART_FLAG_TXE) != RESET)
+		{
+			// empty , can to send data
+			if( 0 < fifo_avail(&uart2_tx_fifo) ){
+				fifo_get(&uart2_tx_fifo,&c);
+				USART_SendData(USART2, c);
+			}else{
+				USART_ITConfig(USART2, USART_IT_TXE, DISABLE);
+			}
+		}
 	}		
 	
 } 
+
+void bsp_uart2_PutChar( char ch)
+{
+	char c;
+	USART_TypeDef *uartDev = USART2;
+	
+	USART_ITConfig(uartDev, USART_IT_TXE, DISABLE);
+	fifo_recovery_put(&uart2_tx_fifo,ch);
+	USART_ITConfig(uartDev, USART_IT_TXE, ENABLE);
+}
+
+
+
+#define UART2_LOG_UART1 1
+void bps_log_uart1_to_uart2(char c)
+{
+	#if UART2_LOG_UART1
+		bsp_uart2_PutChar(c);
+	#endif
+}
 
 //for micorlib printf
 int fputc(int ch, FILE *f)
 {
   /* Place your implementation of fputc here */
   /* e.g. write a character to the USART */
-  USART_SendData(USART2, (uint8_t) ch);
-
-  /* Loop until the end of transmission */
-  while (USART_GetFlagStatus(USART2, USART_FLAG_TXE) == RESET)
-  {}
-
+	
+	#if UART2_LOG_UART1
+	;//no display log
+	#else
+		bsp_uart2_PutChar( (char) ch);
+	#endif
+	
   return ch;
 }
 

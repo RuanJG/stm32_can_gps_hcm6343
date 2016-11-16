@@ -41,6 +41,9 @@ void bsp_Init (void);
 void bsp_save_parameter_to_flash(void);
 void bsp_load_parameter_from_flash(void);
 	 
+void bsp_uart2_PutChar( char ch);
+void bps_log_uart1_to_uart2(char c);
+	 
 #ifdef __cplusplus
 }
 #endif
