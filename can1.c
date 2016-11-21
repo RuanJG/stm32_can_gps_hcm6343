@@ -3,6 +3,7 @@
 #include "ringbuffer.h"
 #include "protocol.h"
 #include "can1.h"
+#include "custom.h"
 
 #define CAN_BUF_MAX                   10
 
@@ -13,6 +14,62 @@ uint32_t tx_obj_idx  = 0xFFFFFFFFU;
 uint8_t can_buffer[CAN_BUF_MAX][11] = { 0 };
 uint32_t can_r_index                = 0;
 uint32_t can_w_index                = 0;
+
+
+static void Handle_Can1_Packet(uint8_t *data, uint32_t size) {
+    int32_t packet_len = 0;
+    if (size <= 2) { // Empty packet.
+        return;
+    }
+    
+    packet_len = Extract_Packet(data, size);
+    if (packet_len < 1) { // Invalid packet.
+        return;
+    }
+    
+    Handle_Packet_Down(data, packet_len);
+}
+
+
+static uint8_t     can1_rev_buf[MAX_PACKET_SIZE] = { 0 };
+static uint32_t    can1_buf_size = 0;
+static void can1_protocol_parse(uint8_t revByte) {
+
+    if (PACKET_START == revByte) { // Wait for the start byte.
+        can1_rev_buf[0] = PACKET_START;        
+        can1_buf_size = 1;
+    }else{
+			
+			if( can1_buf_size > 0 )
+			{
+				can1_rev_buf[can1_buf_size++] = revByte;
+				
+				if (PACKET_END == revByte) 
+				{ // Entire packect received.
+					Handle_Can1_Packet(can1_rev_buf, can1_buf_size);
+					can1_buf_size = 0;
+					return;
+				}
+				
+				if (can1_buf_size >= MAX_PACKET_SIZE) { // Packet too big!
+					can1_buf_size = 0;
+				}
+			}
+			
+		}
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 static void SaveToBuffer(uint16_t id, uint8_t *data, uint32_t size) {
     uint8_t *arr = can_buffer[can_w_index];
@@ -54,25 +111,22 @@ static void Begin_Send() {
     can_r_index = ((can_r_index + 1) % CAN_BUF_MAX);
 }
 
+
+
 static void CAN_SignalObjectEvent (uint32_t obj_idx, uint32_t event) {
     ARM_CAN_MSG_INFO rx_msg_info;
-    uint8_t rx_data[11]; // header + canId + data
-    
-    uint8_t packet[(sizeof(rx_data) + 3) * 2];
-    int32_t pack_len = 0;
+    uint8_t rx_data[8];
+		uint8_t i;
     
     if ((obj_idx == rx_obj_idx) && (ARM_CAN_EVENT_RECEIVE == event)) {
-        if (Driver_CAN1.MessageRead(rx_obj_idx, &rx_msg_info, rx_data + 3, 8U) <= 0) {
+        if (Driver_CAN1.MessageRead(rx_obj_idx, &rx_msg_info, rx_data , 8U) <= 0) {
             return;
         }
-        
-        rx_data[0] = (1 << 6) | (PORT_CAN << 3) | 0;
-        rx_data[1] = (rx_msg_info.id >> 8) & 0xFF;
-        rx_data[2] = (rx_msg_info.id     ) & 0xFF;
-        pack_len = Pack_Data(rx_data, rx_msg_info.dlc + 3, packet, sizeof(packet));
-        if (pack_len > 0) {
-            Send_To_Port(packet, pack_len, PORT_USART, 0);
-        }
+        for( i=0; i< rx_msg_info.dlc ; i++)
+				{
+					can1_protocol_parse(rx_data[i]);
+				}
+
         return;
     }
     
@@ -106,7 +160,7 @@ void CAN1_Init() {
         }
     }
 
-    Driver_CAN1.ObjectSetFilter(rx_obj_idx, ARM_CAN_FILTER_ID_MASKABLE_ADD, ARM_CAN_STANDARD_ID(0), 0U);
+    Driver_CAN1.ObjectSetFilter(rx_obj_idx, ARM_CAN_FILTER_ID_MASKABLE_ADD, ARM_CAN_STANDARD_ID(CUSTOM_CAN1_ID), CUSTOM_CAN1_MASK);
     Driver_CAN1.ObjectConfigure(rx_obj_idx, ARM_CAN_OBJ_RX);
     Driver_CAN1.ObjectConfigure(tx_obj_idx, ARM_CAN_OBJ_TX);
     Driver_CAN1.SetMode(ARM_CAN_MODE_NORMAL);
