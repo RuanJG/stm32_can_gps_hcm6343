@@ -44,7 +44,7 @@ static void Begin_Send() {
     
     arr = can_buffer[can_r_index];
     canId = ((arr[0] << 8) & 0xFF00) + (arr[1] & 0xFF);
-    tx_msg_info.id = ARM_CAN_EXTENDED_ID(canId);
+    tx_msg_info.id = ARM_CAN_STANDARD_ID(canId);
     tx_msg_info.dlc = arr[2];
     
     if (Driver_CAN1.MessageSend(tx_obj_idx, &tx_msg_info, arr + 3, arr[2]) < 0) {
@@ -91,10 +91,10 @@ void CAN1_Init() {
     Driver_CAN1.Initialize(NULL, CAN_SignalObjectEvent);
     Driver_CAN1.PowerControl(ARM_POWER_FULL);
     Driver_CAN1.SetMode(ARM_CAN_MODE_INITIALIZATION);
-    Driver_CAN1.SetBitrate(ARM_CAN_BITRATE_NOMINAL,  500000U, // 500K
+    Driver_CAN1.SetBitrate(ARM_CAN_BITRATE_NOMINAL,  1000000U, // 500K
                            ARM_CAN_BIT_PROP_SEG(1U) |
-                           ARM_CAN_BIT_PHASE_SEG1(4U) |
-                           ARM_CAN_BIT_PHASE_SEG2(2U) |
+                           ARM_CAN_BIT_PHASE_SEG1(2U) |
+                           ARM_CAN_BIT_PHASE_SEG2(5U) |
                            ARM_CAN_BIT_SJW(1U));
     for (index = 0U; index < can_cap.num_objects; index++) {
         can_obj_cap = Driver_CAN1.ObjectGetCapabilities(index);
@@ -106,7 +106,7 @@ void CAN1_Init() {
         }
     }
 
-    Driver_CAN1.ObjectSetFilter(rx_obj_idx, ARM_CAN_FILTER_ID_MASKABLE_ADD, ARM_CAN_EXTENDED_ID(0), 0U);
+    Driver_CAN1.ObjectSetFilter(rx_obj_idx, ARM_CAN_FILTER_ID_MASKABLE_ADD, ARM_CAN_STANDARD_ID(0), 0U);
     Driver_CAN1.ObjectConfigure(rx_obj_idx, ARM_CAN_OBJ_RX);
     Driver_CAN1.ObjectConfigure(tx_obj_idx, ARM_CAN_OBJ_TX);
     Driver_CAN1.SetMode(ARM_CAN_MODE_NORMAL);
