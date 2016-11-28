@@ -169,7 +169,7 @@ void Uart_PutChar(Uart_t *uart,char ch)
 	if( 0 >= fifo_free(&uart->txfifo) ){
 		//TODO add error check;
 		system_Error_Callback(ERROR_UART_TX_FIFO_OVERFLOW_TYPE, (int)uart);
-		#if 1
+		#if 0
 		USART_ITConfig(uartDev, USART_IT_TXE, ENABLE);
 		while( 0 >= fifo_free(&uart->txfifo) ); //wait for empty buff
 		USART_ITConfig(uartDev, USART_IT_TXE, DISABLE);
