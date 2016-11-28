@@ -68,7 +68,7 @@ void main_loop()
 	//将来自导航盒的can的数据直接发到串口上
 	if( 0 < Can1_Get_CanRxMsg(&can_msg) )
 	{
-		if( can_msg.Data[0] == 0x11 )
+		//if( can_msg.Data[0] == 0x11 )
 		{
 			cmdcoder_send_bytes(&encoder, can_msg.Data , can_msg.DLC);
 		}
