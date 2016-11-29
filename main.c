@@ -3,6 +3,7 @@
 #include "usart2.h"
 #include "usart3.h"
 #include "can1.h"
+#include "custom.h"
 
 int main (void) {
     USART1_Init(115200);
@@ -11,7 +12,9 @@ int main (void) {
     
     CAN1_Init();
     
+	Custom_Init();
+	
     while (1) {
-        // Do nothing!
+        Custom_Loop();
     }
 }
