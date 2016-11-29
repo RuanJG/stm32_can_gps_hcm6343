@@ -47,28 +47,34 @@ void Uart_Configuration (Uart_t *uart, USART_TypeDef *uartDev, uint32_t USART_Ba
 	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;  
 	USART_Init(uartDev, &USART_InitStructure); 
 
-	// irq
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
-	//user cant set this read_cb by youself
-	uart->read_cb = NULL; //example , in Iap_jumper 
+
+	//user cant set this read_cb by youself, example , in Iap_jumper 
+	uart->read_cb = NULL;
 	uart->uartDev = uartDev;
+	
+	// irq
 	if( uartDev == USART1 ){
 		uart1_p = uart;
 		NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
-		NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = CUSTOM_UART1_IRQ_PREPRIORITY;
+		NVIC_InitStructure.NVIC_IRQChannelSubPriority = CUSTOM_UART1_IRQ_SUBPRIORITY;
 	}else if( uartDev == USART2 ){
 		uart2_p = uart;
 		NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
-		NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;	
+		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = CUSTOM_UART2_IRQ_PREPRIORITY;
+		NVIC_InitStructure.NVIC_IRQChannelSubPriority = CUSTOM_UART2_IRQ_SUBPRIORITY;
 	}else if( uartDev == USART3 ){
 		uart3_p = uart;
 		NVIC_InitStructure.NVIC_IRQChannel = USART3_IRQn;
-		NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = CUSTOM_UART3_IRQ_PREPRIORITY;
+		NVIC_InitStructure.NVIC_IRQChannelSubPriority = CUSTOM_UART3_IRQ_SUBPRIORITY;
 	}
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);	
 	
-
+	
+	
+	
 
 	// start .... 
 	USART_ITConfig(uartDev, USART_IT_RXNE, ENABLE);

@@ -18,7 +18,7 @@ void SysTick_Configuration(void)
 
 	SysTick->LOAD=SysTick_Reloadvalue;
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
-	NVIC_SetPriority(SysTick_IRQn, 0);//230
+	NVIC_SetPriority(SysTick_IRQn, CUSTOM_SYSTICK_IRQ_PRIORITY);
 	SysTick->CTRL|=0x02;
 	SysTick->CTRL|=0x01;
 }
@@ -57,7 +57,7 @@ void Systick_Event()
 	if( systick_ms >= SYSTICK_MS_MAX ){
 		systick_ms_overflow ++;
 		systick_ms_overflow %= SYSTICK_OVERYFLOW_MAX;
-		systick_ms = 0.0;
+		systick_ms = 0;//0.0;
 	}
 }
 
