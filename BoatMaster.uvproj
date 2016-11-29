@@ -591,6 +591,16 @@
               <FileType>1</FileType>
               <FilePath>.\misc\rtu_485.c</FilePath>
             </File>
+            <File>
+              <FileName>protocol.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\misc\protocol.h</FilePath>
+            </File>
+            <File>
+              <FileName>protocol.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\misc\protocol.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1524,6 +1534,16 @@
               <FileName>rtu_485.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\misc\rtu_485.c</FilePath>
+            </File>
+            <File>
+              <FileName>protocol.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\misc\protocol.h</FilePath>
+            </File>
+            <File>
+              <FileName>protocol.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\misc\protocol.c</FilePath>
             </File>
           </Files>
         </Group>
