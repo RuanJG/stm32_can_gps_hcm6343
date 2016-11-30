@@ -89,8 +89,6 @@ void Esc_ADC_Configuration (escAdcIrqFunction_t irqfunc)
 	DMA_Cmd(DMA1_Channel1, ENABLE);
 
 
-	
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
   /* Enable DMA channel1 IRQ Channel */
 	NVIC_InitStructure.NVIC_IRQChannel = DMA1_Channel1_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = CUSTOM_USER_IMPORTENT_IRQ_PREPRIORITY;

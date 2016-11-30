@@ -17,7 +17,6 @@ void SysTick_Configuration(void)
 	SysTick_CLKSourceConfig(SysTick_CLKSource_HCLK_Div8);		//×î¸ß9MHz
 
 	SysTick->LOAD=SysTick_Reloadvalue;
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
 	NVIC_SetPriority(SysTick_IRQn, CUSTOM_SYSTICK_IRQ_PRIORITY);
 	SysTick->CTRL|=0x02;
 	SysTick->CTRL|=0x01;
@@ -63,15 +62,8 @@ void Systick_Event()
 
 void delay_us(u32 us)
 {
-	//NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
-	//NVIC_SetPriority(SysTick_IRQn, 0);
-	//SysTick->CTRL|=0x01;
 	TimingDelay = us;
 	while(TimingDelay != 0);
-	//SysTick->CTRL&=0xFFFE;
-	//SysTick->VAL =0x00000000;
-	//NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
-	//NVIC_SetPriority(SysTick_IRQn, 230);	
 }
 /*
 float get_system_s()
