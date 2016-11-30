@@ -458,6 +458,16 @@
               <FileType>5</FileType>
               <FilePath>.\systick.h</FilePath>
             </File>
+            <File>
+              <FileName>custom_samplebox.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\custom_samplebox.c</FilePath>
+            </File>
+            <File>
+              <FileName>custom_samplebox.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\custom_samplebox.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
