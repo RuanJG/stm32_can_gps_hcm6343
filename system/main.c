@@ -18,6 +18,8 @@ int main(void)
   	NVIC_SetVectorTable(NVIC_VectTab_FLASH, 0x0);   
 #endif	
 	*/
+
+	NVIC_PriorityGroupConfig(CUSTOM_IRQ_GROUP);
 	system_error_init();
 	SysTick_Configuration();
 	main_setup();
