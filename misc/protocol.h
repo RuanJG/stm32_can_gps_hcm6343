@@ -25,10 +25,34 @@ port number: 0 for the first device, 1 for the second device ...
 
 #define MAX_PACKET_SIZE      128
 
-//encode data to buffer ; return len of valid data in buffer , -1 error
-int32_t protocol_encode(uint8_t *data, uint32_t size, uint8_t *buffer, uint32_t buf_len);
-//decode data[size], and return len of data decoded(without head tag and crc),  -1 error
-int32_t protocol_decode(uint8_t *data, uint32_t size);
+
+
+typedef struct _protocol_t {
+	unsigned char data[MAX_PACKET_SIZE];
+	unsigned char error_count;
+	unsigned char ok_count;
+	unsigned char decode_rate;
+	unsigned int index;
+	int len;
+}protocol_t;
+void protocol_init(protocol_t * coder);
+/*
+encoder data into coder, reutrn 1 ok 0 false;
+*/
+int protocol_encode(protocol_t * coder, unsigned char* data, int len);
+/*
+parse a byte for protocol coder
+return 0 : no packget reciver
+return 1 decoder packget ok , len is coder->len; data is coder->data
+*/
+int protocol_parse(protocol_t * coder, unsigned char c );
+int protocol_decode(uint8_t *data, uint32_t size);
+
+
+
+
+
+
 
 
 #endif
