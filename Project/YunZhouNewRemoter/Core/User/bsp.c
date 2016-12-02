@@ -231,6 +231,9 @@ void bsp_ADC1_CH6_DMA_Config(void)
   ADC_Init(ADC1, &ADC_InitStructure);
 
   /* ADC1 regular channe6 configuration *************************************/
+  //      HCLK = SYSCLK(168M) / 1  ; PCLK2 = HCLK / 2=84M ; APB2Periph = pclk2 = 84M
+  //   adc_clk = 84/ ADC_Prescaler = 10.5M; sample_tick = 12.5+ ADC_SampleTime_480Cycles = 492.5 tick
+  //	sample_time = 1000000us / (10.5M/492.5)  = 46.9us
   ADC_RegularChannelConfig(ADC1, ADC_Channel_10, 1, ADC_SampleTime_480Cycles);
   ADC_RegularChannelConfig(ADC1, ADC_Channel_11, 2, ADC_SampleTime_480Cycles);
   ADC_RegularChannelConfig(ADC1, ADC_Channel_12, 3, ADC_SampleTime_480Cycles);
