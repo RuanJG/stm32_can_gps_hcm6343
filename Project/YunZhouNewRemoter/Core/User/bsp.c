@@ -303,10 +303,15 @@ void DMA2_Stream0_IRQHandler(void)
 //################################  遥控器的电池电量
 #define _BATTERY_ADC_MAX 3210
 #define _BATTERY_ADC_MIN 2480
+#define _BATTERY_VALUE_COUNT 50
+unsigned int battery_value[_BATTERY_VALUE_COUNT];
+unsigned int battery_index = 0;
+unsigned int battery_level=100;
 unsigned char bsp_Get_Battery_Level()
 {
 	unsigned short val ;
 	unsigned char level;
+	int sum=0,i;
 	
 	val = bsp_Cali_Adc_Value(0);
 	
@@ -325,8 +330,22 @@ unsigned char bsp_Get_Battery_Level()
 			{
 				level = 100;
 			}		
+			
+			battery_value[battery_index++] = level;
+			if( battery_index >= _BATTERY_VALUE_COUNT ) {
+				
+				for( i=0; i< battery_index; i++ )
+					sum += battery_value[i];
+				sum /= battery_index;
+				
+				if( sum < battery_level ) 
+					battery_level = sum;
+				
+				battery_index = 0;
+			}
+			
 	
-			return level;
+			return battery_level;
 }
 
 

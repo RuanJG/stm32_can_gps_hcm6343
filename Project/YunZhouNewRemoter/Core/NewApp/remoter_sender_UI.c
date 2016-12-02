@@ -163,7 +163,7 @@ void show_jostick_status_text()
 	GUI_MEMDEV_Clear(layer0_textbox_memdev);
 	x = 0; y = 10;
 	GUI_DispStringAt("------- Power ------", x, y);
-	sprintf(strBuffer,"Remoter     %d    ",bsp_Get_Battery_Level());
+	sprintf(strBuffer,"Battery     %d    ",bsp_Get_Battery_Level());
 	GUI_DispStringAt(strBuffer, x, y+15);
 	sprintf(strBuffer,"Boat        %d    ",remoter_sender_RF_get_boat_powerLevel());
 	GUI_DispStringAt(strBuffer, x, y+30);
@@ -185,7 +185,8 @@ void show_jostick_status_text()
 	GUI_DispStringAt(strBuffer ,x , y+15);
 	sprintf(strBuffer,"xtend_id     %d    ",rf_config->id);
 	GUI_DispStringAt(strBuffer ,x , y+30);
-	sprintf(strBuffer,"RSSI         %d -- %d     ",xtend900_get_rssi(),xtend900_get_rssi_level() );
+	//sprintf(strBuffer,"RSSI         %d -- %d     ",xtend900_get_rssi(),xtend900_get_rssi_level() );
+	sprintf(strBuffer,"RSSI         %d     ",xtend900_get_rssi_level() );
 	GUI_DispStringAt(strBuffer,x , y+45);
 	sprintf(strBuffer,"decode_rate  %d    ",remoter_sender_RF_getDecodeRate() );
 	GUI_DispStringAt(strBuffer,x , y+60);
