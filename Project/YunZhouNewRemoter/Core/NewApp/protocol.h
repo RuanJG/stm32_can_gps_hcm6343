@@ -25,17 +25,6 @@ port number: 0 for the first device, 1 for the second device ...
 
 #define MAX_PACKET_SIZE      128
 
-uint8_t ComputeCRC8(uint8_t *data, uint32_t size);
-int32_t Extract_Packet(uint8_t *data, uint32_t size);
-int32_t Pack_Data(uint8_t *data, uint32_t size, uint8_t *buffer, uint32_t buf_len);
-/*
-void Send_To_Port(uint8_t *data, uint32_t size, uint8_t port, uint8_t num);
-void Handle_Packet_Down(uint8_t *packet, uint32_t size);
-*/
-
-
-
-
 
 
 typedef struct _protocol_t {
@@ -57,7 +46,7 @@ return 0 : no packget reciver
 return 1 decoder packget ok , len is coder->len; data is coder->data
 */
 int protocol_parse(protocol_t * coder, unsigned char c );
-
+int protocol_decode(uint8_t *data, uint32_t size);
 
 
 

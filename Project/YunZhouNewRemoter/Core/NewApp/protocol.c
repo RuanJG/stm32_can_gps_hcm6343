@@ -54,7 +54,11 @@ int32_t Pack_Data(uint8_t *data, uint32_t size, uint8_t *buffer, uint32_t buf_le
     return ret_len;
 }
 
-int32_t Extract_Packet(uint8_t *data, uint32_t size) {
+
+
+
+
+int32_t protocol_decode(uint8_t *data, uint32_t size) {
     uint32_t index = 0;
     int32_t pack_len = 0;
     uint8_t crc = 0;
@@ -88,51 +92,6 @@ int32_t Extract_Packet(uint8_t *data, uint32_t size) {
     
     return pack_len - 1;
 }
-
-/*
-void Send_To_Port(uint8_t *data, uint32_t size, uint8_t port, uint8_t num) {
-    uint16_t canId = 0;
-    
-    if (PORT_USART == port && 0 == num) { // Send to USART1
-        USART1_Send(data, size);
-        return;
-    }
-    
-    if (PORT_CAN == port && 0 == num) { // Send to CAN1
-        if (size < 3) { // 2 bytes ID + data
-            return;
-        }
-        
-        canId = ((data[0] << 8) & 0xFF00)  + (data[1] & 0x00FF);
-        CAN1_Send(canId, data + 2, size - 2);
-        return;
-    }
-}
-
-void Handle_Packet_Down(uint8_t *packet, uint32_t size) {
-    uint8_t transmit;
-    uint8_t port_type;
-    uint8_t port_num;
-    
-    if (size < 2) {
-        return;
-    }
-    
-    transmit  = ((packet[0] >> 6) & 0x01);
-    port_type = ((packet[0] >> 3) & 0x07);
-    port_num  = ( packet[0]       & 0x07);
-    
-    if (TRANSFER_DONE == transmit) {
-        Excute_Command(packet + 1, size - 1);
-        return;
-    }
-    
-    Send_To_Port(packet + 1, size - 1, port_type, port_num);
-}
-*/
-
-
-
 
 
 
@@ -184,7 +143,7 @@ int protocol_parse(protocol_t * coder, unsigned char c )
 		if( c == PACKET_END )
 		{
 			coder->data[coder->index++] = c;
-			coder->len = Extract_Packet(coder->data,coder->index);
+			coder->len = protocol_decode(coder->data,coder->index);
 			if( coder->len >= 0 ){
 				coder->ok_count ++;
 				_protocol_check_decode_rate(coder);
